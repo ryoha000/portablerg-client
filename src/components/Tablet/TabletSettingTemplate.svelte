@@ -42,7 +42,7 @@
   const confirm = async () => {
     addCon(containerSize.width, containerSize.height)
     await update()
-    push('/client')
+    push('/')
   }
 </script>
 

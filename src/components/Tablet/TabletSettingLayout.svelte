@@ -22,7 +22,7 @@
     close()
   }
   const close = () => {
-    push('/client')
+    push('/')
   }
 </script>
 

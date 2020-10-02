@@ -45,8 +45,8 @@
 {#if isOpenToggleSetting}
   <div class="layer" on:click="{closeToggleSetting}"></div>
   <div class="settingContainer" on:click="{stop}">
-    <a href="/client/setting/layout" class="settingItem" use:link>レイアウトの設定を開く</a>
-    <a href="/client/setting/template" class="settingItem" use:link>コントロールのテンプレートを作る</a>
-    <a href="/client/setting/sort" class="settingItem" use:link>コントロールのテンプレートを並び替える</a>
+    <a href="/setting/layout" class="settingItem" use:link>レイアウトの設定を開く</a>
+    <a href="/setting/template" class="settingItem" use:link>コントロールのテンプレートを作る</a>
+    <a href="/setting/sort" class="settingItem" use:link>コントロールのテンプレートを並び替える</a>
   </div>
 {/if}

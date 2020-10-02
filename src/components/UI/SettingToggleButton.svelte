@@ -1,11 +1,11 @@
-<script lang="ts">
+<script>
   import Icon from './Icon.svelte'
   import { push } from 'svelte-spa-router'
   
-  export let iconName: 'cog' | 'close'
-  export let openSetting: (e: MouseEvent) => void = () => {}
+  export let iconName
+  export let openSetting = () => {}
 
-  const toggle = (e: MouseEvent) => {
+  const toggle = (e) => {
     switch (iconName) {
       case 'cog': {
         if (openSetting) {
@@ -14,7 +14,7 @@
         return
       }
       case 'close': {
-        push('/client')
+        push('/')
         return
       }
     }
