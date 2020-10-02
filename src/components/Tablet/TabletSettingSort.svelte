@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import useSetting, { controlStyles, setting } from './useSetting';
@@ -8,9 +8,9 @@
   import TabletSettingSortItem from './TabletSettingSortItem.svelte'
   import TextButton from '../UI/TextButton.svelte'
 
-  let container: HTMLElement
+  let container
   const set = get(setting)
-  let elements: (HTMLElement | null)[] = set ? set.controlTemplates.map(() => null) : Array(999).map(() => null)
+  let elements = set ? set.controlTemplates.map(() => null) : Array(999).map(() => null)
   onMount(async () => {
     const { init, setupElements } = useSort(container)
     await init()

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { onMount } from 'svelte';
   import useSetting, { windowStyle, controlsStyle } from './useSetting'
   import useLayout, { LayoutType } from './useLayout'
@@ -6,9 +6,9 @@
   import TextButton from '../UI/TextButton.svelte'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
 
-  let container: HTMLElement
-  let windowElement: HTMLElement
-  let controlsElement: HTMLElement
+  let container
+  let windowElement
+  let controlsElement
 
   const { update } = useSetting()
   onMount(() => {

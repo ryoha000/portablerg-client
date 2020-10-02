@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import useSetting, { getStyleFromRect, ControlType, getControlKeyName, setting } from './useSetting'
@@ -7,8 +7,8 @@
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
 
-  let container: HTMLElement
-  let elements: any = {
+  let container
+  let elements = {
     '0': null,
     '1': null,
     '2': null,
@@ -25,7 +25,7 @@
   init()
 
   const { init: initSetting, update } = useSetting()
-  let addCon: (width: number, height: number) => void
+  let addCon
   onMount(async () => {
     const prev = get(setting)
     if (!prev) {

@@ -10,5 +10,5 @@ export const store = {
   ws: writable<WebSocket | null>(null),
   mouseMoveChannel: writable<RTCDataChannel | null>(null),
 
-  setting: writable<TabletSetting | null>(null)
+  setting: writable<TabletSetting | null>(null),
 }

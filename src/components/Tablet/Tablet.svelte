@@ -21,11 +21,7 @@
   onMount(async () => {
     store.remoteVideoElement.set(remoteVideo)
     await init()
-    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-      ws = setupWS({ privateIP: location.hostname, browserPort: Number(location.port) })
-    } else {
-      ws = setupWS({ privateIP: location.hostname, browserPort: 2401 })
-    }
+    ws = setupWS()
     // document.documentElement.requestFullscreen()
   })
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {

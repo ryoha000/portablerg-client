@@ -5,8 +5,8 @@ import { store } from '../store';
 const useWebRTC = () => {
   const hostID = writable(0)
 
-  const setupWS = (setting: Setting) => {
-    const wsUrl = `ws://${setting.privateIP}:${setting.browserPort + 1}/`;
+  const setupWS = () => {
+    const wsUrl = `wss://ryoha.trap.show/portablerg-server/`;
     console.log(wsUrl)
     const ws = new WebSocket(wsUrl);
     store.ws.set(ws)
