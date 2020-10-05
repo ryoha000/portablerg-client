@@ -120,7 +120,7 @@ class State {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'bindings' does not exist on type 'State'... Remove this comment to see the full error message
     this.bindings.push(new Binding(element, boundGesture,
       handler, false, bindOnce));
-    element.addEventListener(boundGesture.getId(), handler, false);
+    element.addEventListener(boundGesture.getId(), handler, { capture: false, passive: true });
     // element.addEventListener(boundGesture.getId(), handler, capture);
   }
 

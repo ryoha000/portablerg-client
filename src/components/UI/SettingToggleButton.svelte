@@ -6,16 +6,18 @@
   export let openSetting = () => {}
 
   const toggle = (e) => {
+    console.log('click toggle')
+    e.stopPropagation()
     switch (iconName) {
       case 'cog': {
         if (openSetting) {
           openSetting(e)
         }
-        return
+        break
       }
       case 'close': {
         push('/')
-        return
+        break
       }
     }
   }
