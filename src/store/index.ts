@@ -11,4 +11,6 @@ export const store = {
   mouseMoveChannel: writable<RTCDataChannel | null>(null),
 
   setting: writable<TabletSetting | null>(null),
+
+  me: writable<string | null>(null)
 }
