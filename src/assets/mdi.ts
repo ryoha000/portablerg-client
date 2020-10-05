@@ -4,7 +4,9 @@ import {
   mdiChevronRight,
   mdiCog,
   mdiClose,
-  mdiTrashCan
+  mdiTrashCan,
+  mdiGoogle,
+  mdiGithub
 } from '@mdi/js'
 
 const mdi = new Map<string, string>([
@@ -13,7 +15,9 @@ const mdi = new Map<string, string>([
   ['chevron-right', mdiChevronRight ],
   ['cog', mdiCog],
   ['close', mdiClose],
-  ['trash-can', mdiTrashCan]
+  ['trash-can', mdiTrashCan],
+  ['google', mdiGoogle],
+  ['github', mdiGithub]
 ])
 
 export default mdi
