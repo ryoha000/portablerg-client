@@ -6,7 +6,7 @@ import {
   mdiClose,
   mdiTrashCan,
   mdiGoogle,
-  mdiGithub
+  mdiGithub, mdiCastConnected
 } from '@mdi/js'
 
 const mdi = new Map<string, string>([
@@ -17,7 +17,8 @@ const mdi = new Map<string, string>([
   ['close', mdiClose],
   ['trash-can', mdiTrashCan],
   ['google', mdiGoogle],
-  ['github', mdiGithub]
+  ['github', mdiGithub],
+  ['cast-connected', mdiCastConnected]
 ])
 
 export default mdi

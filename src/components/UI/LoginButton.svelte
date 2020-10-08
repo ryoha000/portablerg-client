@@ -1,9 +1,8 @@
 <script lang="ts">
-import Icon from "./Icon.svelte"
+  import Icon from "./Icon.svelte"
 
   export let label: string
   export let iconName: string
-  export let color: string = 'rgb(0, 0, 0)'
 </script>
 
 <style>
@@ -12,6 +11,7 @@ import Icon from "./Icon.svelte"
     justify-content: center;
     align-items: center;
     padding: 1rem;
+    cursor: pointer;
   }
   .icon {
     padding: 0.25rem;
