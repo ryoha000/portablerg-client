@@ -1,6 +1,7 @@
 <script lang="ts">
   import TextButton from '../UI/TextButton.svelte';
   import useFirebase from './use/useFirebase'
+  import { fullScreen } from '../../lib/utils'
 
   let id: string = ""
   const { original } = useFirebase()
@@ -9,6 +10,7 @@
       alert("idを入力してください")
       return
     }
+    fullScreen()
     original(id)
   }
 </script>

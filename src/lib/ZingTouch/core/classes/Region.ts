@@ -94,7 +94,7 @@ class Region {
           e.stopPropagation()
         }
         arbiter(e, this);
-      }, {capture: false, passive: true });
+      }, {capture: false, passive: false });
       // }, this.capture);
     });
   }

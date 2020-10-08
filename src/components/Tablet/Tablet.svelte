@@ -6,6 +6,7 @@
   import { store } from '../../store';
   import TabletSetting from './TabletSetting.svelte'
   import { getNextIndex } from './useControl'
+  import TabletLogin from './TabletLogin.svelte'
 
   let remoteVideo: HTMLMediaElement
   let ws: WebSocket
@@ -47,9 +48,10 @@
   }
 </style>
 
+<TabletLogin />
 <div class="container">
   <div class="btnContainer">
-    <button type="button" on:click="{connectHost}">Connect</button>
+    <button type="button" on:click="{() => connectHost("")}">Connect</button>
     <button type="button" on:click="{() => hangUp(remoteVideo)}">Hang Up</button>
     <button type="button" on:click="{sendMouseMove}">sendMouseMove</button>
   </div>
