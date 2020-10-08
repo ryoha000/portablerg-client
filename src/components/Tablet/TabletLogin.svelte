@@ -12,22 +12,29 @@
   let isConnect = false
 
   const { connectHost } = useWebRTC()
-  const unsubscribe = store.me.subscribe(v => {
+  const unsubscribe = store.me.subscribe(async v => {
     me = v
     if (v) {
-      console.log(v)
+      if (location.href.endsWith("login")) {
+        const img = new Image()
+        img.src = `http://localhost:19952/${v}`
+        document.body.appendChild(img)
+        setTimeout(() => {
+          window.close()
+        }, 50)
+        return
+      }
       connectHost(v)
+      fullScreen()
     }
   })
   const { init, google, github } = useFirebase()
   onMount(() => init())
   onDestroy(unsubscribe)
   const loginGoogle = () => {
-    fullScreen()
     google()
   }
   const loginGitHub = () => {
-    fullScreen()
     github()
   }
 

@@ -13,6 +13,10 @@ const useWebRTC = () => {
     ws.onopen = (evt) => {
       console.log('ws open()');
     };
+    ws.onclose = () => {
+      console.log('ws closed reconnecting...');
+      setupWS()
+    }
     ws.onerror = (err) => {
       console.error('ws onerror() ERR:', err);
     };

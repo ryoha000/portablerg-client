@@ -1,12 +1,14 @@
 <script>
 	import Router from 'svelte-spa-router'
 	import Tablet from './components/Tablet/Tablet.svelte'
+	import Login from './components/Tablet/TabletLogin.svelte'
 	import TabletSettingLayout from './components/Tablet/TabletSettingLayout.svelte'
 	import TabletSettingSort from './components/Tablet/TabletSettingSort.svelte';
 	import TabletSettingTemplate from './components/Tablet/TabletSettingTemplate.svelte';
 
 	const routes = {
 		'/': Tablet,
+		'/login': Login,
 		'/setting/layout': TabletSettingLayout,
 		'/setting/template': TabletSettingTemplate,
 		'/setting/sort': TabletSettingSort,

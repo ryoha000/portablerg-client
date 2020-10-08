@@ -6,7 +6,8 @@ import {
   mdiClose,
   mdiTrashCan,
   mdiGoogle,
-  mdiGithub, mdiCastConnected
+  mdiGithub,
+  mdiCastConnected
 } from '@mdi/js'
 
 const mdi = new Map<string, string>([

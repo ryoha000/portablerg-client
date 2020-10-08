@@ -10,7 +10,6 @@
       alert("idを入力してください")
       return
     }
-    fullScreen()
     original(id)
   }
 </script>
