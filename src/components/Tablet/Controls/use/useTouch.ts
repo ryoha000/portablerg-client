@@ -1,5 +1,6 @@
 import ZingTouch from "../../../../lib/ZingTouch/ZingTouch";
 import { writable, get } from 'svelte/store';
+import { sendWSMessageWithID } from '../../../../lib/utils'
 
 export const message = writable('')
 
@@ -8,7 +9,7 @@ const ALLOW_DRAG_START_RADIUS = 20
 const BUFFER_LENGTH = 3
 const MAGNIFICATION = 5
 
-const useTouch = (ws: WebSocket) => {
+const useTouch = (ws: WebSocket, id: string) => {
   let isDragging = false
   let isMoving = false
   let isScroll = false
@@ -23,7 +24,7 @@ const useTouch = (ws: WebSocket) => {
     region.bind(ele, 'tap', (e: TapEvent) => {
       if (!isMoving && !isDragging && !isScroll) {
         console.log('click !')
-        ws.send(JSON.stringify({ type: 'click' }))
+        sendWSMessageWithID(id, { type: 'click' }, ws)
         resetPan()
       }
     })
@@ -32,13 +33,17 @@ const useTouch = (ws: WebSocket) => {
         console.log('scroll !')
         const data = e.detail.data[0]
         const r = data.velocity * data.duration
-        ws.send(JSON.stringify({
-          type: 'scroll',
-          dPoint: {
-            x: r * Math.cos(data.currentDirection / Math.PI),
-            y: r * Math.sin(data.currentDirection / Math.PI)
-          }
-        }))
+        sendWSMessageWithID(
+          id,
+          {
+            type: 'scroll',
+            dPoint: {
+              x: r * Math.cos(data.currentDirection / Math.PI),
+              y: r * Math.sin(data.currentDirection / Math.PI)
+            }
+          },
+          ws
+        )
       }
     })
     const scrollPan: Pan = new ZingTouch.Pan({ numInputs: 2 })
@@ -48,10 +53,11 @@ const useTouch = (ws: WebSocket) => {
         isScroll = true
         console.log('scroll !')
         const data = e.detail.data[0]
-        ws.send(JSON.stringify({
-          type: 'scroll',
-          dPoint: data.change
-        }))
+        sendWSMessageWithID(
+          id,
+          { type: 'scroll', Point: data.change },
+          ws
+        )
       }
     })
   };
@@ -72,7 +78,7 @@ const useTouch = (ws: WebSocket) => {
     timer = setTimeout(() => {
       console.log('isDragging: true')
       isDragging = true
-      ws.send(JSON.stringify({ type: 'dragStart' }))
+      sendWSMessageWithID(id, { type: 'dragStart' }, ws)
     }, DRAG_START_INTERVAL)
   }
   const panMove = (e: ZingInput[], state: any, element: HTMLElement, event: PanData) => {
@@ -113,7 +119,7 @@ const useTouch = (ws: WebSocket) => {
     if (isDragging) {
       console.log('dragEnd')
       sendDiv('dragging')
-      ws.send(JSON.stringify({ type: 'dragEnd' }))
+      sendWSMessageWithID(id, { type: 'dragEnd' }, ws)
     }
     console.log('isDragging: false')
     resetPan()
@@ -140,10 +146,11 @@ const useTouch = (ws: WebSocket) => {
   const sendDiv = (type: 'dragging' | 'move') => {
     const dPoint = dPosBuf.reduce((acc, cur) => ({ x: acc.x + cur.x, y: acc.y + cur.y }), { x: 0, y: 0 })
     dPosBuf = []
-    ws.send(JSON.stringify({
-      type: type,
-      dPoint: dPoint
-    }))
+    sendWSMessageWithID(
+      id,
+      { type: type, dPoint: dPoint },
+      ws
+    )
   }
   return { init, dispose };
 };

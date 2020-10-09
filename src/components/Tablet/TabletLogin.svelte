@@ -24,7 +24,7 @@
         }, 50)
         return
       }
-      connectHost(v)
+      connectHost()
       fullScreen()
     }
   })
@@ -79,7 +79,7 @@
       </div>
       <TabletOriginalLogin />
     {:else}
-      <LoginButton label="CONNECT" iconName="cast-connected" on:click="{() => connectHost(me)}" />
+      <LoginButton label="CONNECT" iconName="cast-connected" on:click="{connectHost}" />
     {/if}
   </div>
 {/if}

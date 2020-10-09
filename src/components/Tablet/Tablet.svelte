@@ -51,7 +51,7 @@
 <TabletLogin />
 <div class="container">
   <div class="btnContainer">
-    <button type="button" on:click="{() => connectHost("")}">Connect</button>
+    <button type="button" on:click="{connectHost}">Connect</button>
     <button type="button" on:click="{() => hangUp(remoteVideo)}">Hang Up</button>
     <button type="button" on:click="{sendMouseMove}">sendMouseMove</button>
   </div>

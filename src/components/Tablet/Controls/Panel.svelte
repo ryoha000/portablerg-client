@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+import { store } from '../../../store';
   import { ControlType } from '../useSetting';
   import useKey from './use/useKey';
   import useScroll from './use/useScroll';
@@ -10,20 +11,23 @@
   export let type: ControlType
   let container: HTMLElement
 
+  let id: null | string = null
+  store.me.subscribe(v => id = v)
+
   onMount(() => {
     switch (type) {
       case ControlType.Panel: {
-        const { init } = useTouch(ws)
+        const { init } = useTouch(ws, id)
         init(container)
         break
       }
       case ControlType.Scroll: {
-        const { init } = useScroll(ws)
+        const { init } = useScroll(ws, id)
         init(container)
         break
       }
       default: {
-        const { init } = useKey(ws)
+        const { init } = useKey(ws, id)
         switch (type) {
           case ControlType.Enter: {
             init(container, 'enter')
