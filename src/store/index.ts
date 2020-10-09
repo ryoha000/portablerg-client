@@ -9,6 +9,7 @@ export const store = {
   remoteVideoStream: writable<null | MediaStream>(null),
   ws: writable<WebSocket | null>(null),
   mouseMoveChannel: writable<RTCDataChannel | null>(null),
+  isConnected: writable(false),
 
   setting: writable<TabletSetting | null>(null),
 

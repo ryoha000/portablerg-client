@@ -128,6 +128,7 @@ const useWebRTC = () => {
     // リモートのMediStreamTrackを受信した時
     peer.ontrack = async (evt) => {
       console.log('-- peer.ontrack()');
+      store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
       console.log(remoteVideoElement)
@@ -177,6 +178,7 @@ const useWebRTC = () => {
           const peerConnection: RTCPeerConnection = get(store.peerConnection)
           if (peerConnection) {
             hangUp();
+            store.isConnected.set(false)
           }
           break;
         case 'disconnected':

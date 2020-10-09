@@ -32,6 +32,7 @@
       }
     }
   })
+  store.isConnected.subscribe(v => isConnect = v)
   const { init, google, github } = useFirebase()
   onMount(() => init())
   onDestroy(unsubscribe)
