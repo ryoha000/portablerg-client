@@ -25,7 +25,11 @@
         return
       }
       connectHost()
-      fullScreen()
+      try {
+        fullScreen()
+      } catch (e) {
+        console.error("fullscreen error: ", e)
+      }
     }
   })
   const { init, google, github } = useFirebase()
