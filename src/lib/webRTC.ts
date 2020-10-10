@@ -107,14 +107,18 @@ const useWebRTC = () => {
   }
 
   // Videoの再生を開始する
-  async function playVideo(element : HTMLMediaElement, stream: MediaStream) {
+  function playVideo(element : HTMLMediaElement, stream: MediaStream) {
     if (element.srcObject) {
       console.warn("already setted")
       return
     }
-    element.srcObject = stream;
     try {
-      await element.play();
+      element.srcObject = stream;
+      element.onloadedmetadata = async () => {
+        console.error('loaded meta data')
+        await element.play();
+      }
+      console.log(element)
     } catch(error) {
       console.error('error auto play:' + error);
     }
@@ -132,8 +136,9 @@ const useWebRTC = () => {
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
       console.log(remoteVideoElement)
+      console.log(evt.streams[0])
       if (remoteVideoElement) {
-        await playVideo(remoteVideoElement, evt.streams[0])
+        playVideo(remoteVideoElement, evt.streams[0])
       }
       // playVideo(remoteVideo, evt.streams[0]);
     };
@@ -325,21 +330,6 @@ const useWebRTC = () => {
     console.log('peerConnection is closed.');
   }
 
-  // ビデオエレメントを初期化する
-  function cleanupVideoElement(element: HTMLMediaElement) {
-    element.pause();
-    element.srcObject = null;
-  }
-
-  function playRemoteVideo(remoteVideo: HTMLMediaElement) {
-    const remoteVideoStream: MediaStream = get(store.remoteVideoStream)
-    if (remoteVideoStream) {
-      playVideo(remoteVideo, remoteVideoStream)
-    } else {
-      alert('not set remote video stream')
-    }
-  }
-
   function sendMouseMove(dPoint: { x: number, y: number }) {
     const mouseMoveChannel: RTCDataChannel = get(store.mouseMoveChannel)
     console.log(mouseMoveChannel)
@@ -359,7 +349,6 @@ const useWebRTC = () => {
     setStreamByID,
     hangUp,
     connect,
-    playRemoteVideo,
     sendMouseMove,
     connectHost,
     playVideo

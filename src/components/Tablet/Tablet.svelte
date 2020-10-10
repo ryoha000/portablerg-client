@@ -37,7 +37,7 @@ import { get } from 'svelte/store';
     const stream: MediaStream = get(store.remoteVideoStream)
     console.log(ele)
     console.log(stream)
-    await playVideo(ele, stream)
+    playVideo(ele, stream)
   }
 </script>
 
