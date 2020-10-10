@@ -1,6 +1,7 @@
 import ZingTouch from "../../../../lib/ZingTouch/ZingTouch";
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { sendWSMessageWithID } from '../../../../lib/utils'
+import { store } from "../../../../store";
 
 export const message = writable('')
 
@@ -9,13 +10,15 @@ const ALLOW_DRAG_START_RADIUS = 20
 const BUFFER_LENGTH = 3
 const MAGNIFICATION = 5
 
-const useTouch = (ws: WebSocket, id: string) => {
+const useTouch = (ws: WebSocket) => {
   let isDragging = false
   let isMoving = false
   let isScroll = false
   let tapPos = { x: 0, y: 0 }
   let timer: number | null = null
   let dPosBuf: { x: number, y: number }[] = []
+  let id = ""
+  store.me.subscribe(v => id = v)
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement) => {

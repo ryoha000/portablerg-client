@@ -1,4 +1,3 @@
-import type { Setting } from '../@types/Original'
 import { get } from 'svelte/store';
 import { store } from '../store';
 import { sendWSMessageWithID } from './utils';
@@ -52,6 +51,7 @@ const useWebRTC = () => {
         }
         case 'error': {
           console.error(message.data)
+          break
         }
         default: { 
           console.log("Invalid message"); 
@@ -108,8 +108,8 @@ const useWebRTC = () => {
 
   // Videoの再生を開始する
   async function playVideo(element : HTMLMediaElement, stream: MediaStream) {
-    console.log(element.srcObject)
     if (element.srcObject) {
+      console.warn("already setted")
       return
     }
     element.srcObject = stream;

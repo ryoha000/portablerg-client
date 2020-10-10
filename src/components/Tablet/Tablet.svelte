@@ -7,6 +7,7 @@
   import TabletSetting from './TabletSetting.svelte'
   import { getNextIndex } from './useControl'
   import TabletLogin from './TabletLogin.svelte'
+import { get } from 'svelte/store';
 
   let remoteVideo: HTMLMediaElement
   let ws: WebSocket
@@ -16,7 +17,8 @@
     hangUp,
     setupWS,
     connectHost,
-    sendMouseMove
+    sendMouseMove,
+    playVideo
   } = useWebRTC()
   const { init } = useSetting()
   onMount(async () => {
@@ -28,6 +30,14 @@
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {
     const next = getNextIndex(index, e.detail.num)
     index = next
+  }
+
+  const play = async () => {
+    const ele: HTMLMediaElement = get(store.remoteVideoElement)
+    const stream: MediaStream = get(store.remoteVideoStream)
+    console.log(ele)
+    console.log(stream)
+    await playVideo(ele, stream)
   }
 </script>
 
@@ -51,7 +61,7 @@
 <TabletLogin />
 <div class="container">
   <div class="btnContainer">
-    <button type="button" on:click="{connectHost}">Connect</button>
+    <button type="button" on:click="{play}">Play</button>
     <button type="button" on:click="{() => hangUp(remoteVideo)}">Hang Up</button>
     <button type="button" on:click="{sendMouseMove}">sendMouseMove</button>
   </div>

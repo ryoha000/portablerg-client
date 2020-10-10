@@ -1,7 +1,10 @@
 import ZingTouch from '../../../../lib/ZingTouch/ZingTouch'
 import { sendWSMessageWithID } from '../../../../lib/utils'
+import { store } from '../../../../store';
 
-const useScroll = (ws: WebSocket, id: string) => {
+const useScroll = (ws: WebSocket) => {
+  let id = ""
+  store.me.subscribe(v => id = v)
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement) => {

@@ -5,7 +5,10 @@
 	import TabletSettingLayout from './components/Tablet/TabletSettingLayout.svelte'
 	import TabletSettingSort from './components/Tablet/TabletSettingSort.svelte';
 	import TabletSettingTemplate from './components/Tablet/TabletSettingTemplate.svelte';
+	import { store } from './store';
 
+	let id = ""
+	store.me.subscribe(v => id = v)
 	const routes = {
 		'/': Tablet,
 		'/login': Login,
@@ -16,6 +19,7 @@
 </script>
 
 <main>
+	<div>id: {id}</div>
 	<Router {routes} />
 </main>
 

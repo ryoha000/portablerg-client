@@ -17,17 +17,17 @@ import { store } from '../../../store';
   onMount(() => {
     switch (type) {
       case ControlType.Panel: {
-        const { init } = useTouch(ws, id)
+        const { init } = useTouch(ws)
         init(container)
         break
       }
       case ControlType.Scroll: {
-        const { init } = useScroll(ws, id)
+        const { init } = useScroll(ws)
         init(container)
         break
       }
       default: {
-        const { init } = useKey(ws, id)
+        const { init } = useKey(ws)
         switch (type) {
           case ControlType.Enter: {
             init(container, 'enter')
