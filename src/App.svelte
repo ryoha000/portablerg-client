@@ -11,7 +11,7 @@
 
 	onMount(async () => {
 		const { init } = useDB()
-		init()
+		await init()
 		const { setupWS } = useWebRTC()
 		setupWS()
 	})

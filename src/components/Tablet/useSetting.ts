@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { store } from '../../store';
 
 export interface TabletSetting {
   windowRect: Rect
@@ -64,23 +65,21 @@ export interface ControlStyle {
   }[]
 }
 
-export const setting = writable<TabletSetting | null>(null)
-
-export const windowStyle = derived(setting, ($setting) => {
+export const windowStyle = derived(store.setting, ($setting) => {
   if (!$setting) {
     return ''
   }
   return `position: absolute; ${getStyleFromRect($setting.windowRect)}`
 })
 
-export const controlsStyle = derived(setting, ($setting) => {
+export const controlsStyle = derived(store.setting, ($setting) => {
   if (!$setting) {
     return ''
   }
   return `position: absolute; ${getStyleFromRect($setting.controlRect)}`
 })
 
-export const controlStyles = derived(setting, ($setting) => {
+export const controlStyles = derived(store.setting, ($setting) => {
   if (!$setting) {
     return []
   }

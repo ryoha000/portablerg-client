@@ -1,7 +1,8 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import { ControlType, Control, setting, TabletSetting, getControlKeyName } from './useSetting'
+import { ControlType, Control, TabletSetting, getControlKeyName } from './useSetting'
 import { get, writable } from 'svelte/store'
 import type { NumRect } from './useLayout'
+import { store } from '../../store'
 
 export const controls = writable<Control[]>([])
 
@@ -126,7 +127,7 @@ const useTemplate = (container: HTMLElement) => {
     region.bind(ele, customDistance, () => {})
   }
   const addControl = (width: number, height: number) => {
-    const prev: TabletSetting = get(setting)
+    const prev: TabletSetting = get(store.setting)
     let maxID = -1
     for (const c of prev.controlTemplates) {
       if (c.id > maxID) {
@@ -156,7 +157,7 @@ const useTemplate = (container: HTMLElement) => {
       id: maxID + 1,
       controls: newControls
     })
-    setting.set(prev)
+    store.setting.set(prev)
   }
   return { setupHandler, addControl }
 };

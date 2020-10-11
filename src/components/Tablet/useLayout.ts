@@ -1,7 +1,8 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import { TabletSetting, Rect, setting } from './useSetting'
+import type { TabletSetting, Rect } from './useSetting'
 import { get } from 'svelte/store'
 import { getSetting } from '../../lib/useDB'
+import { store } from '../../store'
 
 export type LayoutType = typeof LayoutType[keyof typeof LayoutType]
 
@@ -20,7 +21,7 @@ const useLayout = (container: HTMLElement) => {
   let isDragging = Array(Object.values(LayoutType).length).map(_ => false)
 
   const init = async () => {
-    let s = getSetting()
+    let s = await getSetting()
     for (const type of Object.values(LayoutType)) {
       if (type === LayoutType.window) {
         rects[type] = getNumRect(s.windowRect)
@@ -62,14 +63,14 @@ const useLayout = (container: HTMLElement) => {
       const data = output.data[0]
       rects[draggingIndex].x += data.change.x
       rects[draggingIndex].y += data.change.y
-      const prev: TabletSetting = get(setting)
+      const prev: TabletSetting = get(store.setting)
       if (draggingIndex === LayoutType.window) {
         prev.windowRect = getRect(rects[draggingIndex])
       }
       if (draggingIndex === LayoutType.control) {
         prev.controlRect = getRect(rects[draggingIndex])
       }
-      setting.set(prev)
+      store.setting.set(prev)
     }
 
     const customPan = new ZingTouch.Pan({ onStart: onPanStart, onMove: onPanMove })
@@ -103,14 +104,14 @@ const useLayout = (container: HTMLElement) => {
         rects[type].width += change1.x + change2.x
         rects[type].height += change1.y + change2.y
       }
-      const prev: TabletSetting = get(setting)
+      const prev: TabletSetting = get(store.setting)
       if (type === LayoutType.window) {
         prev.windowRect = getRect(rects[type])
       }
       if (type === LayoutType.control) {
         prev.controlRect = getRect(rects[type])
       }
-      setting.set(prev)
+      store.setting.set(prev)
     }
     const customDistance: Distance = new ZingTouch.Distance({ onStart: onDistanceStart, onMove: onDistanceMove })
     region.bind(ele, customDistance, () => {})

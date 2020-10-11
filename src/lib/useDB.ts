@@ -1,5 +1,5 @@
 import { get } from "svelte/store"
-import { setting, ControlTemplate, Rect, TabletSetting } from "../components/Tablet/useSetting"
+import type { ControlTemplate, Rect, TabletSetting } from "../components/Tablet/useSetting"
 import { store } from "../store"
 
 const initialWindowRect = {
@@ -38,95 +38,100 @@ const firstControlTemplate: ControlTemplate = {
 }
 const initialSort = [0]
 
-export const getSetting = (): TabletSetting => {
-  const nowS: TabletSetting = get(setting)
+export const getSetting = async (): Promise<TabletSetting> => {
+  const nowS: TabletSetting = get(store.setting)
   if (nowS) {
     return nowS
   }
   const { init } = useDB()
-  init()
-  const newS: TabletSetting = get(setting)
-  console.log(newS)
-  return newS
+  return await init()
 }
 
 const useDB = () => {
   const init = () => {
-    const openRequest = indexedDB.open('portablerg-setting')
-    let initializedDB = false
+    return new Promise<TabletSetting>((resolve, reject) => {
+      const openRequest = indexedDB.open('portablerg-setting')
+      let initializedDB = false
 
-    openRequest.onupgradeneeded = () => {
-      const conn = openRequest.result
-      createInitialData(conn)
-      store.setting.set({ windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] })
-      store.connection.set(conn)
-      initializedDB = true
-    }
-
-    openRequest.onsuccess = async () => {
-      if (initializedDB) return
-      const conn = openRequest.result
-      console.log(conn)
-
-      const getRects = () => new Promise<{ type: 'window' | 'control', rect: Rect }[]>((resolve, reject) => {
-        const txRect = conn.transaction('rect', 'readonly')
-        const winReq = txRect.objectStore('rect').getAll()
-        winReq.onsuccess = () => resolve(winReq.result)
-        winReq.onerror = (e) => reject(e)
-      })
-      const getTemplates = () => new Promise<ControlTemplate[]>((resolve, reject) => {
-        const txTemplate = conn.transaction('template', 'readonly')
-        const tmpReq = txTemplate.objectStore('template').getAll()
-        tmpReq.onsuccess = () => resolve(tmpReq.result)
-        tmpReq.onerror = (e) => reject(e)
-      })
-      const getSort = () => new Promise<{ id: 1, value: number[] }>((resolve, reject) => {
-        const txSort = conn.transaction('sort', 'readonly')
-        const sortReq = txSort.objectStore('sort').get(1)
-        sortReq.onsuccess = (e) => resolve(sortReq.result)
-        sortReq.onerror = (e) => reject(e)
-      })
-
-      let rects: { type: 'window' | 'control', rect: Rect }[] = []
-      let tmps: ControlTemplate[] = []
-      let sort: number[] = []
-
-      try {
-        await Promise.all([
-          rects = await getRects(),
-          tmps = await getTemplates(),
-          sort = (await getSort()).value,
-        ])
-        const winRect = rects[rects.findIndex(v => v.type === 'window')].rect
-        const ctrlRect = rects[rects.findIndex(v => v.type === 'control')].rect
-        const sortedTemplates = sort.map(v => {
-          const index = tmps.findIndex(tmp => tmp.id === v)
-          if (index === -1) {
-            throw 'ソートテーブルが整合性を保っていません'
-          }
-          return tmps[index]
-        })
-        if (!winRect || !ctrlRect || !sort) {
-          console.log(winRect, ctrlRect, sort)
-          throw 'データが取れませんでした'
-        }
-        store.setting.set({ windowRect: winRect, controlRect: ctrlRect, controlTemplates: sortedTemplates })
-        console.warn({ windowRect: winRect, controlRect: ctrlRect, controlTemplates: sortedTemplates })
+      openRequest.onupgradeneeded = () => {
+        const conn = openRequest.result
+        createInitialData(conn)
+        const s = { windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] }
+        store.setting.set(s)
         store.connection.set(conn)
-      } catch (e) {
-        console.error(e)
-        resetInitialData(conn)
-        store.setting.set({ windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] })
-        store.connection.set(conn)
-        alert('設定の読み込みでエラーが発生しました。初期設定にリセットしました。')
+        initializedDB = true
+        resolve(s)
       }
-    }
 
-    openRequest.onerror = (e) => {
-      console.error(e)
-      store.setting.set({ windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] })
-      alert('IndexedDBが無効になっています。設定は保存されません。')
-    }
+      openRequest.onsuccess = async () => {
+        if (initializedDB) return
+        const conn = openRequest.result
+
+        const getRects = () => new Promise<{ type: 'window' | 'control', rect: Rect }[]>((resolve, reject) => {
+          const txRect = conn.transaction('rect', 'readonly')
+          const winReq = txRect.objectStore('rect').getAll()
+          winReq.onsuccess = () => resolve(winReq.result)
+          winReq.onerror = (e) => reject(e)
+        })
+        const getTemplates = () => new Promise<ControlTemplate[]>((resolve, reject) => {
+          const txTemplate = conn.transaction('template', 'readonly')
+          const tmpReq = txTemplate.objectStore('template').getAll()
+          tmpReq.onsuccess = () => resolve(tmpReq.result)
+          tmpReq.onerror = (e) => reject(e)
+        })
+        const getSort = () => new Promise<{ id: 1, value: number[] }>((resolve, reject) => {
+          const txSort = conn.transaction('sort', 'readonly')
+          const sortReq = txSort.objectStore('sort').get(1)
+          sortReq.onsuccess = (e) => resolve(sortReq.result)
+          sortReq.onerror = (e) => reject(e)
+        })
+  
+        let rects: { type: 'window' | 'control', rect: Rect }[] = []
+        let tmps: ControlTemplate[] = []
+        let sort: number[] = []
+  
+        try {
+          await Promise.all([
+            rects = await getRects(),
+            tmps = await getTemplates(),
+            sort = (await getSort()).value,
+          ])
+          const winRect = rects[rects.findIndex(v => v.type === 'window')].rect
+          const ctrlRect = rects[rects.findIndex(v => v.type === 'control')].rect
+          const sortedTemplates = sort.map(v => {
+            const index = tmps.findIndex(tmp => tmp.id === v)
+            if (index === -1) {
+              throw 'ソートテーブルが整合性を保っていません'
+            }
+            return tmps[index]
+          })
+          if (!winRect || !ctrlRect || !sort) {
+            console.log(winRect, ctrlRect, sort)
+            throw 'データが取れませんでした'
+          }
+          const s = { windowRect: winRect, controlRect: ctrlRect, controlTemplates: sortedTemplates }
+          store.setting.set({ windowRect: winRect, controlRect: ctrlRect, controlTemplates: sortedTemplates })
+          store.connection.set(conn)
+          resolve(s)
+        } catch (e) {
+          console.error(e)
+          resetInitialData(conn)
+          const s = { windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] }
+          store.setting.set(s)
+          store.connection.set(conn)
+          alert('設定の読み込みでエラーが発生しました。初期設定にリセットしました。')
+          resolve(s)
+        }
+      }
+
+      openRequest.onerror = (e) => {
+        console.error(e)
+        const s = { windowRect: initialWindowRect, controlRect: initialControlRect, controlTemplates: [firstControlTemplate] }
+        store.setting.set(s)
+        alert('IndexedDBが無効になっています。設定は保存されません。')
+        resolve(s)
+      }
+    })
   }
   const createInitialData = (conn: IDBDatabase) => {
     const rectStore = conn.createObjectStore('rect', { keyPath: 'type' })
@@ -168,11 +173,11 @@ const useDB = () => {
     })
   }
   const deleteTemplateByID = async (id: number) => {
-    const prev = getSetting()
+    const prev = await getSetting()
     const deleteIndex = prev.controlTemplates.findIndex(v => v.id === id)
     if (deleteIndex < 0) return
     prev.controlTemplates.splice(deleteIndex, 1)
-    setting.set(prev)
+    store.setting.set(prev)
 
     const conn: IDBDatabase | null = get(store.connection)
     if (!conn) {

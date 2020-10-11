@@ -1,7 +1,8 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import { TabletSetting, setting } from './useSetting'
+import type { TabletSetting } from './useSetting'
 import { get, writable } from 'svelte/store'
 import { getSetting } from '../../lib/useDB'
+import { store } from '../../store'
 
 export const overIndex = writable(-1)
 
@@ -90,7 +91,7 @@ const useSort = (container: HTMLElement) => {
     elements[index] = ele
   }
   const updateList = (draggingIndex: number) => {
-    const prev: TabletSetting = get(setting)
+    const prev: TabletSetting = get(store.setting)
     const tmp = prev.controlTemplates[draggingIndex]
     const oIndex: number = get(overIndex)
     if (oIndex === -1) {
@@ -100,7 +101,7 @@ const useSort = (container: HTMLElement) => {
     prev.controlTemplates[draggingIndex] = prev.controlTemplates[oIndex]
     prev.controlTemplates[oIndex] = tmp
     console.log(prev)
-    setting.set(prev)
+    store.setting.set(prev)
   }
   return { init, setupElements }
 };

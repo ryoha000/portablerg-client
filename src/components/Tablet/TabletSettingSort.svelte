@@ -1,16 +1,17 @@
 <script>
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
-  import { controlStyles, setting } from './useSetting';
+  import { controlStyles } from './useSetting';
   import useSort, { overIndex } from './useSort'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import TabletSettingSortItem from './TabletSettingSortItem.svelte'
   import TextButton from '../UI/TextButton.svelte'
   import useDB from '../../lib/useDB'
+  import { store } from '../../store';
 
   let container
-  const set = get(setting)
+  const set = get(store.setting)
   let elements = set ? set.controlTemplates.map(() => null) : Array(999).map(() => null)
   onMount(async () => {
     const { init, setupElements } = useSort(container)
