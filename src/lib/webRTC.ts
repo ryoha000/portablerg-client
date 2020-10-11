@@ -77,14 +77,15 @@ const useWebRTC = () => {
   // ICE candidate生成時に送信する
   function sendIceCandidate(candidate: RTCIceCandidate) {
     console.log('---sending ICE candidate ---');
-    const message = JSON.stringify({ type: 'candidate', ice: candidate });
+    const m = { type: 'candidate', ice: candidate }
+    const message = JSON.stringify(m);
     console.log('sending candidate=' + message);
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
       return
     }
-    sendWSMessageWithID(id, message, ws)
+    sendWSMessageWithID(id, m, ws)
   }
 
   const setStreamByID = async (id: string, localVideo: HTMLMediaElement) => {
@@ -114,9 +115,9 @@ const useWebRTC = () => {
     }
     try {
       element.srcObject = stream;
-      element.onloadedmetadata = async () => {
+      element.onloadedmetadata = () => {
         console.error('loaded meta data')
-        await element.play();
+        // await element.play();
       }
       console.log(element)
     } catch(error) {
