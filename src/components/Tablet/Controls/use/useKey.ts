@@ -7,7 +7,7 @@ const useKey = (ws: WebSocket) => {
   store.me.subscribe(v => id = v)
   const region: Region = new ZingTouch.Region(document.body);
 
-  const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down') => {
+  const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
     region.bind(ele, "tap", (e: TapEvent) => {
       sendWSMessageWithID(id, { type: type }, ws)
     });
