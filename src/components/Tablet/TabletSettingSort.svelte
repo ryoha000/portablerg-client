@@ -23,10 +23,9 @@
     }
   })
   const confirm = async () => {
-    // TODO
-    // const { update } = useDB()
-    // await update()
-    // push('/client')
+    const { sortTemplate } = useDB()
+    await sortTemplate()
+    push('/client')
   }
 </script>
 

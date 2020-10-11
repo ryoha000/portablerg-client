@@ -11,7 +11,7 @@
   let windowElement
   let controlsElement
 
-  const { update } = useDB()
+  const { updateRects } = useDB()
   onMount(() => {
     const { init, setupHandler } = useLayout(container)
     init()
@@ -19,10 +19,8 @@
     setupHandler(controlsElement, LayoutType.control)
   })
   const confirm = async () => {
-    // TODO
-    console.warn('not impl')
-    // await update()
-    // close()
+    await updateRects()
+    close()
   }
   const close = () => {
     push('/client')

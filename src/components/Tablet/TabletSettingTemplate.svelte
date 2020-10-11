@@ -26,7 +26,7 @@
   }
   init()
 
-  const { init: initDB, update } = useDB()
+  const { init: initDB, addTemplate } = useDB()
   let addCon
   onMount(async () => {
     const prev = get(store.setting)
@@ -42,10 +42,9 @@
     }
   })
   const confirm = async () => {
-    // TODO
-    // addCon(containerSize.width, containerSize.height)
-    // await update()
-    // push('/client')
+    const newControl = addCon(containerSize.width, containerSize.height)
+    await addTemplate(newControl)
+    push('/client')
   }
 </script>
 

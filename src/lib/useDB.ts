@@ -172,6 +172,20 @@ const useDB = () => {
       req.onerror = (e) => reject(e)
     })
   }
+  const updateRects = async () => {
+    const setting: TabletSetting = get(store.setting)
+    await update('rect', { type: 'window', rect: setting.windowRect })
+    await update('rect', { type: 'control', rect: setting.controlRect })
+  }
+  const addTemplate = async (control: ControlTemplate) => {
+    const setting: TabletSetting = get(store.setting)
+    await update('template', control)
+    await update('sort', { id: 1, value: setting.controlTemplates.map(v => v.id) })
+  }
+  const sortTemplate = async () => {
+    const setting: TabletSetting = get(store.setting)
+    await update('sort', { id: 1, value: setting.controlTemplates.map(v => v.id) })
+  }
   const deleteTemplateByID = async (id: number) => {
     const prev = await getSetting()
     const deleteIndex = prev.controlTemplates.findIndex(v => v.id === id)
@@ -195,8 +209,10 @@ const useDB = () => {
   }
   return {
     init,
-    update,
-    deleteTemplateByID
+    deleteTemplateByID,
+    updateRects,
+    addTemplate,
+    sortTemplate
   }
 }
 

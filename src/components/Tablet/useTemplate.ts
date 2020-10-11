@@ -153,11 +153,13 @@ const useTemplate = (container: HTMLElement) => {
     if (newControls.length === 0) {
       return
     }
-    prev.controlTemplates.push({
+    const newControl = {
       id: maxID + 1,
       controls: newControls
-    })
+    }
+    prev.controlTemplates.push(newControl)
     store.setting.set(prev)
+    return newControl
   }
   return { setupHandler, addControl }
 };
