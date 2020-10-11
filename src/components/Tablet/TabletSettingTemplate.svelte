@@ -96,5 +96,5 @@
     </div>
   {/each}
   <div style="height: {containerSize.height}px; width: {containerSize.width}px" class="controls center"><span>コントロール</span></div>
-  <div class="confirm"><TextButton on:click="{confirm}" label="確定" /></div>
+  <div class="confirm"><TextButton on:click="{confirm}" on:touchstart="{confirm}" label="確定" /></div>
 </div>

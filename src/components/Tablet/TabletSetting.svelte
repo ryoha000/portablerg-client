@@ -4,7 +4,7 @@
 
   let isOpenToggleSetting = false
   const stop = (e) => {
-    // e.stopPropagation()
+    e.stopPropagation()
   }
   const openToggleSetting = (e) => {
     isOpenToggleSetting = true

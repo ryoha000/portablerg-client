@@ -31,6 +31,6 @@
   <div>IDが重複したときあなたのPCと他のユーザーがつながる可能性があります</div>
   <div class="inputs">
     <input bind:value="{id}" class="input" />
-    <TextButton label="確定" on:click="{confirm}" />
+    <TextButton label="確定" on:click="{confirm}" on:touchstart="{confirm}" />
   </div>
 </div>

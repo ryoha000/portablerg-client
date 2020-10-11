@@ -15,6 +15,6 @@
   }
 </style>
 
-<div on:click class="container" style="color: {color}; border-color: {color};">
+<div on:click on:touchstart class="container" style="color: {color}; border-color: {color};">
   {label}
 </div>

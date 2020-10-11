@@ -4,9 +4,11 @@
   
   export let iconName
   export let openSetting = () => {}
+  const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
 
-  const toggle = (e) => {
+  const toggle = async (e) => {
     console.log('click toggle')
+    await sleep(400)
     e.stopPropagation()
     switch (iconName) {
       case 'cog': {
@@ -35,6 +37,6 @@
   }
 </style>
 
-<div on:click="{toggle}" class="button">
+<div on:click="{toggle}" on:touchstart="{toggle}" class="button">
   <Icon name="{iconName}" size="{48}" />
 </div>
