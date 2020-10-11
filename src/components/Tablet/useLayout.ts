@@ -30,7 +30,7 @@ const useLayout = (container: HTMLElement) => {
     }
     for (const type of Object.values(LayoutType)) {
       if (type === LayoutType.window) {
-        rects[type] = getNumRect(s.window.rect)
+        rects[type] = getNumRect(s.windowRect)
       }
       if (type === LayoutType.control) {
         rects[type] = getNumRect(s.controlRect)
@@ -71,7 +71,7 @@ const useLayout = (container: HTMLElement) => {
       rects[draggingIndex].y += data.change.y
       const prev: TabletSetting = get(setting)
       if (draggingIndex === LayoutType.window) {
-        prev.window.rect = getRect(rects[draggingIndex])
+        prev.windowRect = getRect(rects[draggingIndex])
       }
       if (draggingIndex === LayoutType.control) {
         prev.controlRect = getRect(rects[draggingIndex])
@@ -112,7 +112,7 @@ const useLayout = (container: HTMLElement) => {
       }
       const prev: TabletSetting = get(setting)
       if (type === LayoutType.window) {
-        prev.window.rect = getRect(rects[type])
+        prev.windowRect = getRect(rects[type])
       }
       if (type === LayoutType.control) {
         prev.controlRect = getRect(rects[type])

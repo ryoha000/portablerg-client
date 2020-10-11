@@ -1,9 +1,8 @@
 import { writable, get, derived } from 'svelte/store';
+import { store } from '../../store';
 
 export interface TabletSetting {
-  window: {
-    rect: Rect
-  }
+  windowRect: Rect
   controlRect: Rect
   controlTemplates: ControlTemplate[]
 }
@@ -84,7 +83,7 @@ export const windowStyle = derived(setting, ($setting) => {
   if (!$setting) {
     return ''
   }
-  return `position: absolute; ${getStyleFromRect($setting.window.rect)}`
+  return `position: absolute; ${getStyleFromRect($setting.windowRect)}`
 })
 
 export const controlsStyle = derived(setting, ($setting) => {
@@ -134,14 +133,12 @@ const path = '/public/clientSetting.json'
 const useSetting = () => {
   const init = async () => {
     const initialSetting: TabletSetting = {
-      window: {
-        rect: {
-          width: '80%',
-          height: '80%',
-          start: {
-            x: '0px',
-            y: '0px'
-          }
+      windowRect: {
+        width: '80%',
+        height: '80%',
+        start: {
+          x: '0px',
+          y: '0px'
         }
       },
       controlRect: {
