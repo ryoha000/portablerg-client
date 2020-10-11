@@ -29,6 +29,7 @@ export const ControlType = {
   Enter: 2,
   Up: 3,
   Down: 4,
+  Control: 5,
 } as const
 
 export const getControlKeyName = (type: ControlType) => {
@@ -43,6 +44,12 @@ export const getControlKeyName = (type: ControlType) => {
       return 'Up'
     case 4:
       return 'Down'
+    case 5:
+      return 'Control'
+    default: {
+      console.error('this control type not supported')
+      return ''
+    }
   }
 }
 

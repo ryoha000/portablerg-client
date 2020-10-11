@@ -41,6 +41,10 @@ import { store } from '../../../store';
             init(container, 'down')
             break
           }
+          case ControlType.Control: {
+            init(container, 'control')
+            break
+          }
           default: {
             console.error('this control type not supported')
           }
