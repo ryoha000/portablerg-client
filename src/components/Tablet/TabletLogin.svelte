@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
   import { onDestroy, onMount } from 'svelte';
   import { store } from '../../store';
   import TabletOriginalLogin from "./TabletOriginalLogin.svelte"
@@ -7,8 +7,9 @@
   import useFirebase from './use/useFirebase'
   import { fullScreen } from '../../lib/utils'
   import useWebRTC from "../../lib/webRTC"
+  import { push } from 'svelte-spa-router'
 
-  let me: string | null
+  let me
   let isConnect = false
 
   const { connectHost } = useWebRTC()
@@ -32,7 +33,9 @@
       }
     }
   })
-  store.isConnected.subscribe(v => isConnect = v)
+  store.isConnected.subscribe(v => {
+    if (v) push('/client')
+  })
   const { init, google, github } = useFirebase()
   onMount(() => init())
   onDestroy(unsubscribe)
@@ -41,10 +44,6 @@
   }
   const loginGitHub = () => {
     github()
-  }
-
-  const stop = (e: MouseEvent) => {
-    e.stopPropagation()
   }
 </script>
 
@@ -74,7 +73,7 @@
 </style>
 
 {#if !isConnect}
-  <div class="container" on:click="{stop}">
+  <div class="container">
     <h1 class="title">portablerg</h1>
     {#if !me}
       <div class="btnContainer">

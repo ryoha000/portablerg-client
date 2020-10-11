@@ -23,7 +23,7 @@
   const confirm = async () => {
     const { update } = useSetting()
     await update()
-    push('/')
+    push('/client')
   }
 </script>
 

@@ -1,13 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import useWebRTC from '../../lib/webRTC'
-  import useSetting, { controlStyles, windowStyle } from './useSetting'
+  import { controlStyles, windowStyle } from './useSetting'
   import TabletControl from './TabletControl.svelte'
   import { store } from '../../store';
   import TabletSetting from './TabletSetting.svelte'
   import { getNextIndex } from './useControl'
-  import TabletLogin from './TabletLogin.svelte'
-import { get } from 'svelte/store';
+  import { get } from 'svelte/store';
 
   let remoteVideo: HTMLMediaElement
   let ws: WebSocket
@@ -15,17 +14,16 @@ import { get } from 'svelte/store';
 
   const {
     hangUp,
-    setupWS,
-    connectHost,
     sendMouseMove,
     playVideo
   } = useWebRTC()
-  const { init } = useSetting()
   onMount(async () => {
     store.remoteVideoElement.set(remoteVideo)
-    await init()
-    ws = setupWS()
-    // document.documentElement.requestFullscreen()
+    const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
+    if (remoteVideoStream) {
+      playVideo(remoteVideo, remoteVideoStream)
+    }
+    ws = get(store.ws)
   })
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {
     const next = getNextIndex(index, e.detail.num)
@@ -58,7 +56,6 @@ import { get } from 'svelte/store';
   }
 </style>
 
-<TabletLogin />
 <div class="container">
   <div class="btnContainer">
     <button type="button" on:click="{play}">Play</button>

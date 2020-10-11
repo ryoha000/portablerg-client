@@ -12,10 +12,9 @@
     }[]
   }
   export let ws: WebSocket
-  
+
   const dispatch = createEventDispatcher();
   const trans = (num: 1 | -1) => {
-    console.log('trans')
     dispatch('trans', {
       num: num
     });

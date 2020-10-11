@@ -1,17 +1,25 @@
 <script>
+	import { onMount } from 'svelte';
 	import Router from 'svelte-spa-router'
 	import Tablet from './components/Tablet/Tablet.svelte'
 	import Login from './components/Tablet/TabletLogin.svelte'
 	import TabletSettingLayout from './components/Tablet/TabletSettingLayout.svelte'
 	import TabletSettingSort from './components/Tablet/TabletSettingSort.svelte';
 	import TabletSettingTemplate from './components/Tablet/TabletSettingTemplate.svelte';
+	import useSetting from './components/Tablet/useSetting'
+	import useWebRTC from './lib/webRTC'
 	import { store } from './store';
 
-	let id = ""
-	store.me.subscribe(v => id = v)
+	onMount(async () => {
+		const { init } = useSetting()
+		await init()
+		const { setupWS } = useWebRTC()
+		setupWS()
+	})
 	const routes = {
-		'/': Tablet,
+		'/': Login,
 		'/login': Login,
+		'/client': Tablet,
 		'/setting/layout': TabletSettingLayout,
 		'/setting/template': TabletSettingTemplate,
 		'/setting/sort': TabletSettingSort,
@@ -19,7 +27,6 @@
 </script>
 
 <main>
-	<div>id: {id}</div>
 	<Router {routes} />
 </main>
 

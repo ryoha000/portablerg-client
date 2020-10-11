@@ -8,7 +8,6 @@ const useWebRTC = () => {
 
   const setupWS = () => {
     const wsUrl = `wss://ryoha.trap.show/portablerg-server/`;
-    console.log(wsUrl)
     const ws = new WebSocket(wsUrl);
     store.ws.set(ws)
     ws.onopen = (evt) => {

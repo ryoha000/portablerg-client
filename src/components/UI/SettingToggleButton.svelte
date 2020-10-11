@@ -16,7 +16,7 @@
         break
       }
       case 'close': {
-        push('/')
+        push('/client')
         break
       }
     }
