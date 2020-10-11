@@ -35,6 +35,7 @@ class Tap extends Gesture {
     maxDelay?: number,
     numInputs?: number,
     tolerance?: number,
+    onStart?: () => void,
     onEnd?: () => void
   }) {
     super();
@@ -89,6 +90,10 @@ class Tap extends Gesture {
     /**
      * The on end callback
      */
+    if (options && options.onStart && typeof options.onStart === 'function') {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onStart' does not exist on type 'Tap'.
+      this.onStart = options.onStart
+    }
     if (options && options.onEnd && typeof options.onEnd === 'function') {
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'onEnd' does not exist on type 'Tap'.
       this.onEnd = options.onEnd
@@ -110,6 +115,8 @@ class Tap extends Gesture {
         let progress = input.getGestureProgress(this.getId());
         progress.start = new Date().getTime();
       });
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onStart' does not exist on type 'Tap'.
+      this.onStart()
     }
     return null;
   }

@@ -5,12 +5,20 @@ import { store } from "../../../../store";
 const useKey = (ws: WebSocket) => {
   let id = ""
   store.me.subscribe(v => id = v)
+
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
-    region.bind(ele, "tap", (e: TapEvent) => {
-      sendWSMessageWithID(id, { type: type }, ws)
-    });
+    const tapStart = () => {
+      console.log('tap start')
+      sendWSMessageWithID(id, { type: 'down', key: type }, ws)
+    }
+    const tapEnd = () => {
+      console.log('tap end')
+      sendWSMessageWithID(id, { type: 'up', key: type }, ws)
+    }
+    const keyTap: Tap = new ZingTouch.Tap({ maxDelay: 9999999999999999999999999, onStart: tapStart, onEnd: tapEnd })
+    region.bind(ele, keyTap, () => {})
   };
   return { init };
 };
