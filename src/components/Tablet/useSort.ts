@@ -1,6 +1,7 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import { TabletSetting, setting, getSetting } from './useSetting'
+import { TabletSetting, setting } from './useSetting'
 import { get, writable } from 'svelte/store'
+import { getSetting } from '../../lib/useDB'
 
 export const overIndex = writable(-1)
 

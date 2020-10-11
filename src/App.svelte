@@ -6,13 +6,12 @@
 	import TabletSettingLayout from './components/Tablet/TabletSettingLayout.svelte'
 	import TabletSettingSort from './components/Tablet/TabletSettingSort.svelte';
 	import TabletSettingTemplate from './components/Tablet/TabletSettingTemplate.svelte';
-	import useSetting from './components/Tablet/useSetting'
+	import useDB from './lib/useDB'
 	import useWebRTC from './lib/webRTC'
-	import { store } from './store';
 
 	onMount(async () => {
-		const { init } = useSetting()
-		await init()
+		const { init } = useDB()
+		init()
 		const { setupWS } = useWebRTC()
 		setupWS()
 	})

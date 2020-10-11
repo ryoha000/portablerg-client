@@ -1,11 +1,12 @@
 <script>
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
-  import useSetting, { getStyleFromRect, ControlType, getControlKeyName, setting } from './useSetting'
+  import { getStyleFromRect, ControlType, getControlKeyName, setting } from './useSetting'
   import useTemplate, { controls, init } from './useTemplate'
   import TextButton from '../UI/TextButton.svelte'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
+  import useDB from '../../lib/useDB'
 
   let container
   let elements = {
@@ -24,12 +25,12 @@
   }
   init()
 
-  const { init: initSetting, update } = useSetting()
+  const { init: initDB, update } = useDB()
   let addCon
-  onMount(async () => {
+  onMount(() => {
     const prev = get(setting)
     if (!prev) {
-      await initSetting()
+      initDB()
     }
     const { setupHandler, addControl } = useTemplate(container)
     addCon = addControl
@@ -40,9 +41,10 @@
     }
   })
   const confirm = async () => {
-    addCon(containerSize.width, containerSize.height)
-    await update()
-    push('/client')
+    // TODO
+    // addCon(containerSize.width, containerSize.height)
+    // await update()
+    // push('/client')
   }
 </script>
 

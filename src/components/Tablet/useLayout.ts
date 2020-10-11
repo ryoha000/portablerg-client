@@ -1,6 +1,7 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import useSetting, { TabletSetting, Rect, setting } from './useSetting'
+import { TabletSetting, Rect, setting } from './useSetting'
 import { get } from 'svelte/store'
+import { getSetting } from '../../lib/useDB'
 
 export type LayoutType = typeof LayoutType[keyof typeof LayoutType]
 
@@ -19,15 +20,7 @@ const useLayout = (container: HTMLElement) => {
   let isDragging = Array(Object.values(LayoutType).length).map(_ => false)
 
   const init = async () => {
-    let s: TabletSetting | null = get(setting)
-    if (!s) {
-      const { init: initSetting } = useSetting()
-      await initSetting()
-    }
-    s = get(setting)
-    if (!s) {
-      return
-    }
+    let s = getSetting()
     for (const type of Object.values(LayoutType)) {
       if (type === LayoutType.window) {
         rects[type] = getNumRect(s.windowRect)

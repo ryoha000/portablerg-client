@@ -13,14 +13,12 @@ export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
   // 右端の時
   if (nowIndex + 1 === tmp.length) {
     if (d === 1) {
-      console.log('ふりだしに')
       return 0
     }
   }
   // 左端の時
   if (nowIndex === 0) {
     if (d === -1) {
-      console.log('ゴールに')
       return tmp.length - 1
     }
   }

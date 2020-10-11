@@ -1,12 +1,13 @@
 <script>
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
-  import useSetting, { controlStyles, setting } from './useSetting';
+  import { controlStyles, setting } from './useSetting';
   import useSort, { overIndex } from './useSort'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import TabletSettingSortItem from './TabletSettingSortItem.svelte'
   import TextButton from '../UI/TextButton.svelte'
+  import useDB from '../../lib/useDB'
 
   let container
   const set = get(setting)
@@ -21,9 +22,10 @@
     }
   })
   const confirm = async () => {
-    const { update } = useSetting()
-    await update()
-    push('/client')
+    // TODO
+    // const { update } = useDB()
+    // await update()
+    // push('/client')
   }
 </script>
 

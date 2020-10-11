@@ -1,16 +1,17 @@
 <script>
   import { onMount } from 'svelte';
-  import useSetting, { windowStyle, controlsStyle } from './useSetting'
+  import { windowStyle, controlsStyle } from './useSetting'
   import useLayout, { LayoutType } from './useLayout'
   import { push } from 'svelte-spa-router'
   import TextButton from '../UI/TextButton.svelte'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
+  import useDB from '../../lib/useDB'
 
   let container
   let windowElement
   let controlsElement
 
-  const { update } = useSetting()
+  const { update } = useDB()
   onMount(() => {
     const { init, setupHandler } = useLayout(container)
     init()
@@ -18,8 +19,10 @@
     setupHandler(controlsElement, LayoutType.control)
   })
   const confirm = async () => {
-    await update()
-    close()
+    // TODO
+    console.warn('not impl')
+    // await update()
+    // close()
   }
   const close = () => {
     push('/client')

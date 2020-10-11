@@ -1,14 +1,15 @@
 <script lang="ts">
-  import useSetting, { getControlKeyName } from './useSetting'
+  import { getControlKeyName } from './useSetting'
   import type { ControlStyle } from "./useSetting";
   import Icon from '../UI/Icon.svelte'
+  import useDB from '../../lib/useDB'
 
   export let controlStyle: ControlStyle
 
   const deleteTemplate = async () => {
     if (window.confirm('このテンプレートを削除してもいいですか？')) {
-      const { deleteTemplateByID } = useSetting()
-      deleteTemplateByID(controlStyle.id)
+      const { deleteTemplateByID } = useDB()
+      await deleteTemplateByID(controlStyle.id)
     }
   }
 </script>
