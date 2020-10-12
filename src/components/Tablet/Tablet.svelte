@@ -19,13 +19,13 @@
   onMount(async () => {
     // const constraints = { audio: true, video: { width: 1280, height: 720 } }; 
 
-    // navigator.mediaDevices.getUserMedia(constraints)
-    // .then(function(mediaStream) {
-    //   v.srcObject = mediaStream;
-    //   v.onloadedmetadata = function(e) {
-    //     v.play();
-    //   };
-    // })
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function(mediaStream) {
+      v.srcObject = mediaStream;
+      // v.onloadedmetadata = function(e) {
+      //   v.play();
+      // };
+    })
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream) {
