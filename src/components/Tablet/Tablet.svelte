@@ -19,9 +19,9 @@
     const isIOS = /iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent)
 
     if (isIOS) {
+      alert('iOS端末ではSafariでしか動かず、使用しないカメラのアクセスを要求します')
       await navigator.mediaDevices.getUserMedia({ video: true })
     }
-    alert(isIOS)
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream) {
@@ -53,7 +53,6 @@
 
 <div class="container">
   {#if ws && !isTabletMode}
-  <!-- {#if ws && !isOpenToggleSetting} -->
     {#each $controlStyles as controlStyle, i}
       {#if i === index}
         <TabletControl {ws} {controlStyle} on:trans="{trans}" />
@@ -62,6 +61,7 @@
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
-  <video src="/movie.mp4" autoplay class="dammy"></video>
+  <!-- svelte-ignore a11y-media-has-caption -->
+  <video src="/movie.mp4" class="dammy"></video>
   <TabletSetting />
 </div>

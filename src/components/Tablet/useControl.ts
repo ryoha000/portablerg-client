@@ -40,6 +40,7 @@ export const toggleTabletMode = async (e: MouseEvent) => {
     const { init: initDB } = useDB()
     dispose(remoteMediaElement)
     await initDB()
+    store.isTabletMode.set(false)
   }
   if (!prev) {
     sendWSMessageWithID(get(store.me), { type: 'tabletMode' }, ws)
