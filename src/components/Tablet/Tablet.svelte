@@ -51,6 +51,6 @@
     {/each}
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
-  <video bind:this="{remoteVideo}" playsinline autoplay controls style="{$windowStyle}" class="window"></video>
+  <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
   <TabletSetting />
 </div>
