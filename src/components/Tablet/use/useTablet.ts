@@ -5,8 +5,6 @@ import { store } from "../../../store";
 import type { TabletSetting } from "../useSetting";
 import { getSize, WindowRect } from "../../../lib/coordinary";
 
-const ALLOW_DRAG_START_RADIUS = 20
-
 const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   let id = ""
   store.me.subscribe(v => id = v)
@@ -68,7 +66,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   }
 
   const getDrag = () => {
-    const dragPan: Pan = new ZingTouch.Pan({ threshold: ALLOW_DRAG_START_RADIUS, onStart: panStart, onMove: panMove, onEnd: panEnd })
+    const dragPan: Pan = new ZingTouch.Pan({ onStart: panStart, onMove: panMove, onEnd: panEnd })
     return dragPan
   }
   const panStart = (e: ZingInput[]) => {
