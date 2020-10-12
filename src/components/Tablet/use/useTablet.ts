@@ -13,9 +13,10 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   let ratio = 1
   let winRect: WindowRect = get(store.windowRect)
   store.windowRect.subscribe(v => winRect = v)
-  const region: Region = new ZingTouch.Region(document.body);
 
   const init = () => {
+    const region: Region = new ZingTouch.Region(document.body);
+    store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
     const s = getSize(winRect, window.innerWidth, window.innerHeight)
     console.log(s)
@@ -48,6 +49,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
     })
   };
   const dispose = (...elements: HTMLElement[]) => {
+    const region: Region = get(store.videoRegion)
     for (const ele of elements) {
       region.unbind(ele)
     }

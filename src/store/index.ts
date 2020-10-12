@@ -14,6 +14,7 @@ export const store = {
   connection: writable<IDBDatabase | null>(null),
   isTabletMode: writable(false),
   windowRect: writable<WindowRect | null>(null),
+  videoRegion: writable<Region>(null),
 
   setting: writable<TabletSetting | null>(null),
 
