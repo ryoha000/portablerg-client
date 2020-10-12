@@ -17,7 +17,7 @@
 
   const { playVideo } = useWebRTC()
   onMount(async () => {
-    const isIOS = /iP(hone|(o|a)d)/.test(navigator.userAgent)
+    const isIOS = /iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent)
 
     if (isIOS) {
       await navigator.mediaDevices.getUserMedia({ video: true })
