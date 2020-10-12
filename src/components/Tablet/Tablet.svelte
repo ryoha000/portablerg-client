@@ -10,6 +10,8 @@
 
   let remoteVideo: HTMLMediaElement
   let ws: WebSocket
+  let isTabletMode = false
+  store.isTabletMode.subscribe(v => isTabletMode = v)
   let index = 0
 
   const {
@@ -62,7 +64,7 @@
     <button type="button" on:click="{() => hangUp(remoteVideo)}">Hang Up</button>
     <button type="button" on:click="{sendMouseMove}">sendMouseMove</button>
   </div>
-  {#if ws}
+  {#if ws && !isTabletMode}
   <!-- {#if ws && !isOpenToggleSetting} -->
     {#each $controlStyles as controlStyle, i}
       {#if i === index}

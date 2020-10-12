@@ -11,6 +11,8 @@ export const store = {
   mouseMoveChannel: writable<RTCDataChannel | null>(null),
   isConnected: writable(false),
   connection: writable<IDBDatabase | null>(null),
+  isTabletMode: writable(false),
+  windowRect: writable<{ left: number, top: number, right: number, buttom: number } | null>(null),
 
   setting: writable<TabletSetting | null>(null),
 
