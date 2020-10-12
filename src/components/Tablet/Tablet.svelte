@@ -45,10 +45,6 @@
   .window {
     z-index: -1;
   }
-  .dammy {
-    width: 0;
-    height: 0;
-  }
 </style>
 
 <div class="container">
@@ -61,7 +57,5 @@
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
-  <!-- svelte-ignore a11y-media-has-caption -->
-  <!-- <video src="/movie.mp4" class="dammy"></video> -->
   <TabletSetting />
 </div>
