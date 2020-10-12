@@ -127,8 +127,8 @@ const useWebRTC = () => {
     try {
       element.srcObject = stream;
       element.onloadedmetadata = () => {
-        console.error('loaded meta data')
-        // await element.play();
+        console.log('loaded meta data')
+        element.play();
       }
       console.log(element)
     } catch(error) {
