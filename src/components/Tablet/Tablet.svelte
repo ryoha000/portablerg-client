@@ -13,7 +13,6 @@
   let isTabletMode = false
   store.isTabletMode.subscribe(v => isTabletMode = v)
   let index = 0
-  let v: HTMLMediaElement
 
   const { playVideo } = useWebRTC()
   onMount(async () => {
@@ -46,6 +45,10 @@
   .window {
     z-index: -1;
   }
+  .dammy {
+    width: 0;
+    height: 0;
+  }
 </style>
 
 <div class="container">
@@ -59,6 +62,6 @@
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
-  <video src="/movie.mp4" autoplay style="{$windowStyle}; transform: translateY(100%);" class="window"></video>
+  <video src="/movie.mp4" autoplay class="dammy"></video>
   <TabletSetting />
 </div>
