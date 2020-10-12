@@ -116,7 +116,10 @@ class Tap extends Gesture {
         progress.start = new Date().getTime();
       });
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'onStart' does not exist on type 'Tap'.
-      this.onStart(inputs)
+      if (this.onStart) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'onStart' does not exist on type 'Tap'.
+        this.onStart(inputs)
+      }
     }
     return null;
   }

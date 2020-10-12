@@ -3,6 +3,7 @@ import useDB from "../../lib/useDB"
 import { sendWSMessageWithID } from "../../lib/utils"
 import { store } from "../../store"
 import useTouch from "./Controls/use/useTouch"
+import useTablet from "./use/useTablet"
 import { ControlStyle, controlStyles } from "./useSetting"
 
 export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
@@ -34,7 +35,7 @@ export const toggleTabletMode = async (e: MouseEvent) => {
   const prev: boolean = get(store.isTabletMode)
   const ws: WebSocket = get(store.ws)
   const remoteMediaElement: HTMLMediaElement = get(store.remoteVideoElement)
-  const { dispose } = useTouch(ws)
+  const { dispose } = useTablet(ws, remoteMediaElement)
   if (prev) {
     const { init: initDB } = useDB()
     dispose(remoteMediaElement)
