@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store'
 import type { TabletSetting } from '../components/Tablet/useSetting'
+import type { WindowRect } from '../lib/coordinary'
 
 export const store = {
   localStream: writable<null | MediaStream>(null),
@@ -12,7 +13,7 @@ export const store = {
   isConnected: writable(false),
   connection: writable<IDBDatabase | null>(null),
   isTabletMode: writable(false),
-  windowRect: writable<{ left: number, top: number, right: number, buttom: number } | null>(null),
+  windowRect: writable<WindowRect | null>(null),
 
   setting: writable<TabletSetting | null>(null),
 

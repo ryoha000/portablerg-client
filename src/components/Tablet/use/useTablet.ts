@@ -18,6 +18,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   const init = () => {
     const setting: TabletSetting = get(store.setting)
     const s = getSize(winRect, window.innerWidth, window.innerHeight)
+    console.log(s)
     setting.windowRect.width = `${s.width}px`
     setting.windowRect.height = `${s.height}px`
     ratio = s.expr
@@ -71,7 +72,8 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   }
   const panMove = (e: ZingInput[], state: any, element: HTMLElement, event: PanData) => {
     const current = e[0].current
-    const point = toPoint(current.x, current.y, ratio)
+    console.log(current)
+    const point = toPoint(current.screenX, current.screenY, ratio)
     console.log('dragging !')
     sendWSMessageWithID(id, { type: 'moveDragging', point: point }, ws)
   }
@@ -81,6 +83,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
   }
 
   const toPoint = (x: number, y: number, ratio: number) => {
+    if (winRect === null) { console.error('winrect is null') }
     return {
       x: winRect.left + (x * ratio),
       y: winRect.top + (y * ratio),

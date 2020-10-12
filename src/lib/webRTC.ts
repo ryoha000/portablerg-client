@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
+import type { WindowRect } from './coordinary';
 import { sendWSMessageWithID } from './utils';
 
 const useWebRTC = () => {
@@ -51,7 +52,8 @@ const useWebRTC = () => {
         }
         case 'windowRect': {
           console.log('start tablet mode')
-          const rect: { left: number; top: number; right: number; buttom: number; } = message.rect
+          const rect: WindowRect = message.rect
+          console.log(rect)
           store.windowRect.set(rect)
           store.isTabletMode.set(true)
           const { init } = useTablet(ws, get(store.remoteVideoElement))

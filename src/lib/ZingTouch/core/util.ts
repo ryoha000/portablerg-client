@@ -208,7 +208,9 @@ let util = {
 
   preventDefault(event: any) {
     if (event.preventDefault) {
-      event.preventDefault();
+      if(event.cancelable){
+        event.preventDefault();
+      }
     } else {
       event.returnValue = false;
     }

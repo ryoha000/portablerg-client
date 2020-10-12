@@ -20,21 +20,21 @@ const conversionPX = (str: string, base?: number) => {
   return 0
 }
 
-export interface WindowRect { left: number; top: number; right: number; buttom: number; }
+export interface WindowRect { left: number; top: number; right: number; bottom: number; }
 
 export const getSize = (winRect: WindowRect, width: number, height: number) => {
-  const ratio = (winRect.left - winRect.right) / (winRect.buttom - winRect.top)
+  const ratio = (winRect.right - winRect.left) / (winRect.bottom - winRect.top)
   // windowの方がブラウザと比べて横に長い場合
   if (ratio > (width / height)) {
     return {
       width: width,
       height: width / ratio,
-      expr: (winRect.left - winRect.right) / width
+      expr: (winRect.right - winRect.left) / width
     }
   }
   return {
     width: ratio * height,
     height: height,
-    expr: (winRect.buttom - winRect.top) / height
+    expr: (winRect.bottom - winRect.top) / height
   }
 }

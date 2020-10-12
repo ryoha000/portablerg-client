@@ -56,6 +56,8 @@ interface ZingEvent {
   clientY: number
   x: number
   y: number
+  screenX: number
+  screenY: number
 }
 
 class Region {
