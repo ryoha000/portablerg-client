@@ -99,25 +99,6 @@ const useWebRTC = () => {
     sendWSMessageWithID(id, m, ws)
   }
 
-  const setStreamByID = async (id: string, localVideo: HTMLMediaElement) => {
-    const stream = await window.navigator.mediaDevices.getUserMedia({
-      audio: {
-        mandatory: {
-          chromeMediaSource: 'desktop'
-        }
-      },
-      video: {
-        mandatory: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: id
-        }
-      }
-    })
-    store.localStream.set(stream)
-    console.log('setted localStream: ', stream)
-    playVideo(localVideo, stream)
-  }
-
   // Videoの再生を開始する
   function playVideo(element : HTMLMediaElement, stream: MediaStream) {
     if (element.srcObject) {
@@ -361,7 +342,6 @@ const useWebRTC = () => {
   }
   return {
     setupWS,
-    setStreamByID,
     hangUp,
     connect,
     sendMouseMove,
