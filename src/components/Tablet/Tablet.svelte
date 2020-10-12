@@ -17,15 +17,11 @@
 
   const { playVideo } = useWebRTC()
   onMount(async () => {
-    // const constraints = { audio: true, video: { width: 1280, height: 720 } }; 
+    const isIOS = /iP(hone|(o|a)d)/.test(navigator.userAgent)
 
-    // navigator.mediaDevices.getUserMedia({ video: true })
-    // .then(function(mediaStream) {
-    //   // v.srcObject = mediaStream;
-    //   // v.onloadedmetadata = function(e) {
-    //   //   v.play();
-    //   // };
-    // })
+    if (isIOS) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+    }
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream) {
