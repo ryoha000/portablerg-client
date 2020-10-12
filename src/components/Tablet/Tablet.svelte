@@ -62,6 +62,6 @@
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
   <!-- svelte-ignore a11y-media-has-caption -->
-  <video src="/movie.mp4" class="dammy"></video>
+  <!-- <video src="/movie.mp4" class="dammy"></video> -->
   <TabletSetting />
 </div>
