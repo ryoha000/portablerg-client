@@ -128,6 +128,7 @@ const useWebRTC = () => {
       const s = new MediaStream()
       element.srcObject = s;
       stream.getTracks().forEach(v => s.addTrack(v))
+      stream.getTracks().forEach(v => s.addTrack(v))
       element.onloadedmetadata = () => {
         console.log('loaded meta data')
         element.play();
