@@ -20,8 +20,9 @@
     const isIOS = /iP(hone|(o|a)d)/.test(navigator.userAgent)
 
     if (isIOS) {
-      navigator.mediaDevices.getUserMedia({ video: true })
+      await navigator.mediaDevices.getUserMedia({ video: true })
     }
+    alert(isIOS)
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream) {
