@@ -13,6 +13,7 @@
   let isTabletMode = false
   store.isTabletMode.subscribe(v => isTabletMode = v)
   let index = 0
+  let paused
 
   const {
     playVideo
@@ -53,6 +54,7 @@
     {/each}
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
-  <video bind:this="{remoteVideo}" playsinline autoplay controls style="{$windowStyle}" class="window"></video>
+  <video bind:this="{remoteVideo}" bind:paused="{paused}" playsinline autoplay controls style="{$windowStyle}" class="window"></video>
+  <div>paused: {paused}</div>
   <TabletSetting />
 </div>
