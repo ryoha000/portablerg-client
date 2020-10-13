@@ -11,7 +11,7 @@
       style: string
     }[]
   }
-  export let dc: RTCDataChannel
+  export let ws: WebSocket
 
   const dispatch = createEventDispatcher();
   const trans = (num: 1 | -1) => {
@@ -49,7 +49,7 @@
   <div class="container" style="{$controlsStyle}">
     <div class="controls">
       {#each controlStyle.controls as control}
-        <Panel {dc} style="{control.style}" type="{control.type}" />
+        <Panel {ws} style="{control.style}" type="{control.type}" />
       {/each}
     </div>
     <div class="btnContainer">

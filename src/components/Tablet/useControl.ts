@@ -1,7 +1,8 @@
 import { get } from "svelte/store"
 import useDB from "../../lib/useDB"
-import { sendDataMessage } from "../../lib/utils"
+import { sendWSMessageWithID } from "../../lib/utils"
 import { store } from "../../store"
+import useTouch from "./Controls/use/useTouch"
 import useTablet from "./use/useTablet"
 import { ControlStyle, controlStyles } from "./useSetting"
 
@@ -32,9 +33,9 @@ export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
 export const toggleTabletMode = async (e: MouseEvent) => {
   e.stopPropagation()
   const prev: boolean = get(store.isTabletMode)
-  const dc: RTCDataChannel = get(store.dataChannel)
+  const ws: WebSocket = get(store.ws)
   const remoteMediaElement: HTMLMediaElement = get(store.remoteVideoElement)
-  const { dispose } = useTablet(dc, remoteMediaElement)
+  const { dispose } = useTablet(ws, remoteMediaElement)
   if (prev) {
     const { init: initDB } = useDB()
     dispose(remoteMediaElement)
@@ -42,6 +43,6 @@ export const toggleTabletMode = async (e: MouseEvent) => {
     store.isTabletMode.set(false)
   }
   if (!prev) {
-    sendDataMessage({ type: 'tabletMode' }, dc)
+    sendWSMessageWithID(get(store.me), { type: 'tabletMode' }, ws)
   }
 }

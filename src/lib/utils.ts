@@ -1,10 +1,4 @@
-export const sendDataMessage = (
-  obj: Object,
-  channel: RTCDataChannel
-) => {
-  channel.send(JSON.stringify(obj))
-}
-
+export const fullScreen = () => document.documentElement.requestFullscreen()
 export const sendWSMessageWithID = (
   id: string,
   obj: Object,

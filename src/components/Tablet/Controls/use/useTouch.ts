@@ -1,6 +1,7 @@
 import ZingTouch from "../../../../lib/ZingTouch/ZingTouch";
 import { writable } from 'svelte/store';
-import { sendDataMessage } from '../../../../lib/utils'
+import { sendWSMessageWithID } from '../../../../lib/utils'
+import { store } from "../../../../store";
 
 export const message = writable('')
 
@@ -9,13 +10,15 @@ const ALLOW_DRAG_START_RADIUS = 20
 const BUFFER_LENGTH = 3
 const MAGNIFICATION = 5
 
-const useTouch = (dc: RTCDataChannel) => {
+const useTouch = (ws: WebSocket) => {
   let isDragging = false
   let isMoving = false
   let isScroll = false
   let tapPos = { x: 0, y: 0 }
   let timer: number | null = null
   let dPosBuf: { x: number, y: number }[] = []
+  let id = ""
+  store.me.subscribe(v => id = v)
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement) => {
@@ -23,7 +26,7 @@ const useTouch = (dc: RTCDataChannel) => {
     region.bind(ele, 'dragPan', () => {})
     region.bind(ele, 'tap', (e: TapEvent) => {
       if (!isMoving && !isDragging && !isScroll) {
-        sendDataMessage({ type: 'click' }, dc)
+        sendWSMessageWithID(id, { type: 'click' }, ws)
         resetPan()
       }
     })
@@ -31,14 +34,16 @@ const useTouch = (dc: RTCDataChannel) => {
       if (!isDragging && e.detail.data.length !== 0) {
         const data = e.detail.data[0]
         const r = data.velocity * data.duration
-        sendDataMessage({
+        sendWSMessageWithID(
+          id,
+          {
             type: 'scroll',
             dPoint: {
               x: r * Math.cos(data.currentDirection / Math.PI),
               y: r * Math.sin(data.currentDirection / Math.PI)
             }
           },
-          dc
+          ws
         )
       }
     })
@@ -48,7 +53,11 @@ const useTouch = (dc: RTCDataChannel) => {
       if (!isDragging && e.detail.data.length !== 0) {
         isScroll = true
         const data = e.detail.data[0]
-        sendDataMessage({ type: 'scroll', Point: data.change }, dc)
+        sendWSMessageWithID(
+          id,
+          { type: 'scroll', Point: data.change },
+          ws
+        )
       }
     })
   };
@@ -67,7 +76,7 @@ const useTouch = (dc: RTCDataChannel) => {
     tapPos.y = e[0].initial.y
     timer = setTimeout(() => {
       isDragging = true
-      sendDataMessage({ type: 'dragStart' }, dc)
+      sendWSMessageWithID(id, { type: 'dragStart' }, ws)
     }, DRAG_START_INTERVAL)
   }
   const panMove = (e: ZingInput[], state: any, element: HTMLElement, event: PanData) => {
@@ -103,7 +112,7 @@ const useTouch = (dc: RTCDataChannel) => {
   const panEnd = () => {
     if (isDragging) {
       sendDiv('dragging')
-      sendDataMessage({ type: 'dragEnd' }, dc)
+      sendWSMessageWithID(id, { type: 'dragEnd' }, ws)
     }
     resetPan()
   }
@@ -129,7 +138,11 @@ const useTouch = (dc: RTCDataChannel) => {
   const sendDiv = (type: 'dragging' | 'move') => {
     const dPoint = dPosBuf.reduce((acc, cur) => ({ x: acc.x + cur.x, y: acc.y + cur.y }), { x: 0, y: 0 })
     dPosBuf = []
-    sendDataMessage({ type: type, dPoint: dPoint }, dc)
+    sendWSMessageWithID(
+      id,
+      { type: type, dPoint: dPoint },
+      ws
+    )
   }
   return { init, dispose };
 };

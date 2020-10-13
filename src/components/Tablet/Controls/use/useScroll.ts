@@ -1,7 +1,10 @@
 import ZingTouch from '../../../../lib/ZingTouch/ZingTouch'
-import { sendDataMessage } from '../../../../lib/utils'
+import { sendWSMessageWithID } from '../../../../lib/utils'
+import { store } from '../../../../store';
 
-const useScroll = (dc: RTCDataChannel) => {
+const useScroll = (ws: WebSocket) => {
+  let id = ""
+  store.me.subscribe(v => id = v)
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement) => {
@@ -10,7 +13,8 @@ const useScroll = (dc: RTCDataChannel) => {
           return
         }
         const data = e.detail.data[0]
-        sendDataMessage(
+        sendWSMessageWithID(
+          id,
           {
             type: 'scroll',
             dPoint: {
@@ -18,7 +22,7 @@ const useScroll = (dc: RTCDataChannel) => {
               y: data.change.y
             }
           },
-          dc
+          ws
         )
     })
   };
