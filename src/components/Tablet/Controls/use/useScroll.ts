@@ -6,20 +6,19 @@ const useScroll = (dc: RTCDataChannel) => {
 
   const init = (ele: HTMLElement) => {
     region.bind(ele, 'pan', (e: PanEvent) => {
-        if (e.detail.data.length === 0) {
-          return
+      if (e.detail.data.length === 0) {
+        return
+      }
+      const data = e.detail.data[0]
+      const message = {
+        type: 'scroll',
+        dPoint: {
+          x: data.change.x,
+          y: data.change.y
         }
-        const data = e.detail.data[0]
-        sendDataMessage(
-          {
-            type: 'scroll',
-            dPoint: {
-              x: data.change.x,
-              y: data.change.y
-            }
-          },
-          dc
-        )
+      }
+      console.log(message)
+      sendDataMessage(message, dc)
     })
   };
   return { init };
