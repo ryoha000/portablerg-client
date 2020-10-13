@@ -27,6 +27,8 @@ const useFirebase = () => {
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
       store.me.set(result.user.uid)
+      const token = await result.user.getIdToken()
+      console.log(token)
     }
   }
   const google = async () => {
@@ -34,6 +36,7 @@ const useFirebase = () => {
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
       store.me.set(result.user.uid)
+      const token = await result.user.getIdToken()
     }
   }
   const original = async (id: string) => {
