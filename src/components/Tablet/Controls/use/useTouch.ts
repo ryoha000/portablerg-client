@@ -48,7 +48,7 @@ const useTouch = (dc: RTCDataChannel) => {
       if (!isDragging && e.detail.data.length !== 0) {
         isScroll = true
         const data = e.detail.data[0]
-        sendDataMessage({ type: 'scroll', dPoint: data.change }, dc)
+        sendDataMessage({ type: 'scroll', Point: data.change }, dc)
       }
     })
   };
