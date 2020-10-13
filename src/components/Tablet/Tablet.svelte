@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import useWebRTC from '../../lib/webRTC'
+  import { playVideo, confirm} from '../../lib/utils'
   import { controlStyles, windowStyle } from './useSetting'
   import TabletControl from './TabletControl.svelte'
   import { store } from '../../store';
@@ -9,7 +9,6 @@
   import { get } from 'svelte/store';
 
   let remoteVideo: HTMLMediaElement
-  let ws: WebSocket
   let dc: RTCDataChannel | null = null
   store.dataChannel.subscribe(v => dc = v)
   let isTabletMode = false
@@ -18,17 +17,16 @@
   let isIOS = false
   store.isIOS.subscribe(v => isIOS = v)
 
-  const { playVideo } = useWebRTC()
   onMount(() => {
-    console.log('mount')
-    if (!isIOS) {
-      store.remoteVideoElement.set(remoteVideo)
-      const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
-      if (remoteVideoStream) {
+    store.remoteVideoElement.set(remoteVideo)
+    const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
+    if (remoteVideoStream) {
+      if (!isIOS) {
         playVideo(remoteVideo, remoteVideoStream)
+      } else {
+        confirm(remoteVideo, remoteVideoStream)
       }
     }
-    ws = get(store.ws)
   })
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {
     const next = getNextIndex(index, e.detail.num)
@@ -67,9 +65,9 @@
       {/if}
     {/each}
   {/if}
-  <button on:click="{play}" on:touchstart="{play}">play</button>
-  <!-- {#if isIOS}
-  {/if} -->
+  {#if isIOS}
+    <button on:click="{play}" on:touchstart="{play}">play</button>
+  {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
   <TabletSetting />

@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
-import { sendDataMessage, sendWSMessageWithID } from './utils';
+import { confirm, playVideo, sendWSMessageWithID } from './utils';
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
@@ -101,28 +101,6 @@ const useWebRTC = () => {
     sendWSMessageWithID(id, m, ws)
   }
 
-  // Videoの再生を開始する
-  function playVideo(element : HTMLMediaElement, stream: MediaStream) {
-    console.log('play video')
-    if (element.srcObject) {
-      console.warn("already setted")
-      return
-    }
-    try {
-      element.srcObject = stream
-      // const s = new MediaStream()
-      // element.srcObject = s;
-      // stream.getTracks().forEach(v => s.addTrack(v))
-      // stream.getTracks().forEach(v => s.addTrack(v))
-      element.onloadedmetadata = () => {
-        console.log('loaded meta data')
-        element.play();
-      }
-    } catch(error) {
-      console.error('error auto play:' + error);
-    }
-  }
-
   // WebRTCを利用する準備をする
   function prepareNewConnection(isOffer: boolean) {
     const pc_config = {"iceServers":[ {"urls":"stun:stun.webrtc.ecl.ntt.com:3478"} ]};
@@ -140,8 +118,13 @@ const useWebRTC = () => {
       store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
-      if (remoteVideoElement && !get(store.isIOS)) {
-        playVideo(remoteVideoElement, evt.streams[0])
+      const isIOS: boolean = get(store.isIOS)
+      if (remoteVideoElement) {
+        if (isIOS) {
+          confirm(remoteVideoElement, evt.streams[0])
+        } else {
+          playVideo(remoteVideoElement, evt.streams[0])
+        }
       }
     };
 
@@ -299,8 +282,7 @@ const useWebRTC = () => {
   return {
     setupWS,
     hangUp,
-    connectHost,
-    playVideo
+    connectHost
   }
 }
 
