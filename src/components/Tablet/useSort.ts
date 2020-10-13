@@ -24,7 +24,6 @@ const useSort = (container: HTMLElement) => {
       elements.push(null)
     }
     const onPanStart = (inputs: ZingInput[]) => {
-      console.log('start')
       if (inputs.length === 0) {
         console.error('pan start error')
         return
@@ -32,7 +31,6 @@ const useSort = (container: HTMLElement) => {
       const initial = inputs[0].initial
       dragBuffer = 0
       isDragging =isDragging.map(_ => false)
-      console.log(tops, initial)
       tops.forEach((top, i) => {
         if (top < initial.y && initial.y < top + HEIGHT) {
           isDragging[i] = true
@@ -58,19 +56,16 @@ const useSort = (container: HTMLElement) => {
         if (isDragging.some(v => v === true)) {
           isDragging = isDragging.map(() => false)
           elem.style.transform = ''
-          console.log(draggingIndex)
           updateList(draggingIndex)
           overIndex.set(-1)
         }
         return
       }
       const newOverIndex = getValidIndex(oIndex, tops.length)
-      console.log(tops.length, newOverIndex)
       overIndex.set(newOverIndex)
     }
   
     const onPanEnd = () => {
-      console.log('end')
       const draggingIndex = isDragging.findIndex(v => v === true)
       const elem = elements[draggingIndex]
       if (draggingIndex === -1 || !elem) {
@@ -78,7 +73,6 @@ const useSort = (container: HTMLElement) => {
       }
       isDragging.map(() => false)
       elem.style.transform = ''
-      console.log(draggingIndex)
       updateList(draggingIndex)
       overIndex.set(-1)
     }
@@ -97,10 +91,8 @@ const useSort = (container: HTMLElement) => {
     if (oIndex === -1) {
       return
     }
-    console.log('tmp: ', tmp)
     prev.controlTemplates[draggingIndex] = prev.controlTemplates[oIndex]
     prev.controlTemplates[oIndex] = tmp
-    console.log(prev)
     store.setting.set(prev)
   }
   return { init, setupElements }

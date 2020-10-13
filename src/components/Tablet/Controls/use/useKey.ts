@@ -10,11 +10,9 @@ const useKey = (ws: WebSocket) => {
 
   const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
     const tapStart = () => {
-      console.log('tap start')
       sendWSMessageWithID(id, { type: 'down', key: type }, ws)
     }
     const tapEnd = () => {
-      console.log('tap end')
       sendWSMessageWithID(id, { type: 'up', key: type }, ws)
     }
     const keyTap: Tap = new ZingTouch.Tap({ maxDelay: 9999999999999999999999999, onStart: tapStart, onEnd: tapEnd })

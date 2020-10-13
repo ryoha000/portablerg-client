@@ -28,7 +28,6 @@ const useFirebase = () => {
     if (result.user) {
       store.me.set(result.user.uid)
     }
-    console.log('github resulr: ', result, ', uid: ', result.user.uid)
   }
   const google = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -36,7 +35,6 @@ const useFirebase = () => {
     if (result.user) {
       store.me.set(result.user.uid)
     }
-    console.log('google resulr: ', result, ', uid: ', result.user.uid)
   }
   const original = async (id: string) => {
     store.me.set(id)

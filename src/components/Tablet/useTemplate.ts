@@ -89,7 +89,6 @@ const useTemplate = (container: HTMLElement) => {
     region.bind(container, customPan, () => {})
   
     const onDistanceStart = (inputs: ZingInput[], state: any, element: HTMLElement) => {
-      console.log('distance move')
       if (inputs.length < 2) {
         return
       }
@@ -99,7 +98,6 @@ const useTemplate = (container: HTMLElement) => {
       }
     }
     const onDistanceMove = (inputs: ZingInput[], state: any, element: HTMLElement, movement: DistanceData) => {
-      console.log('distance move')
       if (!movement || inputs.length < 2) {
         return
       }

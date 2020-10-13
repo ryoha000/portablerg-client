@@ -26,14 +26,12 @@ const useTouch = (ws: WebSocket) => {
     region.bind(ele, 'dragPan', () => {})
     region.bind(ele, 'tap', (e: TapEvent) => {
       if (!isMoving && !isDragging && !isScroll) {
-        console.log('click !')
         sendWSMessageWithID(id, { type: 'click' }, ws)
         resetPan()
       }
     })
     region.bind(ele, 'swipe', (e: SwipeEvent) => {
       if (!isDragging && e.detail.data.length !== 0) {
-        console.log('scroll !')
         const data = e.detail.data[0]
         const r = data.velocity * data.duration
         sendWSMessageWithID(
@@ -54,7 +52,6 @@ const useTouch = (ws: WebSocket) => {
     region.bind(ele, 'scrollPan', (e: PanEvent) => {
       if (!isDragging && e.detail.data.length !== 0) {
         isScroll = true
-        console.log('scroll !')
         const data = e.detail.data[0]
         sendWSMessageWithID(
           id,
@@ -75,11 +72,9 @@ const useTouch = (ws: WebSocket) => {
     region.register('dragPan', dragPan)
   }
   const panStart = (e: ZingInput[]) => {
-    console.log('panStart')
     tapPos.x = e[0].initial.x
     tapPos.y = e[0].initial.y
     timer = setTimeout(() => {
-      console.log('isDragging: true')
       isDragging = true
       sendWSMessageWithID(id, { type: 'dragStart' }, ws)
     }, DRAG_START_INTERVAL)
@@ -93,7 +88,6 @@ const useTouch = (ws: WebSocket) => {
     }
 
     if (isDragging) {
-      console.log('dragging !')
       dPosBuf.push(dPoint)
       if (dPosBuf.length < BUFFER_LENGTH) {
         return
@@ -102,7 +96,6 @@ const useTouch = (ws: WebSocket) => {
       return
     }
     if (isMoving) {
-      console.log('moving !')
       dPosBuf.push(dPoint)
       if (dPosBuf.length < BUFFER_LENGTH) {
         return
@@ -111,20 +104,16 @@ const useTouch = (ws: WebSocket) => {
       return
     }
     if (timer && checkStartDrag(current.x, current.y)) {
-      console.log('probably dragging')
     } else {
       resetPan()
       isMoving = true
     }
   }
   const panEnd = () => {
-    console.log('pan end')
     if (isDragging) {
-      console.log('dragEnd')
       sendDiv('dragging')
       sendWSMessageWithID(id, { type: 'dragEnd' }, ws)
     }
-    console.log('isDragging: false')
     resetPan()
   }
 

@@ -7,7 +7,6 @@
   const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
 
   const toggle = async (e) => {
-    console.log('click toggle')
     await sleep(400)
     e.stopPropagation()
     switch (iconName) {

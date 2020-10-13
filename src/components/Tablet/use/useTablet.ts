@@ -20,19 +20,15 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
     store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
     const s = getSize(winRect, window.innerWidth, window.innerHeight)
-    console.log(s)
     setting.windowRect.width = `${s.width}px`
     setting.windowRect.height = `${s.height}px`
     ratio = s.expr
     store.setting.set(setting)
 
-    // const downUpTap = getTap()
-    // region.bind(ele, downUpTap, () => {})
     const dragPan = getDrag()
     region.bind(ele, dragPan, () => {})
     region.bind(ele, 'swipe', (e: SwipeEvent) => {
       if (e.detail.data.length !== 0) {
-        console.log('scroll !')
         const data = e.detail.data[0]
         const r = data.velocity * data.duration
         sendWSMessageWithID(
@@ -56,15 +52,6 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
     }
   }
 
-  const getTap = () => {
-    const endTap = (inputs: ZingInput[]) => {
-      const point = inputs[0].initial
-      sendWSMessageWithID(id, { type: 'moveTap', point: toPoint(point.x, point.y, ratio) }, ws)
-    }
-    const downUpTap: Tap = new ZingTouch.Tap({ onEnd: endTap })
-    return downUpTap
-  }
-
   const getDrag = () => {
     const dragPan: Pan = new ZingTouch.Pan({ onStart: panStart, onMove: panMove, onEnd: panEnd })
     return dragPan
@@ -83,9 +70,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
       }
     } else {
       const current = e[0].current
-      console.log(current)
       const point = toPoint(current.screenX, current.screenY, ratio)
-      console.log('dragging !')
       sendWSMessageWithID(id, { type: 'moveDragging', point: point }, ws)
     }
   }
