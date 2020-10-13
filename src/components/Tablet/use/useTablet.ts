@@ -1,13 +1,11 @@
 import ZingTouch from "../../../lib/ZingTouch/ZingTouch";
 import { get } from 'svelte/store';
-import { sendWSMessageWithID } from '../../../lib/utils'
+import { sendDataMessage } from '../../../lib/utils'
 import { store } from "../../../store";
 import type { TabletSetting } from "../useSetting";
 import { getSize, WindowRect } from "../../../lib/coordinary";
 
-const useTablet = (ws: WebSocket, ele: HTMLElement) => {
-  let id = ""
-  store.me.subscribe(v => id = v)
+const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   let ratio = 1
   let winRect: WindowRect = get(store.windowRect)
   store.windowRect.subscribe(v => winRect = v)
@@ -31,8 +29,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
       if (e.detail.data.length !== 0) {
         const data = e.detail.data[0]
         const r = data.velocity * data.duration
-        sendWSMessageWithID(
-          id,
+        sendDataMessage(
           {
             type: 'scroll',
             dPoint: {
@@ -40,7 +37,7 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
               y: r * Math.sin(data.currentDirection / Math.PI)
             }
           },
-          ws
+          dc
         )
       }
     })
@@ -60,25 +57,25 @@ const useTablet = (ws: WebSocket, ele: HTMLElement) => {
     startTime = performance.now()
     isDragging = false
     tapPoint = { x: e[0].initial.x, y: e[0].initial.y }
-    // sendWSMessageWithID(id, { type: 'moveDragStart', point: toPoint(e[0].initial.x, e[0].initial.y, ratio) }, ws)
+    // sendDataMessage({ type: 'moveDragStart', point: toPoint(e[0].initial.x, e[0].initial.y, ratio) }, dc)
   }
   const panMove = (e: ZingInput[], state: any, element: HTMLElement, event: PanData) => {
     if (!isDragging) {
       if (performance.now() - startTime) {
-        sendWSMessageWithID(id, { type: 'moveDragStart', point: toPoint(e[0].initial.x, e[0].initial.y, ratio) }, ws)
+        sendDataMessage({ type: 'moveDragStart', point: toPoint(e[0].initial.x, e[0].initial.y, ratio) }, dc)
         isDragging = true
       }
     } else {
       const current = e[0].current
       const point = toPoint(current.screenX, current.screenY, ratio)
-      sendWSMessageWithID(id, { type: 'moveDragging', point: point }, ws)
+      sendDataMessage({ type: 'moveDragging', point: point }, dc)
     }
   }
   const panEnd = () => {
     if (!isDragging) {
-      sendWSMessageWithID(id, { type: 'moveTap', point: toPoint(tapPoint.x, tapPoint.y, ratio) }, ws)
+      sendDataMessage({ type: 'moveTap', point: toPoint(tapPoint.x, tapPoint.y, ratio) }, dc)
     } else {
-      sendWSMessageWithID(id, { type: 'dragEnd' }, ws)
+      sendDataMessage({ type: 'dragEnd' }, dc)
     }
     isDragging = false
     startTime = 0
