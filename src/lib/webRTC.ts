@@ -3,6 +3,8 @@ import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
 import { sendWSMessageWithID } from './utils';
+// @ts-ignore
+import { push } from 'svelte-spa-router'
 
 const useWebRTC = () => {
   let id: string | null = null
@@ -126,6 +128,10 @@ const useWebRTC = () => {
     // リモートのMediStreamTrackを受信した時
     peer.ontrack = async (evt) => {
       console.log('-- peer.ontrack()');
+      // const p: RTCPeerConnection = get(store.peerConnection)
+      // if (p) {
+        
+      // }
       store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
@@ -166,16 +172,19 @@ const useWebRTC = () => {
     // ICEのステータスが変更になったときの処理
     peer.oniceconnectionstatechange = function() {
       console.log('ICE connection Status has changed to ' + peer.iceConnectionState);
+      const peerConnection: RTCPeerConnection = get(store.peerConnection)
       switch (peer.iceConnectionState) {
         case 'closed':
         case 'failed':
-          const peerConnection: RTCPeerConnection = get(store.peerConnection)
           if (peerConnection) {
             hangUp();
-            store.isConnected.set(false)
           }
           break;
         case 'disconnected':
+          if (peerConnection) {
+            hangUp();
+            push('/')
+          }
           break;
       }
     };
@@ -280,6 +289,10 @@ const useWebRTC = () => {
         peerConnection.close();
         store.peerConnection.set(null)
         store.negotiationneededCounter.set(0)
+        const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
+        if (remoteVideoElement) {
+          remoteVideoElement.srcObject = null
+        }
         store.remoteVideoStream.set(null)
         store.isConnected.set(false)
         return;

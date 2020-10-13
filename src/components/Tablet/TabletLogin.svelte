@@ -5,7 +5,6 @@
   import Separator from '../UI/Separator.svelte';
   import LoginButton from '../UI/LoginButton.svelte'
   import useFirebase from './use/useFirebase'
-  import { fullScreen } from '../../lib/utils'
   import useWebRTC from "../../lib/webRTC"
   import { push } from 'svelte-spa-router'
 
@@ -26,18 +25,17 @@
         return
       }
       connectHost()
-      try {
-        fullScreen()
-      } catch (e) {
-        console.error("fullscreen error: ", e)
-      }
     }
   })
   store.isConnected.subscribe(v => {
     if (v) push('/client')
   })
   const { init, google, github } = useFirebase()
-  onMount(() => init())
+  onMount(() => {
+    if (!me) {
+      init()
+    }
+  })
   onDestroy(unsubscribe)
   const loginGoogle = () => {
     google()
