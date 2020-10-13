@@ -26,8 +26,8 @@ const useFirebase = () => {
     const provider = new firebase.auth.GithubAuthProvider();
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
-      store.me.set(result.user.uid)
       const token = await result.user.getIdToken()
+      store.me.set(token)
       console.log(token)
     }
   }
@@ -35,8 +35,9 @@ const useFirebase = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
-      store.me.set(result.user.uid)
+      // store.me.set(result.user.uid)
       const token = await result.user.getIdToken()
+      store.me.set(token)
     }
   }
   const original = async (id: string) => {
