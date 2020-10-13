@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-import { store } from '../../../store';
+  import { store } from '../../../store';
   import { ControlType } from '../useSetting';
   import useKey from './use/useKey';
   import useScroll from './use/useScroll';
   import useTouch from './use/useTouch'
 
   export let style: string
-  export let ws: WebSocket
+  export let dc: RTCDataChannel
   export let type: ControlType
   let container: HTMLElement
 
@@ -17,17 +17,17 @@ import { store } from '../../../store';
   onMount(() => {
     switch (type) {
       case ControlType.Panel: {
-        const { init } = useTouch(ws)
+        const { init } = useTouch(dc)
         init(container)
         break
       }
       case ControlType.Scroll: {
-        const { init } = useScroll(ws)
+        const { init } = useScroll(dc)
         init(container)
         break
       }
       default: {
-        const { init } = useKey(ws)
+        const { init } = useKey(dc)
         switch (type) {
           case ControlType.Enter: {
             init(container, 'enter')

@@ -9,12 +9,13 @@ export const store = {
   negotiationneededCounter: writable(0),
   remoteVideoStream: writable<null | MediaStream>(null),
   ws: writable<WebSocket | null>(null),
-  mouseMoveChannel: writable<RTCDataChannel | null>(null),
+  dataChannel: writable<RTCDataChannel | null>(null),
   isConnected: writable(false),
   connection: writable<IDBDatabase | null>(null),
   isTabletMode: writable(false),
   windowRect: writable<WindowRect | null>(null),
   videoRegion: writable<Region>(null),
+  isIOS: writable(false),
 
   setting: writable<TabletSetting | null>(null),
 

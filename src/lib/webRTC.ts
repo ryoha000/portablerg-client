@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
-import { sendWSMessageWithID } from './utils';
+import { sendDataMessage, sendWSMessageWithID } from './utils';
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
@@ -60,7 +60,8 @@ const useWebRTC = () => {
           const rect: WindowRect = message.rect
           store.windowRect.set(rect)
           store.isTabletMode.set(true)
-          const { init } = useTablet(ws, get(store.remoteVideoElement))
+          const dc: RTCDataChannel = get(store.dataChannel)
+          const { init } = useTablet(dc, get(store.remoteVideoElement))
           init()
           break
         }
@@ -125,20 +126,21 @@ const useWebRTC = () => {
     const pc_config = {"iceServers":[ {"urls":"stun:stun.webrtc.ecl.ntt.com:3478"} ]};
     const peer = new RTCPeerConnection(pc_config);
 
+    peer.ondatachannel = (e) => {
+      const dataChannel =  e.channel
+      dataChannel.onerror = (e) => { console.error(e) }
+      store.dataChannel.set(dataChannel)
+    }
+
     // リモートのMediStreamTrackを受信した時
     peer.ontrack = async (evt) => {
       console.log('-- peer.ontrack()');
-      // const p: RTCPeerConnection = get(store.peerConnection)
-      // if (p) {
-        
-      // }
       store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
-      if (remoteVideoElement) {
+      if (remoteVideoElement && !get(store.isIOS)) {
         playVideo(remoteVideoElement, evt.streams[0])
       }
-      // playVideo(remoteVideo, evt.streams[0]);
     };
 
     // ICE Candidateを収集したときのイベント
@@ -147,7 +149,6 @@ const useWebRTC = () => {
         sendIceCandidate(evt.candidate);            
       } else {
         console.log('empty ice event');
-        // sendSdp(peer.localDescription);
       }
     };
 
@@ -160,7 +161,7 @@ const useWebRTC = () => {
             console.log('createOffer')
             const offer = await peer.createOffer();
             await peer.setLocalDescription(offer);
-            const id = sendSdp(peer.localDescription);
+            sendSdp(peer.localDescription);
             store.negotiationneededCounter.update(v => v + 1)
           }
         }
@@ -188,22 +189,6 @@ const useWebRTC = () => {
           break;
       }
     };
-    const mouseMoveChannel = peer.createDataChannel('mouseMove')
-    console.log(mouseMoveChannel)
-    mouseMoveChannel.onmessage = function (event) {
-      console.log("データチャネルメッセージ取得:", event.data);
-    };
-    
-    mouseMoveChannel.onopen = function () {
-      console.log("データチャネルのオープン");
-      // mouseMoveChannel?.send(new Blob([JSON.stringify({ x: 0, y: -10 })], { type: 'text/plain' }));
-      // mouseMoveChannel?.send(JSON.stringify({ x: 0, y: -10 }));
-    };
-    
-    mouseMoveChannel.onclose = function () {
-      console.log("データチャネルのクローズ");
-    };
-    store.mouseMoveChannel.set(mouseMoveChannel)
 
     return peer;
   }
@@ -301,12 +286,6 @@ const useWebRTC = () => {
     console.log('peerConnection is closed.');
   }
 
-  function sendMouseMove(dPoint: { x: number, y: number }) {
-    const mouseMoveChannel: RTCDataChannel = get(store.mouseMoveChannel)
-    console.log(mouseMoveChannel)
-    mouseMoveChannel.send(JSON.stringify({ dPoint: dPoint }))
-  }
-
   const connectHost = () => {
     const ws: WebSocket = get(store.ws)
     if (!ws) {
@@ -318,7 +297,6 @@ const useWebRTC = () => {
   return {
     setupWS,
     hangUp,
-    sendMouseMove,
     connectHost,
     playVideo
   }

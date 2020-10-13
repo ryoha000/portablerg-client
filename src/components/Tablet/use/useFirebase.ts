@@ -26,18 +26,19 @@ const useFirebase = () => {
     const provider = new firebase.auth.GithubAuthProvider();
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
-      const token = await result.user.getIdToken(false)
-      store.me.set(token)
-      console.log(token)
+      store.me.set(result.user.uid)
+      // const token = await result.user.getIdToken(false)
+      // store.me.set(token)
+      // console.log(token)
     }
   }
   const google = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
-      // store.me.set(result.user.uid)
-      const token = await result.user.getIdToken(false)
-      store.me.set(token)
+      store.me.set(result.user.uid)
+      // const token = await result.user.getIdToken(false)
+      // store.me.set(token)
     }
   }
   const original = async (id: string) => {

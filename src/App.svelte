@@ -8,11 +8,13 @@
 	import TabletSettingTemplate from './components/Tablet/TabletSettingTemplate.svelte';
 	import useDB from './lib/useDB'
 	import useWebRTC from './lib/webRTC'
+	import { store } from './store';
 
 	onMount(async () => {
 		const { init } = useDB()
 		await init()
 		const { setupWS } = useWebRTC()
+		store.isIOS.set(/iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent))
 		setupWS()
 	})
 	const routes = {

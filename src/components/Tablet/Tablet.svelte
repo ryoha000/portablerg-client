@@ -10,19 +10,17 @@
 
   let remoteVideo: HTMLMediaElement
   let ws: WebSocket
+  let dc: RTCDataChannel | null = null
+  store.dataChannel.subscribe(v => dc = v)
   let isTabletMode = false
   store.isTabletMode.subscribe(v => isTabletMode = v)
   let index = 0
   let isIOS = false
+  store.isIOS.subscribe(v => isIOS = v)
 
   const { playVideo } = useWebRTC()
   onMount(async () => {
-    isIOS = /iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent)
-
     if (!isIOS) {
-      // alert('iOS端末ではSafariでしか動かず、使用しないカメラのアクセスを要求します')
-      // confirm("ok?")
-      // await navigator.mediaDevices.getUserMedia({ video: true })
       store.remoteVideoElement.set(remoteVideo)
       const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
       if (remoteVideoStream) {
@@ -54,13 +52,17 @@
   .window {
     z-index: -1;
   }
+  button {
+    position: absolute;
+    z-index: 10;
+  }
 </style>
 
 <div class="container">
-  {#if ws && !isTabletMode}
+  {#if dc && !isTabletMode}
     {#each $controlStyles as controlStyle, i}
       {#if i === index}
-        <TabletControl {ws} {controlStyle} on:trans="{trans}" />
+        <TabletControl {dc} {controlStyle} on:trans="{trans}" />
       {/if}
     {/each}
   {/if}

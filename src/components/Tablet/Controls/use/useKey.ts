@@ -1,19 +1,15 @@
 import ZingTouch from "../../../../lib/ZingTouch/ZingTouch";
-import { sendWSMessageWithID } from '../../../../lib/utils'
-import { store } from "../../../../store";
+import { sendDataMessage } from '../../../../lib/utils'
 
-const useKey = (ws: WebSocket) => {
-  let id = ""
-  store.me.subscribe(v => id = v)
-
+const useKey = (dc: RTCDataChannel) => {
   const region: Region = new ZingTouch.Region(document.body);
 
   const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
     const tapStart = () => {
-      sendWSMessageWithID(id, { type: 'down', key: type }, ws)
+      sendDataMessage({ type: 'down', key: type }, dc)
     }
     const tapEnd = () => {
-      sendWSMessageWithID(id, { type: 'up', key: type }, ws)
+      sendDataMessage({ type: 'up', key: type }, dc)
     }
     const keyTap: Tap = new ZingTouch.Tap({ maxDelay: 9999999999999999999999999, onStart: tapStart, onEnd: tapEnd })
     region.bind(ele, keyTap, () => {})
