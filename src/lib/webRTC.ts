@@ -103,6 +103,7 @@ const useWebRTC = () => {
 
   // Videoの再生を開始する
   function playVideo(element : HTMLMediaElement, stream: MediaStream) {
+    console.log('play video')
     if (element.srcObject) {
       console.warn("already setted")
       return
