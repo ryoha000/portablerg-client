@@ -7,6 +7,8 @@ import { sendWSMessageWithID } from './utils';
 const useWebRTC = () => {
   let id: string | null = null
   store.me.subscribe(v => id = v)
+  let isConnected = false
+  store.isConnected.subscribe(v => isConnected = v)
 
   const setupWS = () => {
     const wsUrl = `wss://ryoha.trap.show/portablerg-server/`;
@@ -27,33 +29,33 @@ const useWebRTC = () => {
       const message = JSON.parse(evt.data);
       switch(message.type){
         case 'offer': {
-          console.log('Received offer ...');
-          console.log(message.sdp)
-          setOffer(message);
-          break;
-        }
-        case 'answer': {
-          console.log('Received answer ...');
-          console.log(message.sdp)
-          setAnswer(message);
+          if (!isConnected) {
+            setOffer(message);
+          } else {
+            deleteConnection()
+            setTimeout(() => {
+              console.warn('reconnecting host')
+              connectHost()
+            }, 5000);
+          }
           break;
         }
         case 'candidate': {
-          console.log('Received ICE candidate ...');
           const candidate = new RTCIceCandidate(message.ice);
-          console.log(candidate);
           addIceCandidate(candidate);
           break;
         }
         case 'close': {
           console.log('peer is closed ...');
           hangUp();
+          setTimeout(() => {
+            console.warn('reconnecting host')
+            connectHost()
+          }, 5000);
           break;
         }
         case 'windowRect': {
-          console.log('start tablet mode')
           const rect: WindowRect = message.rect
-          console.log(rect)
           store.windowRect.set(rect)
           store.isTabletMode.set(true)
           const { init } = useTablet(ws, get(store.remoteVideoElement))
@@ -87,10 +89,7 @@ const useWebRTC = () => {
 
   // ICE candidate生成時に送信する
   function sendIceCandidate(candidate: RTCIceCandidate) {
-    console.log('---sending ICE candidate ---');
     const m = { type: 'candidate', ice: candidate }
-    const message = JSON.stringify(m);
-    console.log('sending candidate=' + message);
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
@@ -114,7 +113,6 @@ const useWebRTC = () => {
         console.log('loaded meta data')
         element.play();
       }
-      console.log(element)
     } catch(error) {
       console.error('error auto play:' + error);
     }
@@ -131,8 +129,6 @@ const useWebRTC = () => {
       store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
-      console.log(remoteVideoElement)
-      console.log(evt.streams[0])
       if (remoteVideoElement) {
         playVideo(remoteVideoElement, evt.streams[0])
       }
@@ -142,7 +138,6 @@ const useWebRTC = () => {
     // ICE Candidateを収集したときのイベント
     peer.onicecandidate = evt => {
       if (evt.candidate) {
-        console.log(evt.candidate);
         sendIceCandidate(evt.candidate);            
       } else {
         console.log('empty ice event');
@@ -156,11 +151,9 @@ const useWebRTC = () => {
         if(isOffer){
           const negotiationneededCounter = get(store.negotiationneededCounter)
           if(negotiationneededCounter === 0){
-            console.warn('createOffer')
+            console.log('createOffer')
             const offer = await peer.createOffer();
-            console.log('createOffer() succsess in promise');
             await peer.setLocalDescription(offer);
-            console.log('setLocalDescription() succsess in promise');
             const id = sendSdp(peer.localDescription);
             store.negotiationneededCounter.update(v => v + 1)
           }
@@ -202,16 +195,6 @@ const useWebRTC = () => {
       console.log("データチャネルのクローズ");
     };
     store.mouseMoveChannel.set(mouseMoveChannel)
-    
-    const localStream: MediaStream = get(store.localStream)
-    console.log(localStream)
-    // ローカルのMediaStreamを利用できるようにする
-    if (localStream) {
-      console.log('Adding local stream...');
-      localStream.getTracks().forEach(track => peer.addTrack(track, (localStream as MediaStream)));
-    } else {
-      console.warn('no local stream, but continue.');
-    }
 
     return peer;
   }
@@ -222,11 +205,7 @@ const useWebRTC = () => {
       console.error('sessionDescription is NULL')
       return
     }
-    console.log('---sending sdp ---');
-    // const rId = Math.floor(Math.random() * 100)
     const m = { type: sessionDescription.type, sdp: sessionDescription.sdp }
-    const message = JSON.stringify(m);
-    console.log('sending SDP=' + message);
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
@@ -237,21 +216,8 @@ const useWebRTC = () => {
     return
   }
 
-  // Connectボタンが押されたらWebRTCのOffer処理を開始
-  function connect() {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
-    if (!peerConnection) {
-      console.log('make Offer');
-      store.peerConnection.set(prepareNewConnection(true))
-    }
-    else {
-      console.warn('peer already exist.');
-    }
-  }
-
   // Answer SDPを生成する
   async function makeAnswer() {
-    console.log('sending Answer. Creating remote session description...' );
     const peerConnection: RTCPeerConnection = get(store.peerConnection)
     if (!peerConnection) {
       console.error('peerConnection NOT exist!');
@@ -259,9 +225,7 @@ const useWebRTC = () => {
     }
     try{
       let answer = await peerConnection.createAnswer();
-      console.log('createAnswer() succsess in promise');
       await peerConnection.setLocalDescription(answer);
-      console.log('setLocalDescription() succsess in promise');
       sendSdp(peerConnection.localDescription);
     } catch(err){
       console.error(err);
@@ -278,26 +242,10 @@ const useWebRTC = () => {
     store.peerConnection.set(newPeerConnection)
     try{
       await newPeerConnection.setRemoteDescription(sessionDescription);
-      console.log('setRemoteDescription(offer) succsess in promise');
       await makeAnswer();
       // 怪しい
     } catch(err){
       console.error('setRemoteDescription(offer) ERROR: ', err);
-    }
-  }
-  
-  // Answer側のSDPをセットする場合
-  async function setAnswer(sessionDescription: RTCSessionDescription) {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
-    if (!peerConnection) {
-      console.error('peerConnection NOT exist!');
-      return;
-    }
-    try {
-      await peerConnection.setRemoteDescription(sessionDescription);
-      console.log('setRemoteDescription(answer) succsess in promise');
-    } catch(err){
-      console.error('setRemoteDescription(answer) ERROR: ', err);
     }
   }
 
@@ -309,17 +257,31 @@ const useWebRTC = () => {
         peerConnection.close();
         store.peerConnection.set(null)
         store.negotiationneededCounter.set(0)
-        console.log('sending close message');
+        store.remoteVideoStream.set(null)
+        store.isConnected.set(false)
+        const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
+        if (remoteVideoElement) {
+          remoteVideoElement.srcObject = null
+        }
         if (video) {
           video.srcObject = null
         }
-        const ws: WebSocket = get(store.ws)
-        if (!ws) {
-          console.error('ws is NULL !!!')
-          return
-        }
-        sendWSMessageWithID(id, { type: 'close' }, ws)
+        return;
+      }
+    }
+    console.log('peerConnection is closed.');
+  }
+
+  const deleteConnection = () => {
+    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    if (peerConnection) {
+      if(peerConnection.iceConnectionState !== 'closed'){
+        console.log('deleteConnection')
+        peerConnection.close();
+        store.peerConnection.set(null)
+        store.negotiationneededCounter.set(0)
         store.remoteVideoStream.set(null)
+        store.isConnected.set(false)
         return;
       }
     }
@@ -343,7 +305,6 @@ const useWebRTC = () => {
   return {
     setupWS,
     hangUp,
-    connect,
     sendMouseMove,
     connectHost,
     playVideo
