@@ -13,26 +13,34 @@
   let isTabletMode = false
   store.isTabletMode.subscribe(v => isTabletMode = v)
   let index = 0
+  let isIOS = false
 
   const { playVideo } = useWebRTC()
   onMount(async () => {
-    const isIOS = /iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent)
+    isIOS = /iPhone|iPod|iPad|Macintosh/i.test(navigator.userAgent)
 
-    if (isIOS) {
-      alert('iOS端末ではSafariでしか動かず、使用しないカメラのアクセスを要求します')
-      confirm("ok?")
+    if (!isIOS) {
+      // alert('iOS端末ではSafariでしか動かず、使用しないカメラのアクセスを要求します')
+      // confirm("ok?")
       // await navigator.mediaDevices.getUserMedia({ video: true })
-    }
-    store.remoteVideoElement.set(remoteVideo)
-    const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
-    if (remoteVideoStream) {
-      playVideo(remoteVideo, remoteVideoStream)
+      store.remoteVideoElement.set(remoteVideo)
+      const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
+      if (remoteVideoStream) {
+        playVideo(remoteVideo, remoteVideoStream)
+      }
     }
     ws = get(store.ws)
   })
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {
     const next = getNextIndex(index, e.detail.num)
     index = next
+  }
+  const play = () => {
+    store.remoteVideoElement.set(remoteVideo)
+    const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
+    if (remoteVideoStream) {
+      playVideo(remoteVideo, remoteVideoStream)
+    }
   }
 </script>
 
@@ -55,6 +63,9 @@
         <TabletControl {ws} {controlStyle} on:trans="{trans}" />
       {/if}
     {/each}
+  {/if}
+  {#if isIOS}
+    <button on:click="{play}">play</button>
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
