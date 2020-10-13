@@ -3,6 +3,7 @@
   import { store } from '../../store'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import { toggleTabletMode } from './useControl'
+  import useWebRTC from '../../lib/webRTC'
 
   let isOpenToggleSetting = false
   let isTabletMode = false
@@ -18,6 +19,7 @@
     isOpenToggleSetting = false
     stop(e)
   }
+  const { connectHost } = useWebRTC()
 </script>
 
 <style>
@@ -55,5 +57,6 @@
     <div on:click="{() => push('/setting/layout')}" on:touchstart="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
     <div on:click="{() => push('/setting/template')}" on:touchstart="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
     <div on:click="{() => push('/setting/sort')}" on:touchstart="{() => push('/setting/sort')}" class="settingItem">コントロールのテンプレートを並び替える</div>
+    <div on:click="{connectHost}" on:touchstart="{connectHost}" class="settingItem">再接続する</div>
   </div>
 {/if}
