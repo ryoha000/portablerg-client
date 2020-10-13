@@ -51,11 +51,15 @@ const capture = async () => {
 
 const getDate = () => {
   const now = new Date()
-  return `${now.getFullYear()}-${('0' + (now.getMonth() + 1)).slice(-2)}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}`
+  return `${now.getFullYear()}-${fullTime(now.getMonth() + 1)}-${fullTime(now.getDate())}-${fullTime(now.getHours())}-${fullTime(now.getMinutes())}`
+}
+
+const fullTime = (t: number) => {
+  return `${('0' + t).slice(-2)}`
 }
 
 export const captureAndSave = async () => {
-  const canvas = new HTMLCanvasElement()
+  const canvas = document.createElement('canvas')
   document.body.appendChild(canvas)
   const img: ImageBitmap | null = await capture()
   canvas.width = img.width
