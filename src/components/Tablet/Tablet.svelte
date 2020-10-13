@@ -19,8 +19,7 @@
   store.isIOS.subscribe(v => isIOS = v)
 
   const { playVideo } = useWebRTC()
-  onMount(() => {
-    console.log('mount')
+  onMount(async () => {
     if (!isIOS) {
       store.remoteVideoElement.set(remoteVideo)
       const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
@@ -67,9 +66,9 @@
       {/if}
     {/each}
   {/if}
-  <button on:click="{play}" on:touchstart="{play}">play</button>
-  <!-- {#if isIOS}
-  {/if} -->
+  {#if isIOS}
+    <button on:click="{play}">play</button>
+  {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
   <TabletSetting />
