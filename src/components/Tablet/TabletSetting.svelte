@@ -4,6 +4,7 @@
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import { toggleTabletMode } from './useControl'
   import useWebRTC from '../../lib/webRTC'
+  import { captureAndSave } from '../../lib/utils'
 
   let isOpenToggleSetting = false
   let isTabletMode = false
@@ -57,6 +58,7 @@
     <div on:click="{() => push('/setting/layout')}" on:touchstart="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
     <div on:click="{() => push('/setting/template')}" on:touchstart="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
     <div on:click="{() => push('/setting/sort')}" on:touchstart="{() => push('/setting/sort')}" class="settingItem">コントロールのテンプレートを並び替える</div>
+    <div on:click="{captureAndSave}" on:touchstart="{captureAndSave}" class="settingItem">スクリーンショットを保存する</div>
     <div on:click="{connectHost}" on:touchstart="{connectHost}" class="settingItem">再接続する</div>
   </div>
 {/if}
