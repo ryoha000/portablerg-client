@@ -20,7 +20,8 @@
 
     if (isIOS) {
       alert('iOS端末ではSafariでしか動かず、使用しないカメラのアクセスを要求します')
-      await navigator.mediaDevices.getUserMedia({ video: true })
+      confirm("ok?")
+      // await navigator.mediaDevices.getUserMedia({ video: true })
     }
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
