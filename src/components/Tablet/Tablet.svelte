@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { playVideo, confirm} from '../../lib/utils'
+  import { playVideo } from '../../lib/utils'
   import { controlStyles, windowStyle } from './useSetting'
   import TabletControl from './TabletControl.svelte'
   import { store } from '../../store';
@@ -20,12 +20,8 @@
   onMount(() => {
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
-    if (remoteVideoStream) {
-      if (!isIOS) {
-        playVideo(remoteVideo, remoteVideoStream)
-      } else {
-        confirm(remoteVideo, remoteVideoStream)
-      }
+    if (remoteVideoStream && !isIOS) {
+      playVideo(remoteVideo, remoteVideoStream)
     }
   })
   const trans = async (e: CustomEvent<{ num: 1 | -1}>) => {

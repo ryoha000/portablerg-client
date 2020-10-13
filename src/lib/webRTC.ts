@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
-import { confirm, playVideo, sendWSMessageWithID } from './utils';
+import { playVideo, sendWSMessageWithID } from './utils';
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
@@ -119,12 +119,8 @@ const useWebRTC = () => {
       store.remoteVideoStream.set(evt.streams[0])
       const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
       const isIOS: boolean = get(store.isIOS)
-      if (remoteVideoElement) {
-        if (isIOS) {
-          confirm(remoteVideoElement, evt.streams[0])
-        } else {
-          playVideo(remoteVideoElement, evt.streams[0])
-        }
+      if (remoteVideoElement && !isIOS) {
+        playVideo(remoteVideoElement, evt.streams[0])
       }
     };
 
