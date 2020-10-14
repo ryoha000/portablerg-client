@@ -18,6 +18,9 @@
   store.isIOS.subscribe(v => isIOS = v)
 
   onMount(() => {
+    if (!get(store.me)) {
+      window.location.href = '/'
+    }
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream && !isIOS) {
@@ -63,6 +66,9 @@
   {/if}
   {#if isIOS}
     <button on:click="{play}" on:touchstart="{play}">play</button>
+  {/if}
+  {#if !dc}
+    接続中
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
