@@ -1,7 +1,7 @@
 {
   "name": "portablerg",
   "short_name": "portablerg",
-  "start_url": ".",
+  "start_url": "/",
   "display": "fullscreen",
   "background_color": "#fff",
   "description": "simple remote desktop",
