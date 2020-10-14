@@ -35,11 +35,13 @@
     const next = getNextIndex(index, e.detail.num)
     index = next
   }
+  let isPlay = false
   const play = () => {
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream) {
       playVideo(remoteVideo, remoteVideoStream)
+      isPlay = true
     }
   }
 </script>
@@ -87,7 +89,7 @@
   <TabletSetting />
 </div>
 
-{#if isIOS}
+{#if isIOS && !isPlay}
   <div class="play absCenter">
     <LoginButton label="画面を表示する" iconName="cast-connected" on:click="{play}" />
   </div>
