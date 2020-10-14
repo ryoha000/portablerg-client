@@ -6,6 +6,7 @@ import type { TabletSetting } from "../useSetting";
 import { getSize, WindowRect } from "../../../lib/coordinary";
 
 const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
+  const container: HTMLDivElement = get(store.container)
   let ratio = 1
   let winRect: WindowRect = get(store.windowRect)
   store.windowRect.subscribe(v => winRect = v)
@@ -14,7 +15,7 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   let tapPoint = { x: 0, y: 0 }
 
   const init = () => {
-    const region: Region = new ZingTouch.Region(document.body);
+    const region: Region = new ZingTouch.Region(container);
     store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
     const s = getSize(winRect, window.innerWidth, window.innerHeight)

@@ -1,8 +1,8 @@
 import ZingTouch from "../../../../lib/ZingTouch/ZingTouch";
 import { sendDataMessage } from '../../../../lib/utils'
 
-const useKey = (dc: RTCDataChannel) => {
-  const region: Region = new ZingTouch.Region(document.body);
+const useKey = (dc: RTCDataChannel, rootContainer: HTMLDivElement) => {
+  const region: Region = new ZingTouch.Region(rootContainer);
 
   const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
     const tapStart = () => {

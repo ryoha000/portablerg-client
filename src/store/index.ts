@@ -15,11 +15,11 @@ export const store = {
   windowRect: writable<WindowRect | null>(null),
   videoRegion: writable<Region>(null),
   isIOS: writable(false),
+  container: writable(null),
 
   setting: writable<TabletSetting | null>(null),
 
   me: writable<string | null>(null),
 
   chunks: writable<Blob[]>([]),
-  recorder: writable<MediaRecorder | null>(null)
 }

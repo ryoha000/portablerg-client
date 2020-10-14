@@ -9,6 +9,7 @@
   export let style: string
   export let dc: RTCDataChannel
   export let type: ControlType
+  export let rootContainer: HTMLDivElement
   let container: HTMLElement
 
   let id: null | string = null
@@ -17,17 +18,17 @@
   onMount(() => {
     switch (type) {
       case ControlType.Panel: {
-        const { init } = useTouch(dc)
+        const { init } = useTouch(dc, rootContainer)
         init(container)
         break
       }
       case ControlType.Scroll: {
-        const { init } = useScroll(dc)
+        const { init } = useScroll(dc, rootContainer)
         init(container)
         break
       }
       default: {
-        const { init } = useKey(dc)
+        const { init } = useKey(dc, rootContainer)
         switch (type) {
           case ControlType.Enter: {
             init(container, 'enter')

@@ -16,11 +16,13 @@
   let index = 0
   let isIOS = false
   store.isIOS.subscribe(v => isIOS = v)
+  let container: HTMLDivElement
 
   onMount(() => {
     if (!get(store.me)) {
       window.location.href = '/'
     }
+    store.container.set(container)
     store.remoteVideoElement.set(remoteVideo)
     const remoteVideoStream: MediaStream | null = get(store.remoteVideoStream)
     if (remoteVideoStream && !isIOS) {
@@ -56,11 +58,11 @@
   }
 </style>
 
-<div class="container">
+<div class="container" bind:this="{container}">
   {#if dc && !isTabletMode}
     {#each $controlStyles as controlStyle, i}
       {#if i === index}
-        <TabletControl {dc} {controlStyle} on:trans="{trans}" />
+        <TabletControl {dc} {controlStyle} on:trans="{trans}" {container} />
       {/if}
     {/each}
   {/if}

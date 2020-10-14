@@ -9,14 +9,14 @@ const ALLOW_DRAG_START_RADIUS = 20
 const BUFFER_LENGTH = 3
 const MAGNIFICATION = 5
 
-const useTouch = (dc: RTCDataChannel) => {
+const useTouch = (dc: RTCDataChannel, rootContainer: HTMLDivElement) => {
   let isDragging = false
   let isMoving = false
   let isScroll = false
   let tapPos = { x: 0, y: 0 }
   let timer: number | null = null
   let dPosBuf: { x: number, y: number }[] = []
-  const region: Region = new ZingTouch.Region(document.body);
+  const region: Region = new ZingTouch.Region(rootContainer);
 
   const init = (ele: HTMLElement) => {
     setupDrag(region)

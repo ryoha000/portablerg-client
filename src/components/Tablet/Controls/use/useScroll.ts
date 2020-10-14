@@ -1,8 +1,8 @@
 import ZingTouch from '../../../../lib/ZingTouch/ZingTouch'
 import { sendDataMessage } from '../../../../lib/utils'
 
-const useScroll = (dc: RTCDataChannel) => {
-  const region: Region = new ZingTouch.Region(document.body);
+const useScroll = (dc: RTCDataChannel, rootContainer: HTMLDivElement) => {
+  const region: Region = new ZingTouch.Region(rootContainer);
 
   const init = (ele: HTMLElement) => {
     region.bind(ele, 'pan', (e: PanEvent) => {

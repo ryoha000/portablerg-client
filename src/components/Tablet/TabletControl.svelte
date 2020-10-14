@@ -12,6 +12,7 @@
     }[]
   }
   export let dc: RTCDataChannel
+  export let container: HTMLDivElement
 
   const dispatch = createEventDispatcher();
   const trans = (num: 1 | -1) => {
@@ -49,7 +50,7 @@
   <div class="container" style="{$controlsStyle}">
     <div class="controls">
       {#each controlStyle.controls as control}
-        <Panel {dc} style="{control.style}" type="{control.type}" />
+        <Panel {dc} style="{control.style}" type="{control.type}" rootContainer={container} />
       {/each}
     </div>
     <div class="btnContainer">
