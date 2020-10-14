@@ -45,6 +45,10 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
   }
 }
 
+const CHUNK_BEHINDE = 1000
+const MAX_RECORD_MINUTES = 5
+const MAX_CHUNK_LENGTH = MAX_RECORD_MINUTES * 60 * 1000 / CHUNK_BEHINDE
+
 const startRecord = (stream: MediaStream) => {
   store.chunks.set([])
   const prevRecorder: MediaRecorder = get(store.recorder)
@@ -55,23 +59,23 @@ const startRecord = (stream: MediaStream) => {
     mimeType: 'video/webm;codecs=h264,opus'
   }
   const recorder = new MediaRecorder(stream, option)
-  console.log(recorder)
-  console.log(recorder.mimeType)
-  setTimeout(() => {
-    console.log(recorder.mimeType)
-  }, 100);
   recorder.ondataavailable = (e) => {
     store.chunks.update(v => {
       v.push(e.data)
+      if (v.length > MAX_CHUNK_LENGTH) {
+        v.shift()
+      }
       return v
     })
   }
   recorder.onerror = (e) => { console.error(e) }
-  recorder.start(1000)
+  recorder.start(CHUNK_BEHINDE)
   store.recorder.set(recorder)
 }
 
 export const saveRecord = async () => {
+  const recorder = getRecorder()
+  recorder.stop()
   const dataArr = new Uint8Array(await (new Blob(get(store.chunks)).arrayBuffer()))
   await transcode(dataArr)
 }
@@ -136,6 +140,15 @@ const getFFmpeg = () => {
     throw 'ffmpeg is NULL !!!'
   }
   return ffmpeg
+}
+
+const getRecorder = () => {
+  const recorder: MediaRecorder | null = get(store.recorder)
+  if (!recorder) {
+    console.error('recorder is NULL !!!')
+    throw 'recorder is NULL !!!'
+  }
+  return recorder
 }
 
 const capture = async () => {
