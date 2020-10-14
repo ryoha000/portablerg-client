@@ -1,6 +1,16 @@
 import { store } from "../store"
 import { get } from 'svelte/store'
 import { createFFmpeg } from '@ffmpeg/ffmpeg'
+// @ts-ignore
+import { push } from 'svelte-spa-router'
+
+export const initializeFFmpeg = async () => {
+  const ffmpeg = createFFmpeg({
+    log: true
+  });
+  await ffmpeg.load();
+  store.ffmpeg.set(ffmpeg)
+}
 
 export const sendDataMessage = (
   obj: Object,
@@ -25,26 +35,23 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
   }
   try {
     element.srcObject = stream
-    startRecord(stream)
     element.onloadedmetadata = () => {
       console.log('loaded meta data')
       element.play();
     }
+    startRecord(stream)
   } catch(error) {
     console.error('error auto play:' + error);
   }
 }
 
 const startRecord = (stream: MediaStream) => {
-  console.log('start record')
   store.chunks.set([])
   const prevRecorder: MediaRecorder = get(store.recorder)
   if (prevRecorder && prevRecorder.state === 'recording') {
     prevRecorder.stop()
   }
   const option = {
-    // audioBitsPerSecond : 128000,
-    // videoBitsPerSecond : 2500000,
     mimeType: 'video/webm;codecs=h264,opus'
   }
   const recorder = new MediaRecorder(stream, option)
@@ -54,7 +61,6 @@ const startRecord = (stream: MediaStream) => {
     console.log(recorder.mimeType)
   }, 100);
   recorder.ondataavailable = (e) => {
-    // console.log(e)
     store.chunks.update(v => {
       v.push(e.data)
       return v
@@ -67,36 +73,69 @@ const startRecord = (stream: MediaStream) => {
 
 export const saveRecord = async () => {
   const dataArr = new Uint8Array(await (new Blob(get(store.chunks)).arrayBuffer()))
-
-  const videoBlob = new Blob(get(store.chunks), { type: 'video/webm;codecs=h264,opus' })
-  const url = URL.createObjectURL(videoBlob)
-  download(videoBlob, 'webm')
   await transcode(dataArr)
-  // download(videoBlob, 'mp4')
 }
 
-const transcode = async (dataArr: any) => {
-  // console.log(dataArr)
-  const ffmpeg = createFFmpeg({
-    log: true
-  });
-  const start = performance.now()
+const transcode = async (dataArr: Uint8Array) => {
+  const ffmpeg = getFFmpeg()
   const name = 'record.webm';
-  console.log('Loading ffmpeg-core.js');
-  await ffmpeg.load();
-  console.log('Start transcoding');
   await ffmpeg.write(name, dataArr);
   await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
-  console.log('Complete transcoding')
-  console.log('time(): ', (performance.now() - start) / 1000)
   const data = ffmpeg.read('output.mp4');
+  store.editableMovie.set(data)
+  push('/movie')
+  return
+}
 
+export const trimOutputMovie = async (from: number, to: number) => {
+  const ffmpeg = getFFmpeg()
+  const name = `${getDate()}.mp4`
+  await ffmpeg.trim(
+    'output.mp4',
+    name,
+    getHHMMSS(from),
+    getHHMMSS(to),
+    '-vcodec copy -acodec copy -strict -2'
+  )
+  return name
+}
+
+export const saveMovie = (name: string) => {
+  const ffmpeg = getFFmpeg()
+  const data = ffmpeg.read(name);
   const aTag = document.createElement("a");
   document.body.appendChild(aTag)
-  aTag.download = `output.mp4`
+  aTag.download = name
   aTag.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
   aTag.click()
   aTag.remove()
+  push('/client')
+}
+
+const getHHMMSS = (num: number) => {
+  console.log(num / 1000, `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`)
+  return `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`
+}
+
+const getHours = (num: number) => {
+  return Math.floor(num / 60 / 60 % 60)
+}
+
+const getMinutes = (num: number) => {
+  return Math.floor(num / 60 % 60)
+}
+
+const getSeconds = (num: number) => {
+  return num % 60
+}
+
+const getFFmpeg = () => {
+  const ffmpeg: FFmpeg | null = get(store.ffmpeg)
+  if (!ffmpeg) {
+    console.error('ffmpeg is NULL !!!')
+    throw 'ffmpeg is NULL !!!'
+  }
+  return ffmpeg
 }
 
 const capture = async () => {
