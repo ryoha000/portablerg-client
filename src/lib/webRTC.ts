@@ -275,6 +275,7 @@ const useWebRTC = () => {
     }
     sendWSMessageWithID(id, { type: 'connect' }, ws)
   }
+
   return {
     setupWS,
     hangUp,

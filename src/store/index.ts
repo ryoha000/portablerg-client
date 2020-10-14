@@ -18,5 +18,8 @@ export const store = {
 
   setting: writable<TabletSetting | null>(null),
 
-  me: writable<string | null>(null)
+  me: writable<string | null>(null),
+
+  chunks: writable<Blob[]>([]),
+  recorder: writable<MediaRecorder | null>(null)
 }
