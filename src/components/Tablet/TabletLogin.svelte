@@ -56,6 +56,8 @@
     flex-direction: column;
     align-items: center;
     background-color: rgba(255, 255, 255);
+    padding: 1rem;
+    box-sizing: border-box;
   }
   .title {
     margin-bottom: 5rem;
