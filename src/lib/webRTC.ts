@@ -14,10 +14,14 @@ const useWebRTC = () => {
   store.ws.subscribe(v => {
     if (!v) {
       setTimeout(() => {
-        if (get(store.ws)) {
-          setupWS()
+        if (!get(store.ws) && id) {
+          console.log('reconnecting to websocket server')
+          const newWS = setupWS()
+          newWS.onopen = () => {
+            sendWSMessageWithID(id, { type: 'reconnectAnswer' }, newWS)
+          }
         }
-      }, 500);
+      }, 1000);
     }
   })
 
@@ -29,7 +33,6 @@ const useWebRTC = () => {
       console.log('ws open()');
     };
     ws.onclose = () => {
-      console.log('ws closed reconnecting...');
       store.ws.set(null)
     }
     ws.onerror = (err) => {
@@ -105,6 +108,7 @@ const useWebRTC = () => {
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
+      setupWS()
       return
     }
     sendWSMessageWithID(id, m, ws)
@@ -169,6 +173,7 @@ const useWebRTC = () => {
           const ws: WebSocket | null = get(store.ws)
           if (!ws) {
             console.error('connected, but ws is NULL!!!')
+            setupWS()
             return
           }
           sendWSMessageWithID(id, { type: 'connected' }, ws)
@@ -183,8 +188,8 @@ const useWebRTC = () => {
         case 'disconnected':
           if (peerConnection) {
             hangUp();
-            push('/')
           }
+          push('/')
           break;
       }
     };
@@ -202,6 +207,7 @@ const useWebRTC = () => {
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
+      setupWS()
       return
     }
     sendWSMessageWithID(id, m, ws)
@@ -290,6 +296,7 @@ const useWebRTC = () => {
     const ws: WebSocket = get(store.ws)
     if (!ws) {
       console.error('ws is NULL !!!')
+      setupWS()
       return
     }
     sendWSMessageWithID(id, { type: 'connect' }, ws)
