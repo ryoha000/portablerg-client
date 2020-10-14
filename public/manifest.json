@@ -5,9 +5,16 @@
   "display": "fullscreen",
   "background_color": "#fff",
   "description": "simple remote desktop",
-  "icons": [{
-    "src": "favicon.png",
-    "sizes": "256x256",
-    "type": "image/png"
-  }]
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
 }
