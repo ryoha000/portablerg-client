@@ -59,7 +59,7 @@
 </style>
 
 <div class="container" bind:this="{container}">
-  {#if dc && !isTabletMode}
+  {#if dc && container && !isTabletMode}
     {#each $controlStyles as controlStyle, i}
       {#if i === index}
         <TabletControl {dc} {controlStyle} on:trans="{trans}" {container} />
