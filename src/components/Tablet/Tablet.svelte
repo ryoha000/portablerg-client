@@ -3,6 +3,7 @@
   import { playVideo } from '../../lib/utils'
   import { controlStyles, windowStyle } from './useSetting'
   import TabletControl from './TabletControl.svelte'
+  import { RingLoader } from 'svelte-loading-spinners'
   import { store } from '../../store';
   import TabletSetting from './TabletSetting.svelte'
   import { getNextIndex } from './useControl'
@@ -52,6 +53,15 @@
   .window {
     z-index: -1;
   }
+  .loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   button {
     position: absolute;
     z-index: 10;
@@ -70,7 +80,10 @@
     <button on:click="{play}" on:touchstart="{play}">play</button>
   {/if}
   {#if !dc}
-    接続中
+    <div class="loading">
+      <div>NowLoading...</div>
+      <RingLoader />
+    </div>
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
