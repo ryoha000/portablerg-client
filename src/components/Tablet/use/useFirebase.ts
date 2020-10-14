@@ -1,6 +1,7 @@
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
 import * as firebase from "firebase/app";
+import useWebRTC from '../../../lib/webRTC'
 
 // Add the Firebase services that you want to use
 import "firebase/auth";
@@ -19,6 +20,11 @@ const firebaseConfig = {
 };
 
 const useFirebase = () => {
+  const { connectHost } = useWebRTC()
+  const setAndConnect = (me: string) => {
+    store.me.set(me)
+    connectHost()
+  }
   const init = () => {
     firebase.initializeApp(firebaseConfig)
   }
@@ -27,7 +33,7 @@ const useFirebase = () => {
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
       const token = await result.user.getIdToken(false)
-      store.me.set(token)
+      setAndConnect(token)
     }
   }
   const google = async () => {
@@ -35,11 +41,11 @@ const useFirebase = () => {
     const result = await firebase.auth().signInWithPopup(provider);
     if (result.user) {
       const token = await result.user.getIdToken(false)
-      store.me.set(token)
+      setAndConnect(token)
     }
   }
   const original = async (id: string) => {
-    store.me.set(`original${id}`)
+    setAndConnect(`original${id}`)
   }
   return { init, github, google, original }
 }

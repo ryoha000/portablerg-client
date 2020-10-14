@@ -24,7 +24,7 @@
         }, 50)
         return
       }
-      connectHost()
+      // connectHost()
     }
   })
   store.isConnected.subscribe(v => {

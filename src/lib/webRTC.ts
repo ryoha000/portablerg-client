@@ -11,6 +11,15 @@ const useWebRTC = () => {
   store.me.subscribe(v => id = v)
   let isConnected = false
   store.isConnected.subscribe(v => isConnected = v)
+  store.ws.subscribe(v => {
+    if (!v) {
+      setTimeout(() => {
+        if (get(store.ws)) {
+          setupWS()
+        }
+      }, 500);
+    }
+  })
 
   const setupWS = () => {
     const wsUrl = `wss://ryoha.trap.show/portablerg-server/`;
@@ -21,58 +30,58 @@ const useWebRTC = () => {
     };
     ws.onclose = () => {
       console.log('ws closed reconnecting...');
-      setupWS()
+      store.ws.set(null)
     }
     ws.onerror = (err) => {
       console.error('ws onerror() ERR:', err);
+      store.ws.set(null)
     };
     ws.onmessage = (evt) => {
-      console.log('ws onmessage() data:', evt.data);
-      const message = JSON.parse(evt.data);
-      switch(message.type){
-        case 'offer': {
-          if (!isConnected) {
-            setOffer(message);
-          } else {
-            deleteConnection()
-            setTimeout(() => {
-              console.warn('reconnecting host')
-              connectHost()
-            }, 5000);
+      try {
+        const message = JSON.parse(evt.data);
+        switch(message.type){
+          case 'offer': {
+            if (!isConnected) {
+              setOffer(message);
+            } else {
+              deleteConnection()
+              setTimeout(() => {
+                console.warn('reconnecting host')
+                connectHost()
+              }, 5000);
+            }
+            break;
           }
-          break;
+          case 'candidate': {
+            const candidate = new RTCIceCandidate(message.ice);
+            addIceCandidate(candidate);
+            break;
+          }
+          case 'close': {
+            console.log('peer is closed ...');
+            hangUp();
+            break;
+          }
+          case 'windowRect': {
+            const rect: WindowRect = message.rect
+            store.windowRect.set(rect)
+            store.isTabletMode.set(true)
+            const dc: RTCDataChannel = get(store.dataChannel)
+            const { init } = useTablet(dc, get(store.remoteVideoElement))
+            init()
+            break
+          }
+          case 'error': {
+            console.error(message.data)
+            break
+          }
+          default: { 
+            console.log("Invalid message"); 
+            break;              
+          }         
         }
-        case 'candidate': {
-          const candidate = new RTCIceCandidate(message.ice);
-          addIceCandidate(candidate);
-          break;
-        }
-        case 'close': {
-          console.log('peer is closed ...');
-          hangUp();
-          setTimeout(() => {
-            console.warn('reconnecting host')
-            connectHost()
-          }, 5000);
-          break;
-        }
-        case 'windowRect': {
-          const rect: WindowRect = message.rect
-          store.windowRect.set(rect)
-          store.isTabletMode.set(true)
-          const dc: RTCDataChannel = get(store.dataChannel)
-          const { init } = useTablet(dc, get(store.remoteVideoElement))
-          init()
-          break
-        }
-        case 'error': {
-          console.error(message.data)
-          break
-        }
-        default: { 
-          console.log("Invalid message"); 
-          break;              
-        }         
+      } catch (e) {
+        console.error(e)
       }
     };
     return ws
@@ -156,6 +165,15 @@ const useWebRTC = () => {
       console.log('ICE connection Status has changed to ' + peer.iceConnectionState);
       const peerConnection: RTCPeerConnection = get(store.peerConnection)
       switch (peer.iceConnectionState) {
+        case 'connected': {
+          const ws: WebSocket | null = get(store.ws)
+          if (!ws) {
+            console.error('connected, but ws is NULL!!!')
+            return
+          }
+          sendWSMessageWithID(id, { type: 'connected' }, ws)
+          break
+        }
         case 'closed':
         case 'failed':
           if (peerConnection) {
@@ -229,6 +247,7 @@ const useWebRTC = () => {
     const peerConnection: RTCPeerConnection = get(store.peerConnection)
     if (peerConnection) {
       if(peerConnection.iceConnectionState !== 'closed'){
+        console.log('hangup')
         peerConnection.close();
         store.peerConnection.set(null)
         store.negotiationneededCounter.set(0)
