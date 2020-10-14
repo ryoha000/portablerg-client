@@ -4,6 +4,7 @@
   import { controlStyles, windowStyle } from './useSetting'
   import TabletControl from './TabletControl.svelte'
   import { RingLoader } from 'svelte-loading-spinners'
+  import LoginButton from '../UI/LoginButton.svelte'
   import { store } from '../../store';
   import TabletSetting from './TabletSetting.svelte'
   import { getNextIndex } from './useControl'
@@ -54,16 +55,15 @@
     z-index: -1;
   }
   .loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  button {
+  .absCenter {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
     z-index: 10;
   }
 </style>
@@ -76,11 +76,8 @@
       {/if}
     {/each}
   {/if}
-  {#if isIOS}
-    <button on:click="{play}" on:touchstart="{play}">play</button>
-  {/if}
   {#if !dc}
-    <div class="loading">
+    <div class="loading absCenter">
       <div>NowLoading...</div>
       <RingLoader />
     </div>
@@ -89,3 +86,9 @@
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
   <TabletSetting />
 </div>
+
+{#if isIOS}
+  <div class="play absCenter">
+    <LoginButton label="画面を表示する" iconName="cast-connected" on:click="{play}" />
+  </div>
+{/if}
