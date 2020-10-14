@@ -12,14 +12,12 @@ const useWebRTC = () => {
   let isConnected = false
   store.isConnected.subscribe(v => isConnected = v)
   store.ws.subscribe(v => {
-    if (!v) {
+    if (v === null) {
+      console.log('ws set null')
       setTimeout(() => {
-        if (!get(store.ws) && id) {
+        if (!get(store.ws)) {
           console.log('reconnecting to websocket server')
-          const newWS = setupWS()
-          newWS.onopen = () => {
-            sendWSMessageWithID(id, { type: 'reconnectAnswer' }, newWS)
-          }
+          setupWS()
         }
       }, 1000);
     }
@@ -31,6 +29,9 @@ const useWebRTC = () => {
     store.ws.set(ws)
     ws.onopen = (evt) => {
       console.log('ws open()');
+      if (id) {
+        sendWSMessageWithID(id, { type: 'reconnectAnswer' }, ws)
+      }
     };
     ws.onclose = () => {
       store.ws.set(null)
