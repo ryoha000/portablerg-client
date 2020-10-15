@@ -66,15 +66,6 @@ const useWebRTC = () => {
             hangUp();
             break;
           }
-          case 'windowRect': {
-            const rect: WindowRect = message.rect
-            store.windowRect.set(rect)
-            store.isTabletMode.set(true)
-            const dc: RTCDataChannel = get(store.dataChannel)
-            const { init } = useTablet(dc, get(store.remoteVideoElement))
-            init()
-            break
-          }
           case 'error': {
             console.error(message.data)
             break
@@ -124,6 +115,31 @@ const useWebRTC = () => {
       const dataChannel =  e.channel
       dataChannel.onerror = (e) => { console.error(e) }
       store.dataChannel.set(dataChannel)
+      dataChannel.onmessage = (e) => {
+        const message = JSON.parse(e.data)
+        switch (message.type) {
+          case 'windowRect': {
+            const rect: WindowRect = message.rect
+            const ele: HTMLMediaElement = get(store.remoteVideoElement)
+            const size = {
+              width: ele.videoWidth,
+              height: ele.videoHeight
+            }
+            console.log(size)
+            if (ele && size.width && size.height) {
+              store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
+              store.isTabletMode.set(true)
+              const dc: RTCDataChannel = get(store.dataChannel)
+              const { init } = useTablet(dc, get(store.remoteVideoElement))
+              init()
+            }
+            break
+          }
+          default: {
+            console.warn('invalid datachannel message')
+          }
+        }
+      }
     }
 
     // リモートのMediStreamTrackを受信した時

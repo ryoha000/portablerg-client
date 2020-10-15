@@ -53,7 +53,6 @@
 {#if isOpenToggleSetting}
   <div class="layer" on:click="{closeToggleSetting}"></div>
   <div class="settingContainer" on:click="{closeToggleSetting}">
-    <!-- svelte-ignore a11y-missing-attribute -->
     <div on:click="{toggleTabletMode}" on:touchstart="{toggleTabletMode}" class="settingItem">{isTabletMode ? 'タブレットモードを解除する' : 'タブレットモードにする'}</div>
     <div on:click="{() => push('/setting/layout')}" on:touchstart="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
     <div on:click="{() => push('/setting/template')}" on:touchstart="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>

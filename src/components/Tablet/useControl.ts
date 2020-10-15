@@ -30,12 +30,11 @@ export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
 }
 
 export const toggleTabletMode = async (e: MouseEvent) => {
-  e.stopPropagation()
   const prev: boolean = get(store.isTabletMode)
   const dc: RTCDataChannel = get(store.dataChannel)
-  const remoteMediaElement: HTMLMediaElement = get(store.remoteVideoElement)
-  const { dispose } = useTablet(dc, remoteMediaElement)
   if (prev) {
+    const remoteMediaElement: HTMLMediaElement = get(store.remoteVideoElement)
+    const { dispose } = useTablet(dc, remoteMediaElement)
     const { init: initDB } = useDB()
     dispose(remoteMediaElement)
     await initDB()

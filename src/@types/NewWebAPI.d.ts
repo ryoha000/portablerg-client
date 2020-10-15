@@ -26,6 +26,10 @@ interface MediaRecorder {
   onstop: () => void
 }
 
+interface HTMLMediaElement {
+  videoWidth: number
+  videoHeight: number
+}
 interface BlobEvent {
   ibubbles: boolean
   cancelBubble: boolean
