@@ -205,6 +205,7 @@ const download = (blob: Blob, type: string) => {
   document.body.appendChild(aTag)
   aTag.download = `${getDate()}.${type}`
   aTag.href = URL.createObjectURL(blob)
+  aTag.target = '_blank'
   aTag.click()
   aTag.remove()
 }
@@ -219,7 +220,9 @@ export const captureAndSave = async () => {
       width: ele.videoWidth,
       height: ele.videoHeight
     }
-    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, size.width, size.height);
+    alert(JSON.stringify(size))
+    // @ts-ignore
+    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, ele.width, ele.height);
     canvas.toBlob(blob => {
       download(blob, 'png')
     })
