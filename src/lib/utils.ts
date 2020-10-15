@@ -63,9 +63,6 @@ const startRecord = (stream: MediaStream) => {
     recorder.ondataavailable = (e) => {
       store.chunks.update(v => {
         v.push(e.data)
-        if (v.length === 10) {
-          alert('10秒立ったよ～')
-        }
         if (v.length > MAX_CHUNK_LENGTH) {
           v.shift()
         }
@@ -84,7 +81,10 @@ export const saveRecord = async () => {
   const recorder = getRecorder()
   try {
     recorder.stop()
-    const dataArr = new Uint8Array(await (new Blob(get(store.chunks)).arrayBuffer()))
+    const chunks: Blob[] = get(store.chunks)
+    alert(`${chunks.length}秒分のデータ`)
+    const allChunks = new Blob(chunks)
+    const dataArr = new Uint8Array(await (allChunks.arrayBuffer()))
     await transcode(dataArr)
   } catch (e) {
     alert(e.toString())
@@ -212,7 +212,7 @@ const download = (blob: Blob, type: string) => {
   document.body.appendChild(aTag)
   aTag.download = `${getDate()}.${type}`
   aTag.href = URL.createObjectURL(blob)
-  // aTag.target = '_blank'
+  aTag.target = '_blank'
   aTag.click()
   aTag.remove()
 }
