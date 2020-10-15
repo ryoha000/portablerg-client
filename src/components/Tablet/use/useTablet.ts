@@ -5,6 +5,8 @@ import { store } from "../../../store";
 import type { TabletSetting } from "../useSetting";
 import { getSize, WindowRect } from "../../../lib/coordinary";
 
+const TAP_OR_DRAG_TIME = 500
+
 const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   const container: HTMLDivElement = get(store.container)
   let ratio = 1
@@ -18,7 +20,7 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
     const region: Region = new ZingTouch.Region(container);
     store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
-    const s = getSize(winRect, window.innerWidth, window.innerHeight)
+    const s = getSize(winRect, screen.width, screen.height)
     setting.windowRect.start.x = `0px`
     setting.windowRect.start.y = `0px`
     setting.windowRect.width = `${s.width}px`
@@ -64,7 +66,7 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   }
   const panMove = (e: ZingInput[], state: any, element: HTMLElement, event: PanData) => {
     if (!isDragging) {
-      if (performance.now() - startTime) {
+      if (performance.now() - startTime > TAP_OR_DRAG_TIME) {
         sendDataMessage({ type: 'moveDragStart', point: toPoint(e[0].initial.x, e[0].initial.y, ratio) }, dc)
         isDragging = true
       }
