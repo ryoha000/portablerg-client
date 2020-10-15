@@ -1,21 +1,7 @@
 import { store } from "../store"
 import { get } from 'svelte/store'
-import { createFFmpeg } from '@ffmpeg/ffmpeg'
 // @ts-ignore
 import { push } from 'svelte-spa-router'
-
-export const initializeFFmpeg = async () => {
-  try {
-    const ffmpeg = createFFmpeg({
-      log: true
-    });
-    await ffmpeg.load();
-    store.ffmpeg.set(ffmpeg)
-    alert('ffmpef loaded and set')
-  } catch (e) {
-    alert(e.toString())
-  }
-}
 
 export const sendDataMessage = (
   obj: Object,
@@ -82,44 +68,6 @@ const startRecord = (stream: MediaStream) => {
   }
 }
 
-export const saveRecord = async () => {
-  const recorder = getRecorder()
-  try {
-    recorder.stop()
-    const chunks: Blob[] = get(store.chunks)
-    alert(`${chunks.length}秒分のデータ`)
-    const allChunks = new Blob(chunks)
-    const arrBuf = await getArrayBufferFromBlob(allChunks)
-    if (typeof arrBuf === 'string') {
-      return
-    }
-    const dataArr = new Uint8Array(arrBuf)
-    await transcode(dataArr)
-  } catch (e) {
-    alert(e.toString())
-  }
-}
-
-const transcode = async (dataArr: Uint8Array) => {
-  const ffmpeg = getFFmpeg()
-  const name = 'record.webm';
-  await ffmpeg.write(name, dataArr);
-  await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
-  const data = ffmpeg.read('output.mp4');
-  store.editableMovie.set(data)
-  push('/movie')
-  return
-}
-
-const getArrayBufferFromBlob = async (blob: Blob): Promise<ArrayBuffer | string> => {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader()
-    fr.addEventListener('load', (e) => resolve(fr.result))
-    fr.addEventListener('error', (e) => reject(e))
-    fr.readAsArrayBuffer(blob)
-  })
-}
-
 export const trimOutputMovie = async (from: number, to: number) => {
   const ffmpeg = getFFmpeg()
   const name = `${getDate()}.mp4`
@@ -179,42 +127,6 @@ const getRecorder = () => {
   }
   return recorder
 }
-
-// const capture = async () => {
-//   const ele: HTMLVideoElement = get(store.remoteVideoElement)
-//   if (ele) {
-//     const canvas = document.createElement('canvas')
-//     document.body.appendChild(canvas)
-//     const size = {
-//       width: ele.videoWidth,
-//       height: ele.videoHeight
-//     }
-//     canvas.getContext('2d').drawImage(ele, 0, 0, size.width, size.height);
-//     canvas.toBlob(blob => {
-//       download(blob, 'png')
-//     })
-//     canvas.remove()
-//   }
-//   // const stream: MediaStream = get(store.remoteVideoStream)
-//   // console.log(stream)
-//   // if (stream) {
-//   //   const tracks = stream.getVideoTracks()
-//   //   if (tracks.length > 0) {
-//   //     const track = tracks[0]
-//   //     const capabilities = track.getCapabilities()
-//   //     console.log(capabilities)
-//   //     const cap = new ImageCapture(track)
-//   //     console.log(cap)
-//   //     try {
-//   //       return (await cap.grabFrame())
-//   //     } catch (e) {
-//   //       console.error(e)
-//   //       return
-//   //     }
-//   //   }
-//   // }
-//   return
-// }
 
 const getDate = () => {
   const now = new Date()

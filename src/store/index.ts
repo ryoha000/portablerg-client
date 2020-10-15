@@ -24,5 +24,5 @@ export const store = {
   chunks: writable<Blob[]>([]),
   recorder: writable<MediaRecorder | null>(null),
   ffmpeg: writable<FFmpeg | null>(null),
-  editableMovie: writable(null)
+  editableMovie: writable<Blob | null>(null)
 }

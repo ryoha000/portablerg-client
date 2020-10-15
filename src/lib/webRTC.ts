@@ -112,33 +112,43 @@ const useWebRTC = () => {
     const peer = new RTCPeerConnection(pc_config);
 
     peer.ondatachannel = (e) => {
-      const dataChannel =  e.channel
-      dataChannel.onerror = (e) => { console.error(e) }
-      store.dataChannel.set(dataChannel)
-      dataChannel.onmessage = (e) => {
-        const message = JSON.parse(e.data)
-        switch (message.type) {
-          case 'windowRect': {
-            const rect: WindowRect = message.rect
-            const ele: HTMLMediaElement = get(store.remoteVideoElement)
-            const size = {
-              width: ele.videoWidth,
-              height: ele.videoHeight
+      if (e.channel.label === 'dataChannel') {
+        const dataChannel =  e.channel
+        dataChannel.onerror = (e) => { console.error(e) }
+        store.dataChannel.set(dataChannel)
+        dataChannel.onmessage = (e) => {
+          const message = JSON.parse(e.data)
+          switch (message.type) {
+            case 'windowRect': {
+              const rect: WindowRect = message.rect
+              const ele: HTMLMediaElement = get(store.remoteVideoElement)
+              const size = {
+                width: ele.videoWidth,
+                height: ele.videoHeight
+              }
+              if (ele && size.width && size.height) {
+                store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
+                store.isTabletMode.set(true)
+                const dc: RTCDataChannel = get(store.dataChannel)
+                const { init } = useTablet(dc, get(store.remoteVideoElement))
+                init()
+              }
+              break
             }
-            console.log(size)
-            if (ele && size.width && size.height) {
-              store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
-              store.isTabletMode.set(true)
-              const dc: RTCDataChannel = get(store.dataChannel)
-              const { init } = useTablet(dc, get(store.remoteVideoElement))
-              init()
+            default: {
+              console.warn('invalid datachannel message')
             }
-            break
-          }
-          default: {
-            console.warn('invalid datachannel message')
           }
         }
+      }
+      if (e.channel.label === 'nonEditMovieChannel') {
+        const nonEditMovieChannel = e.channel
+        nonEditMovieChannel.onmessage = (e) => {
+          store.editableMovie.set(e.data)
+        }
+      }
+      if (e.channel.label === 'editMovieChannel') {
+        const editMovieChannel = e.channel
       }
     }
 

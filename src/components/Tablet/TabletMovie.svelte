@@ -10,7 +10,7 @@
   let video
   store.editableMovie.subscribe((v) => {
     if (v) {
-      srcURL = URL.createObjectURL(new Blob([v.buffer], { type: 'video/mp4' }))
+      srcURL = URL.createObjectURL(v)
     } else {
       srcURL = ''
       push('/client')
