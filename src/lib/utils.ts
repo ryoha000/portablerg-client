@@ -58,19 +58,23 @@ const startRecord = (stream: MediaStream) => {
   const option = {
     mimeType: 'video/webm;codecs=h264,opus'
   }
-  const recorder = new MediaRecorder(stream, option)
-  recorder.ondataavailable = (e) => {
-    store.chunks.update(v => {
-      v.push(e.data)
-      if (v.length > MAX_CHUNK_LENGTH) {
-        v.shift()
-      }
-      return v
-    })
+  try {
+    const recorder = new MediaRecorder(stream, option)
+    recorder.ondataavailable = (e) => {
+      store.chunks.update(v => {
+        v.push(e.data)
+        if (v.length > MAX_CHUNK_LENGTH) {
+          v.shift()
+        }
+        return v
+      })
+    }
+    recorder.onerror = (e) => { console.error(e) }
+    recorder.start(CHUNK_BEHINDE)
+    store.recorder.set(recorder)
+  } catch {
+    alert('MediaRecorderに対応していません')
   }
-  recorder.onerror = (e) => { console.error(e) }
-  recorder.start(CHUNK_BEHINDE)
-  store.recorder.set(recorder)
 }
 
 export const saveRecord = async () => {

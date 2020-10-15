@@ -20,7 +20,8 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
     const region: Region = new ZingTouch.Region(container);
     store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
-    const s = getSize(winRect, screen.width, screen.height)
+    const s = getSize(winRect, window.innerWidth, window.innerHeight)
+    // const s = getSize(winRect, screen.width, screen.height)
     setting.windowRect.start.x = `0px`
     setting.windowRect.start.y = `0px`
     setting.windowRect.width = `${s.width}px`
