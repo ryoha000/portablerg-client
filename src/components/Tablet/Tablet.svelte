@@ -86,9 +86,9 @@
   {/if}
   <!-- svelte-ignore a11y-media-has-caption -->
   <video bind:this="{remoteVideo}" autoplay style="{$windowStyle}" class="window"></video>
-  <TabletSetting />
 </div>
 
+<TabletSetting />
 {#if isIOS && !isPlay && dc}
   <div class="play absCenter">
     <LoginButton label="画面を表示する" iconName="cast-connected" on:click="{play}" />
