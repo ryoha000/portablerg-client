@@ -19,6 +19,8 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
     store.videoRegion.set(region)
     const setting: TabletSetting = get(store.setting)
     const s = getSize(winRect, window.innerWidth, window.innerHeight)
+    setting.windowRect.start.x = `0px`
+    setting.windowRect.start.y = `0px`
     setting.windowRect.width = `${s.width}px`
     setting.windowRect.height = `${s.height}px`
     ratio = s.expr

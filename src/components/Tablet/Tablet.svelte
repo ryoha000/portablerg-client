@@ -89,7 +89,7 @@
   <TabletSetting />
 </div>
 
-{#if isIOS && !isPlay}
+{#if isIOS && !isPlay && dc}
   <div class="play absCenter">
     <LoginButton label="画面を表示する" iconName="cast-connected" on:click="{play}" />
   </div>
