@@ -1,19 +1,21 @@
 import { store } from "../store"
 import { get } from 'svelte/store'
-import { createFFmpeg } from '@ffmpeg/ffmpeg'
+import { createWorker  } from '@ffmpeg/ffmpeg'
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
 export const initializeFFmpeg = async () => {
   try {
-    const ffmpeg = createFFmpeg({
-      log: true
-    });
-    await ffmpeg.load();
-    store.ffmpeg.set(ffmpeg)
-    alert('ffmpef loaded and set')
+    const worker = createWorker()
+    // const ffmpeg = createWorker({
+    //   log: true
+    // });
+    // await ffmpeg.load();
+    await worker.load();
+    store.ffmpeg.set(worker)
+    // alert('ffmpef loaded and set')
   } catch (e) {
-    alert(e.toString())
+    // alert(e.toString())
   }
 }
 
@@ -101,13 +103,15 @@ export const saveRecord = async () => {
 }
 
 const transcode = async (dataArr: Uint8Array) => {
-  const ffmpeg = getFFmpeg()
-  const name = 'record.webm';
-  await ffmpeg.write(name, dataArr);
-  await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
-  const data = ffmpeg.read('output.mp4');
-  store.editableMovie.set(data)
-  push('/movie')
+  try {
+    const ffmpeg = getFFmpeg()
+    const name = 'record.webm';
+    await ffmpeg.write(name, dataArr);
+    await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
+    const { data } = await ffmpeg.read('output.mp4');
+    store.editableMovie.set(data)
+    push('/movie')
+  } catch (e) { console.error(e) }
   return
 }
 
@@ -133,9 +137,9 @@ export const trimOutputMovie = async (from: number, to: number) => {
   return name
 }
 
-export const saveMovie = (name: string) => {
+export const saveMovie = async (name: string) => {
   const ffmpeg = getFFmpeg()
-  const data = ffmpeg.read(name);
+  const { data } = await ffmpeg.read(name);
   const aTag = document.createElement("a");
   document.body.appendChild(aTag)
   aTag.download = name
