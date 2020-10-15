@@ -203,8 +203,10 @@ const fullTime = (t: number) => {
 const download = (blob: Blob, type: string) => {
   const aTag = document.createElement("a");
   document.body.appendChild(aTag)
-  aTag.download = `${getDate()}.${type}`
-  aTag.href = URL.createObjectURL(blob)
+  // aTag.download = `${getDate()}.${type}`
+  // aTag.href = URL.createObjectURL(blob)
+  aTag.download = URL.createObjectURL(blob)
+  aTag.href = `${getDate()}.${type}`
   aTag.click()
   aTag.remove()
 }
@@ -219,7 +221,7 @@ export const captureAndSave = async () => {
       width: ele.videoWidth,
       height: ele.videoHeight
     }
-    canvas.getContext('2d').drawImage(ele, 0, 0, size.width, size.height);
+    canvas.getContext('2d').drawImage(ele, 0, 0, ele.width, ele.height);
     canvas.toBlob(blob => {
       download(blob, 'png')
     })
