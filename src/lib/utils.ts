@@ -153,6 +153,7 @@ const getRecorder = () => {
 
 const capture = async () => {
   const stream: MediaStream = get(store.remoteVideoStream)
+  console.log(stream)
   if (stream) {
     const tracks = stream.getVideoTracks()
     if (tracks.length > 0) {
@@ -161,10 +162,15 @@ const capture = async () => {
       console.log(capabilities)
       const cap = new ImageCapture(track)
       console.log(cap)
-      return (await cap.grabFrame())
+      try {
+        return (await cap.grabFrame())
+      } catch (e) {
+        console.error(e)
+        return
+      }
     }
   }
-  return null
+  return
 }
 
 const getDate = () => {
@@ -186,19 +192,26 @@ const download = (blob: Blob, type: string) => {
 }
 
 export const captureAndSave = async () => {
+  console.log('capture start')
   const canvas = document.createElement('canvas')
   document.body.appendChild(canvas)
+  console.log('add canvas')
   const img: ImageBitmap | null = await capture()
+  console.log('get img bitmap')
+  if (!img) return
   canvas.width = img.width
   canvas.height = img.height
   const context = canvas.getContext('bitmaprenderer')
   if (context) {
     context.transferFromImageBitmap(img)
+    console.log('bitmaprenderer')
   } else {
     canvas.getContext('2d').drawImage(img, 0, 0)
+    console.log('2d')
   }
   canvas.toBlob(blob => {
     download(blob, 'png')
   })
+  console.log('to blob')
   canvas.remove()
 }
