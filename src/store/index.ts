@@ -3,7 +3,7 @@ import type { TabletSetting } from '../components/Tablet/useSetting'
 import type { WindowRect } from '../lib/coordinary'
 
 export const store = {
-  remoteVideoElement: writable<null | (HTMLMediaElement & HTMLVideoElement)>(null),
+  remoteVideoElement: writable<null | HTMLMediaElement | HTMLVideoElement>(null),
   peerConnection: writable<null | RTCPeerConnection>(null),
   negotiationneededCounter: writable(0),
   remoteVideoStream: writable<null | MediaStream>(null),

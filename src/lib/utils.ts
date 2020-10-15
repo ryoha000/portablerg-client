@@ -155,41 +155,41 @@ const getRecorder = () => {
   return recorder
 }
 
-const capture = async () => {
-  const ele: HTMLVideoElement = get(store.remoteVideoElement)
-  if (ele) {
-    const canvas = document.createElement('canvas')
-    document.body.appendChild(canvas)
-    const size = {
-      width: ele.videoWidth,
-      height: ele.videoHeight
-    }
-    canvas.getContext('2d').drawImage(ele, 0, 0, size.width, size.height);
-    canvas.toBlob(blob => {
-      download(blob, 'png')
-    })
-    canvas.remove()
-  }
-  // const stream: MediaStream = get(store.remoteVideoStream)
-  // console.log(stream)
-  // if (stream) {
-  //   const tracks = stream.getVideoTracks()
-  //   if (tracks.length > 0) {
-  //     const track = tracks[0]
-  //     const capabilities = track.getCapabilities()
-  //     console.log(capabilities)
-  //     const cap = new ImageCapture(track)
-  //     console.log(cap)
-  //     try {
-  //       return (await cap.grabFrame())
-  //     } catch (e) {
-  //       console.error(e)
-  //       return
-  //     }
-  //   }
-  // }
-  return
-}
+// const capture = async () => {
+//   const ele: HTMLVideoElement = get(store.remoteVideoElement)
+//   if (ele) {
+//     const canvas = document.createElement('canvas')
+//     document.body.appendChild(canvas)
+//     const size = {
+//       width: ele.videoWidth,
+//       height: ele.videoHeight
+//     }
+//     canvas.getContext('2d').drawImage(ele, 0, 0, size.width, size.height);
+//     canvas.toBlob(blob => {
+//       download(blob, 'png')
+//     })
+//     canvas.remove()
+//   }
+//   // const stream: MediaStream = get(store.remoteVideoStream)
+//   // console.log(stream)
+//   // if (stream) {
+//   //   const tracks = stream.getVideoTracks()
+//   //   if (tracks.length > 0) {
+//   //     const track = tracks[0]
+//   //     const capabilities = track.getCapabilities()
+//   //     console.log(capabilities)
+//   //     const cap = new ImageCapture(track)
+//   //     console.log(cap)
+//   //     try {
+//   //       return (await cap.grabFrame())
+//   //     } catch (e) {
+//   //       console.error(e)
+//   //       return
+//   //     }
+//   //   }
+//   // }
+//   return
+// }
 
 const getDate = () => {
   const now = new Date()
@@ -203,17 +203,15 @@ const fullTime = (t: number) => {
 const download = (blob: Blob, type: string) => {
   const aTag = document.createElement("a");
   document.body.appendChild(aTag)
-  // aTag.download = `${getDate()}.${type}`
-  // aTag.href = URL.createObjectURL(blob)
-  aTag.download = URL.createObjectURL(blob)
-  aTag.href = `${getDate()}.${type}`
+  aTag.download = `${getDate()}.${type}`
+  aTag.href = URL.createObjectURL(blob)
   aTag.click()
   aTag.remove()
 }
 
 export const captureAndSave = async () => {
   console.log('capture start')
-  const ele: HTMLVideoElement = get(store.remoteVideoElement)
+  const ele: HTMLVideoElement | HTMLMediaElement = get(store.remoteVideoElement)
   if (ele) {
     const canvas = document.createElement('canvas')
     document.body.appendChild(canvas)
@@ -221,7 +219,7 @@ export const captureAndSave = async () => {
       width: ele.videoWidth,
       height: ele.videoHeight
     }
-    canvas.getContext('2d').drawImage(ele, 0, 0, ele.width, ele.height);
+    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, size.width, size.height);
     canvas.toBlob(blob => {
       download(blob, 'png')
     })
