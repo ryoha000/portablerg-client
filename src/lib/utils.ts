@@ -63,6 +63,9 @@ const startRecord = (stream: MediaStream) => {
     recorder.ondataavailable = (e) => {
       store.chunks.update(v => {
         v.push(e.data)
+        if (v.length === 10) {
+          alert('10秒立ったよ～')
+        }
         if (v.length > MAX_CHUNK_LENGTH) {
           v.shift()
         }
@@ -79,9 +82,13 @@ const startRecord = (stream: MediaStream) => {
 
 export const saveRecord = async () => {
   const recorder = getRecorder()
-  recorder.stop()
-  const dataArr = new Uint8Array(await (new Blob(get(store.chunks)).arrayBuffer()))
-  await transcode(dataArr)
+  try {
+    recorder.stop()
+    const dataArr = new Uint8Array(await (new Blob(get(store.chunks)).arrayBuffer()))
+    await transcode(dataArr)
+  } catch (e) {
+    alert(e.toString())
+  }
 }
 
 const transcode = async (dataArr: Uint8Array) => {
@@ -205,7 +212,7 @@ const download = (blob: Blob, type: string) => {
   document.body.appendChild(aTag)
   aTag.download = `${getDate()}.${type}`
   aTag.href = URL.createObjectURL(blob)
-  aTag.target = '_blank'
+  // aTag.target = '_blank'
   aTag.click()
   aTag.remove()
 }
@@ -220,9 +227,10 @@ export const captureAndSave = async () => {
       width: ele.videoWidth,
       height: ele.videoHeight
     }
+    canvas.width = size.width
+    canvas.height = size.height
     alert(JSON.stringify(size))
-    // @ts-ignore
-    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, ele.width, ele.height);
+    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
     canvas.toBlob(blob => {
       download(blob, 'png')
     })
