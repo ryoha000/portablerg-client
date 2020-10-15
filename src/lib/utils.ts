@@ -5,11 +5,16 @@ import { createFFmpeg } from '@ffmpeg/ffmpeg'
 import { push } from 'svelte-spa-router'
 
 export const initializeFFmpeg = async () => {
-  const ffmpeg = createFFmpeg({
-    log: true
-  });
-  await ffmpeg.load();
-  store.ffmpeg.set(ffmpeg)
+  try {
+    const ffmpeg = createFFmpeg({
+      log: true
+    });
+    await ffmpeg.load();
+    store.ffmpeg.set(ffmpeg)
+    alert('ffmpef loaded and set')
+  } catch (e) {
+    alert(e.toString())
+  }
 }
 
 export const sendDataMessage = (
