@@ -84,7 +84,11 @@ export const saveRecord = async () => {
     const chunks: Blob[] = get(store.chunks)
     alert(`${chunks.length}秒分のデータ`)
     const allChunks = new Blob(chunks)
-    const dataArr = new Uint8Array(await (allChunks.arrayBuffer()))
+    const arrBuf = await getArrayBufferFromBlob(allChunks)
+    if (typeof arrBuf === 'string') {
+      return
+    }
+    const dataArr = new Uint8Array(arrBuf)
     await transcode(dataArr)
   } catch (e) {
     alert(e.toString())
@@ -100,6 +104,15 @@ const transcode = async (dataArr: Uint8Array) => {
   store.editableMovie.set(data)
   push('/movie')
   return
+}
+
+const getArrayBufferFromBlob = async (blob: Blob): Promise<ArrayBuffer | string> => {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader()
+    fr.addEventListener('load', (e) => resolve(fr.result))
+    fr.addEventListener('error', (e) => reject(e))
+    fr.readAsArrayBuffer(blob)
+  })
 }
 
 export const trimOutputMovie = async (from: number, to: number) => {
