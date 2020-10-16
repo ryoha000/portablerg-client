@@ -5,6 +5,7 @@
   import { push } from 'svelte-spa-router'
   import useTabletMovie, { movieDuration } from './use/useTabletMovie'
   import TextButton from '../UI/TextButton.svelte'
+import { once } from 'svelte/internal';
 
   let srcURL = ''
   let video
@@ -51,7 +52,7 @@
   }
 </style>
 
-<div class="container">
+<div class="container" on:click|once="{togglePlay}">
   <video src="{srcURL}" bind:this="{video}" on:touchstart={togglePlay} on:click="{togglePlay}" />
   <div class="sliderContainer">
     <Slider value={[0, 1]} on:change="{change}" />

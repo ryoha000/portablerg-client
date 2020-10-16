@@ -46,7 +46,7 @@ const useTabletMovie = () => {
       return
     }
     const title = await trimOutputMovie(startTime * duration, endTime * duration)
-    saveMovie(title)
+    await saveMovie(title)
     return
   }
 
