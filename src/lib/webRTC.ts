@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
-import { concatenation, playVideo, sendWSMessageWithID, transcode } from './utils';
+import { playVideo, receiveRecordArrayBuffer, sendWSMessageWithID } from './utils';
 import { push } from 'svelte-spa-router'
 
 const useWebRTC = () => {
@@ -110,7 +110,6 @@ const useWebRTC = () => {
     const pc_config = {"iceServers":[ {"urls":"stun:stun.webrtc.ecl.ntt.com:3478"} ]};
     const peer = new RTCPeerConnection(pc_config);
 
-    let buffer: ArrayBuffer[] = []
     peer.ondatachannel = (e) => {
       const chan = e.channel
       console.log(chan)
@@ -147,16 +146,7 @@ const useWebRTC = () => {
       }
       if (chan.label === 'movieChannel') {
         chan.onerror = (e) => console.error(e)
-        chan.onmessage = async (e) => {
-          const message: 'end' | ArrayBuffer = e.data
-          if (message === 'end') {
-            // endの処理
-            await transcode(concatenation(buffer))
-            buffer = []
-            return
-          }
-          buffer.push(message)
-        }
+        chan.onmessage = (e) => receiveRecordArrayBuffer(e.data)
       }
     }
 

@@ -47,8 +47,14 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
   }
 }
 
-export const saveRecord = async (blob: Blob) => {
+export const editMovie = async () => {
   try {
+    let buffer: Blob[] = []
+    store.buffer.update(v => {
+      buffer = v.splice(0)
+      return v
+    })
+    const blob = new Blob(buffer)
     const arrBuf = await getArrayBufferFromBlob(blob)
     if (typeof arrBuf === 'string' || !arrBuf) {
       return
@@ -187,20 +193,6 @@ export const captureAndSave = async () => {
   }
 }
 
-export const concatenation = (segments: ArrayBuffer[]) => {
-  let sumLength = 0;
-  for(let i = 0; i < segments.length; ++i){
-    sumLength += segments[i].byteLength;
-  }
-  const whole = new Uint8Array(sumLength);
-  let pos = 0;
-  for(let i = 0; i < segments.length; ++i){
-    whole.set(new Uint8Array(segments[i]),pos);
-    pos += segments[i].byteLength;
-  }
-  return whole;
-}
-
 export const waitDownload = () => {
   let blob: null | Blob = null
   let downloading = false
@@ -213,5 +205,20 @@ export const waitDownload = () => {
         downloading = false
       }, 2000);
     }
+  })
+}
+
+const CHUNK_BEHINDE = 1000
+const MAX_RECORD_MINUTES = 5
+const MAX_CHUNK_LENGTH = MAX_RECORD_MINUTES * 60 * 1000 / CHUNK_BEHINDE
+
+export const receiveRecordArrayBuffer = (arrayBuffer: ArrayBuffer) => {
+  const blob = new Blob([arrayBuffer], { type: 'video/webm' })
+  store.buffer.update(v => {
+    v.push(blob)
+    if (v.length > MAX_CHUNK_LENGTH) {
+      v.shift()
+    }
+    return v
   })
 }
