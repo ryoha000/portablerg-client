@@ -17,6 +17,8 @@
   onMount(() => {
     init(video)
   })
+  let m = ''
+  store.message.subscribe(v => m = v)
 </script>
 
 <!-- svelte-ignore a11y-media-has-caption -->
@@ -52,6 +54,7 @@
 </style>
 
 <div class="container" on:click|once="{togglePlay}">
+  <div>{m}</div>
   <video src="{srcURL}" bind:this="{video}" on:touchstart={togglePlay} on:click="{togglePlay}" />
   <div class="sliderContainer">
     <Slider value={[0, 1]} on:change="{change}" />

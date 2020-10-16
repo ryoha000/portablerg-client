@@ -1,6 +1,7 @@
 import type { SliderEvent } from "svelte-slider"
 import { writable } from "svelte/store"
 import { saveMovie, trimOutputMovie } from "../../../lib/utils"
+import { store } from "../../../store"
 
 
 export const movieDuration = writable(0)
@@ -15,6 +16,7 @@ const useTabletMovie = () => {
   const init = (videoEle: HTMLMediaElement) => {
     videoEle.onloadedmetadata = (e) => {
       duration = videoEle.duration
+      store.message.update(v => v + '  set duration: ' + duration)
       movieDuration.set(duration)
     }
     videoEle.addEventListener('timeupdate', () => {
@@ -30,9 +32,6 @@ const useTabletMovie = () => {
 
   const change = (e: SliderEvent) => {
     if (!ele) return
-    if (!ele.paused) {
-      ele.pause()
-    }
     const arr = e.detail
     if (arr[0] === startTime || arr[0] === endTime) {
       currentTime = duration * arr[1]
@@ -58,6 +57,7 @@ const useTabletMovie = () => {
   }
 
   const togglePlay = async () => {
+    store.message.update(v => v + '  toggle play')
     if (!ele) return
     if (ele.currentTime === duration * endTime) {
       ele.currentTime = duration * startTime

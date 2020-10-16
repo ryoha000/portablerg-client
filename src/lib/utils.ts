@@ -114,15 +114,11 @@ export const trimOutputMovie = async (from: number, to: number) => {
 export const saveMovie = async (name: string) => {
   const ffmpeg = getFFmpeg()
   const { data } = await ffmpeg.read(name);
-  const aTag = document.createElement("a");
-  document.body.appendChild(aTag)
-  aTag.download = name
-  aTag.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
-  aTag.click()
-  aTag.remove()
-  setTimeout(() => {
-    push('/client')
-  }, 500);
+  store.downloadBlob.set({
+    data: new Blob([data.buffer], { type: 'video/mp4' }),
+    type: 'mp4',
+    callBack: () => push('/client')
+  })
 }
 
 const getHHMMSS = (num: number) => {
@@ -172,7 +168,6 @@ const download = (blob: Blob, type: string) => {
 }
 
 export const captureAndSave = async () => {
-  console.log('capture start')
   const ele: HTMLVideoElement | HTMLMediaElement | null = get(store.remoteVideoElement)
   if (ele) {
     const canvas = document.createElement('canvas')
@@ -187,7 +182,7 @@ export const captureAndSave = async () => {
     canvas.getContext('2d')?.drawImage((ele as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
     canvas.toBlob(blob => {
       if (blob) {
-        download(blob, 'png')
+        store.downloadBlob.set({ type: 'png', data: blob })
       }
     })
     canvas.remove()
@@ -206,4 +201,19 @@ export const concatenation = (segments: ArrayBuffer[]) => {
     pos += segments[i].byteLength;
   }
   return whole;
+}
+
+export const waitDownload = () => {
+  let blob: null | Blob = null
+  let downloading = false
+  store.downloadBlob.subscribe(v => {
+    if (v && !downloading) {
+      downloading = true
+      blob = v.data
+      download(blob, v.type)
+      setTimeout(() => {
+        downloading = false
+      }, 2000);
+    }
+  })
 }

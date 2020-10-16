@@ -25,6 +25,7 @@ export const store = {
   buffer: writable<ArrayBuffer[]>([]),
   ffmpeg: writable<FFmpegWorker | null>(null),
   editableMovie: writable<Uint8Array | null>(null),
+  downloadBlob: writable<{ data: Blob, type: string, callBack?: () => void } | null>(null),
 
   message: writable('')
 }
