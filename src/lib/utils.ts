@@ -1,21 +1,17 @@
 import { store } from "../store"
 import { get } from 'svelte/store'
-import { createWorker  } from '@ffmpeg/ffmpeg'
+import { createWorker, setLogging } from '@ffmpeg/ffmpeg'
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
 export const initializeFFmpeg = async () => {
   try {
-    const worker = createWorker()
-    // const ffmpeg = createWorker({
-    //   log: true
-    // });
-    // await ffmpeg.load();
+    setLogging(true)
+    const worker = createWorker({ logger: ({ message }) => console.log(message) })
     await worker.load();
     store.ffmpeg.set(worker)
-    // alert('ffmpef loaded and set')
   } catch (e) {
-    // alert(e.toString())
+    console.error(e)
   }
 }
 
@@ -46,52 +42,14 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
       console.log('loaded meta data')
       element.play();
     }
-    startRecord(stream)
   } catch(error) {
     console.error('error auto play:' + error);
   }
 }
 
-const CHUNK_BEHINDE = 1000
-const MAX_RECORD_MINUTES = 5
-const MAX_CHUNK_LENGTH = MAX_RECORD_MINUTES * 60 * 1000 / CHUNK_BEHINDE
-
-const startRecord = (stream: MediaStream) => {
-  store.chunks.set([])
-  const prevRecorder: MediaRecorder = get(store.recorder)
-  if (prevRecorder && prevRecorder.state === 'recording') {
-    prevRecorder.stop()
-  }
-  const option = {
-    mimeType: 'video/webm;codecs=h264,opus'
-  }
+export const saveRecord = async (blob: Blob) => {
   try {
-    const recorder = new MediaRecorder(stream, option)
-    recorder.ondataavailable = (e) => {
-      store.chunks.update(v => {
-        v.push(e.data)
-        if (v.length > MAX_CHUNK_LENGTH) {
-          v.shift()
-        }
-        return v
-      })
-    }
-    recorder.onerror = (e) => { console.error(e) }
-    recorder.start(CHUNK_BEHINDE)
-    store.recorder.set(recorder)
-  } catch {
-    alert('MediaRecorderに対応していません')
-  }
-}
-
-export const saveRecord = async () => {
-  const recorder = getRecorder()
-  try {
-    recorder.stop()
-    const chunks: Blob[] = get(store.chunks)
-    alert(`${chunks.length}秒分のデータ`)
-    const allChunks = new Blob(chunks)
-    const arrBuf = await getArrayBufferFromBlob(allChunks)
+    const arrBuf = await getArrayBufferFromBlob(blob)
     if (typeof arrBuf === 'string') {
       return
     }
@@ -102,11 +60,17 @@ export const saveRecord = async () => {
   }
 }
 
-const transcode = async (dataArr: Uint8Array) => {
+export const transcode = async (dataArr: Uint8Array) => {
   try {
     const ffmpeg = getFFmpeg()
     const name = 'record.webm';
+    try {
+      await ffmpeg.remove(name)
+    } catch {}
     await ffmpeg.write(name, dataArr);
+    try {
+      await ffmpeg.remove('output.mp4')
+    } catch {}
     await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
     const { data } = await ffmpeg.read('output.mp4');
     store.editableMovie.set(data)
@@ -175,51 +139,6 @@ const getFFmpeg = () => {
   return ffmpeg
 }
 
-const getRecorder = () => {
-  const recorder: MediaRecorder | null = get(store.recorder)
-  if (!recorder) {
-    console.error('recorder is NULL !!!')
-    throw 'recorder is NULL !!!'
-  }
-  return recorder
-}
-
-// const capture = async () => {
-//   const ele: HTMLVideoElement = get(store.remoteVideoElement)
-//   if (ele) {
-//     const canvas = document.createElement('canvas')
-//     document.body.appendChild(canvas)
-//     const size = {
-//       width: ele.videoWidth,
-//       height: ele.videoHeight
-//     }
-//     canvas.getContext('2d').drawImage(ele, 0, 0, size.width, size.height);
-//     canvas.toBlob(blob => {
-//       download(blob, 'png')
-//     })
-//     canvas.remove()
-//   }
-//   // const stream: MediaStream = get(store.remoteVideoStream)
-//   // console.log(stream)
-//   // if (stream) {
-//   //   const tracks = stream.getVideoTracks()
-//   //   if (tracks.length > 0) {
-//   //     const track = tracks[0]
-//   //     const capabilities = track.getCapabilities()
-//   //     console.log(capabilities)
-//   //     const cap = new ImageCapture(track)
-//   //     console.log(cap)
-//   //     try {
-//   //       return (await cap.grabFrame())
-//   //     } catch (e) {
-//   //       console.error(e)
-//   //       return
-//   //     }
-//   //   }
-//   // }
-//   return
-// }
-
 const getDate = () => {
   const now = new Date()
   return `${now.getFullYear()}-${fullTime(now.getMonth() + 1)}-${fullTime(now.getDate())}-${fullTime(now.getHours())}-${fullTime(now.getMinutes())}`
@@ -258,26 +177,18 @@ export const captureAndSave = async () => {
     })
     canvas.remove()
   }
-  // console.log('capture start')
-  // const canvas = document.createElement('canvas')
-  // document.body.appendChild(canvas)
-  // console.log('add canvas')
-  // const img: ImageBitmap | null = await capture()
-  // console.log('get img bitmap')
-  // if (!img) return
-  // canvas.width = img.width
-  // canvas.height = img.height
-  // const context = canvas.getContext('bitmaprenderer')
-  // if (context) {
-  //   context.transferFromImageBitmap(img)
-  //   console.log('bitmaprenderer')
-  // } else {
-  //   canvas.getContext('2d').drawImage(img, 0, 0)
-  //   console.log('2d')
-  // }
-  // canvas.toBlob(blob => {
-  //   download(blob, 'png')
-  // })
-  // console.log('to blob')
-  // canvas.remove()
+}
+
+export const concatenation = (segments: ArrayBuffer[]) => {
+  let sumLength = 0;
+  for(let i = 0; i < segments.length; ++i){
+    sumLength += segments[i].byteLength;
+  }
+  const whole = new Uint8Array(sumLength);
+  let pos = 0;
+  for(let i = 0; i < segments.length; ++i){
+    whole.set(new Uint8Array(segments[i]),pos);
+    pos += segments[i].byteLength;
+  }
+  return whole;
 }

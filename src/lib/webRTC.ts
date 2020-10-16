@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
-import { playVideo, sendWSMessageWithID } from './utils';
+import { concatenation, playVideo, sendWSMessageWithID, transcode } from './utils';
 // @ts-ignore
 import { push } from 'svelte-spa-router'
 
@@ -111,33 +111,50 @@ const useWebRTC = () => {
     const pc_config = {"iceServers":[ {"urls":"stun:stun.webrtc.ecl.ntt.com:3478"} ]};
     const peer = new RTCPeerConnection(pc_config);
 
+    let buffer: ArrayBuffer[] = []
     peer.ondatachannel = (e) => {
-      const dataChannel =  e.channel
-      dataChannel.onerror = (e) => { console.error(e) }
-      store.dataChannel.set(dataChannel)
-      dataChannel.onmessage = (e) => {
-        const message = JSON.parse(e.data)
-        switch (message.type) {
-          case 'windowRect': {
-            const rect: WindowRect = message.rect
-            const ele: HTMLMediaElement = get(store.remoteVideoElement)
-            const size = {
-              width: ele.videoWidth,
-              height: ele.videoHeight
+      const chan = e.channel
+      console.log(chan)
+      if (chan.label === 'dataChannel') {
+        const dataChannel = chan
+        store.dataChannel.set(dataChannel)
+        dataChannel.onerror = (e) => { console.error(e) }
+        dataChannel.onmessage = async (e) => {
+          const message = JSON.parse(e.data)
+          switch (message.type) {
+            case 'windowRect': {
+              const rect: WindowRect = message.rect
+              const ele: HTMLMediaElement = get(store.remoteVideoElement)
+              const size = {
+                width: ele.videoWidth,
+                height: ele.videoHeight
+              }
+              if (ele && size.width && size.height) {
+                store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
+                store.isTabletMode.set(true)
+                const dc: RTCDataChannel = get(store.dataChannel)
+                const { init } = useTablet(dc, get(store.remoteVideoElement))
+                init()
+              }
+              break
             }
-            console.log(size)
-            if (ele && size.width && size.height) {
-              store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
-              store.isTabletMode.set(true)
-              const dc: RTCDataChannel = get(store.dataChannel)
-              const { init } = useTablet(dc, get(store.remoteVideoElement))
-              init()
+            default: {
+              console.warn('invalid datachannel message')
             }
-            break
           }
-          default: {
-            console.warn('invalid datachannel message')
+        }
+      }
+      if (chan.label === 'movieChannel') {
+        chan.onerror = (e) => console.error(e)
+        chan.onmessage = async (e) => {
+          const message: 'end' | ArrayBuffer = e.data
+          if (message === 'end') {
+            // endの処理
+            await transcode(concatenation(buffer))
+            buffer = []
+            return
           }
+          buffer.push(message)
         }
       }
     }

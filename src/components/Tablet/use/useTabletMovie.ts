@@ -41,13 +41,16 @@ const useTabletMovie = () => {
   }
 
   const confirmSave = async () => {
+    if (startTime === endTime) {
+      alert('開始時刻と終了時刻が同じです')
+      return
+    }
     const title = await trimOutputMovie(startTime * duration, endTime * duration)
     saveMovie(title)
     return
   }
 
   const togglePlay = async () => {
-    console.log('togglePlay')
     if (ele.currentTime === duration * endTime) {
       ele.currentTime = duration * startTime
     }

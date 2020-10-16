@@ -22,7 +22,7 @@ export const store = {
   me: writable<string | null>(null),
 
   chunks: writable<Blob[]>([]),
-  recorder: writable<MediaRecorder | null>(null),
+  buffer: writable<ArrayBuffer[]>([]),
   ffmpeg: writable<FFmpeg | null>(null),
   editableMovie: writable(null)
 }
