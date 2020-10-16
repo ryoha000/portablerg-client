@@ -69,11 +69,14 @@ export const transcode = async (dataArr: Uint8Array) => {
       await ffmpeg.remove(name)
     } catch {}
     await ffmpeg.write(name, dataArr);
+    store.message.update(v => v + '   ' + 'upsert record.webm')
     try {
       await ffmpeg.remove('output.mp4')
     } catch {}
     await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
+    store.message.update(v => v + '\n' + 'transcorded')
     const { data } = await ffmpeg.read('output.mp4');
+    store.message.update(v => v + '\n' + 'read output.mp4')
     store.editableMovie.set(data)
     push('/movie')
   } catch (e) {
