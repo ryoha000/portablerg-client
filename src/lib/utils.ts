@@ -122,8 +122,6 @@ export const saveMovie = async (name: string) => {
 }
 
 const getHHMMSS = (num: number) => {
-  store.message.update(v => v + ' ' + num / 1000 + `  ${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`)
-  console.log(num / 1000, `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`)
   return `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`
 }
 

@@ -19,9 +19,15 @@
   })
   let m = ''
   store.message.subscribe(v => m = v)
+  
+  let played = false
+  const firstPlay = (e: Event) => {
+    e.stopPropagation()
+    played = true
+    togglePlay()
+  }
 </script>
 
-<!-- svelte-ignore a11y-media-has-caption -->
 <style>
   .container {
     position: relative;
@@ -51,8 +57,19 @@
     width: 100%;
     height: 100%;
   }
+  .layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 </style>
 
+{#if !played}
+  <div class="layer" on:click="{firstPlay}"></div>
+{/if}
+<!-- svelte-ignore a11y-media-has-caption -->
 <div class="container" on:click|once="{togglePlay}">
   <div>{m}</div>
   <video src="{srcURL}" bind:this="{video}" on:touchstart={togglePlay} on:click="{togglePlay}" />
