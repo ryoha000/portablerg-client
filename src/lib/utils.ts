@@ -7,7 +7,8 @@ import { push } from 'svelte-spa-router'
 export const initializeFFmpeg = async () => {
   try {
     setLogging(true)
-    const worker = createWorker({ logger: ({ message }) => store.message.update(v => v + '\n' + message) })
+    const worker = createWorker()
+    // const worker = createWorker({ logger: ({ message }) => store.message.update(v => v + '\n' + message) })
     await worker.load();
     store.ffmpeg.set(worker)
   } catch (e) {

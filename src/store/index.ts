@@ -23,7 +23,7 @@ export const store = {
 
   buffer: writable<ArrayBuffer[]>([]),
   ffmpeg: writable<FFmpeg | null>(null),
-  editableMovie: writable(null),
+  editableMovie: writable<Uint8Array>(null),
 
   message: writable('')
 }

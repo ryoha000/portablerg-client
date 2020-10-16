@@ -11,9 +11,6 @@
   store.editableMovie.subscribe((v) => {
     if (v) {
       srcURL = URL.createObjectURL(new Blob([v.buffer], { type: 'video/mp4' }))
-    } else {
-      srcURL = ''
-      push('/client')
     }
   })
   const { init, change, confirmSave, togglePlay } = useTabletMovie()
