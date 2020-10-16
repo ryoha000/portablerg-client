@@ -124,7 +124,9 @@ export const saveMovie = async (name: string) => {
   store.downloadBlob.set({
     data: new Blob([data.buffer], { type: 'video/mp4' }),
     type: 'mp4',
-    callBack: () => push('/client')
+    callBack: () => {
+      push('/client')
+    }
   })
 }
 
@@ -204,6 +206,7 @@ export const waitDownload = () => {
       download(blob, v.type)
       setTimeout(() => {
         downloading = false
+        if (v.callBack) v.callBack()
       }, 2000);
     }
   })
