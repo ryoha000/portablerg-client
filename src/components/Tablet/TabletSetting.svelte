@@ -4,7 +4,8 @@
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import { toggleTabletMode } from './useControl'
   import useWebRTC from '../../lib/webRTC'
-  import { captureAndSave, editMovie } from '../../lib/utils'
+  import { captureAndSave, sendDataMessage } from '../../lib/utils'
+  import { get } from 'svelte/store';
 
   let isOpenToggleSetting = false
   let isTabletMode = false
@@ -21,6 +22,9 @@
     stop(e)
   }
   const { connectHost } = useWebRTC()
+  const editMovie = () => {
+    sendDataMessage({ type: 'movie' }, get(store.dataChannel))
+  }
 </script>
 
 <style>

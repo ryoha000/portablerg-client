@@ -64,8 +64,10 @@ export const editMovie = async () => {
     }
     const dataArr = new Uint8Array(arrBuf)
     const data = await transcode(dataArr)
-    if (data) store.editableMovie.set(data)
-    push('/movie')
+    if (data) {
+      store.editableMovie.set(data)
+      push('/movie')
+    }
   } catch (e) {
     alert(e.toString())
   }
