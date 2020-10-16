@@ -16,6 +16,7 @@ import util from './util.js';
  * metadata, or null if a gesture will not be emitted.
  */
 function interpreter(bindings: any, event: any, state: any) {
+  // @ts-expect-error
   const evType = util.normalizeEvent[ event.type ];
   const events = state.inputs.map( (input: any) => input.current );
 

@@ -68,6 +68,7 @@ class Distance extends Gesture {
    * @param {Object} state - The state object of the current region.
    * @param {Element} element - The element associated to the binding.
    */
+  // @ts-expect-error
   start(inputs: any, state: any, element: any) {
     if(!this.isValid(inputs, state, element)) {
       return null;
@@ -97,6 +98,7 @@ class Distance extends Gesture {
    * @param {Element} element - The element associated to the binding.
    * @return {Object | null} - Returns the distance in pixels between two inputs
    */
+  // @ts-expect-error
   move(inputs: any, state: any, element: any) {
     if (state.numActiveInputs() === DEFAULT_INPUTS) {
       const currentDistance = util.distanceBetweenTwoPoints(

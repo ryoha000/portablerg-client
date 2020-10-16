@@ -171,6 +171,7 @@ class Tap extends Gesture {
    * Object with information otherwise. Returns the interval time between start
    * and end events.
    */
+  // @ts-expect-error
   end(inputs: ZingInput[]) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'numInputs' does not exist on type 'Tap'.
     if (inputs.length !== this.numInputs) {

@@ -159,6 +159,7 @@ class Swipe extends Gesture {
    * @return {null|Object} - null if the gesture is not to be emitted,
    *  Object with information otherwise.
    */
+  // @ts-expect-error
   end(inputs: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'numInputs' does not exist on type 'Swipe... Remove this comment to see the full error message
     if (this.numInputs === inputs.length) {

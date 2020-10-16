@@ -181,6 +181,7 @@ class State {
     return true;
 
     function update(event: any, state: any, identifier: any, regionElement: any) {
+      // @ts-expect-error
       const eventType = util.normalizeEvent[ event.type ];
       const input = findInputById(state.inputs, identifier);
 

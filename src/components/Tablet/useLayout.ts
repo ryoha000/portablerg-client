@@ -63,7 +63,8 @@ const useLayout = (container: HTMLElement) => {
       const data = output.data[0]
       rects[draggingIndex].x += data.change.x
       rects[draggingIndex].y += data.change.y
-      const prev: TabletSetting = get(store.setting)
+      const prev: TabletSetting | null = get(store.setting)
+      if (!prev) return
       if (draggingIndex === LayoutType.window) {
         prev.windowRect = getRect(rects[draggingIndex])
       }
@@ -102,7 +103,8 @@ const useLayout = (container: HTMLElement) => {
         rects[type].width += change1.x + change2.x
         rects[type].height += change1.y + change2.y
       }
-      const prev: TabletSetting = get(store.setting)
+      const prev: TabletSetting | null = get(store.setting)
+      if (!prev) return
       if (type === LayoutType.window) {
         prev.windowRect = getRect(rects[type])
       }

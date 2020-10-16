@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store'
 import type { TabletSetting } from '../components/Tablet/useSetting'
 import type { WindowRect } from '../lib/coordinary'
+import type { FFmpegWorker } from '@ffmpeg/ffmpeg'
 
 export const store = {
   remoteVideoElement: writable<null | HTMLMediaElement | HTMLVideoElement>(null),
@@ -13,7 +14,7 @@ export const store = {
   connection: writable<IDBDatabase | null>(null),
   isTabletMode: writable(false),
   windowRect: writable<WindowRect | null>(null),
-  videoRegion: writable<Region>(null),
+  videoRegion: writable<Region | null>(null),
   isIOS: writable(false),
   container: writable(null),
 
@@ -22,8 +23,8 @@ export const store = {
   me: writable<string | null>(null),
 
   buffer: writable<ArrayBuffer[]>([]),
-  ffmpeg: writable<FFmpeg | null>(null),
-  editableMovie: writable<Uint8Array>(null),
+  ffmpeg: writable<FFmpegWorker | null>(null),
+  editableMovie: writable<Uint8Array | null>(null),
 
   message: writable('')
 }

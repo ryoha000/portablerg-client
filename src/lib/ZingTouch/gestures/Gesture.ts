@@ -74,6 +74,7 @@ class Gesture {
    */
   update(object: any) {
     Object.keys(object).forEach( key => {
+      // @ts-expect-error
       this[key] = object[key];
     });
   }
@@ -85,6 +86,7 @@ class Gesture {
 	 * @param {Element} element - The element associated to the binding.
    * @return {null|Object}  - Default of null
    */
+  // @ts-expect-error
   start(inputs, state, element) {
     return null;
   }
@@ -96,6 +98,7 @@ class Gesture {
    * @param {Element} element - The element associated to the binding.
    * @return {null|Object} - Default of null
    */
+  // @ts-expect-error
   move(inputs, state, element) {
     return null;
   }
@@ -105,6 +108,7 @@ class Gesture {
    * @param {Array} inputs - The array of Inputs on the screen
    * @return {null|Object}  - Default of null
    */
+  // @ts-expect-error
   end(inputs) {
     return null;
   }
@@ -116,7 +120,9 @@ class Gesture {
 	* @param {Element} element - The element associated to the binding.
 	* @return {boolean} - If the gesture is valid
 	*/
+  // @ts-expect-error
 	isValid(inputs, state, element) {
+    // @ts-expect-error
     return inputs.every( input => {
         return util.isInside(input.initial.x, input.initial.y, element);
     });

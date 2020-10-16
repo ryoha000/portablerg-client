@@ -1,7 +1,6 @@
 import { store } from "../store"
 import { get } from 'svelte/store'
-import { createWorker, setLogging } from '@ffmpeg/ffmpeg'
-// @ts-ignore
+import { createWorker, setLogging, FFmpegWorker } from '@ffmpeg/ffmpeg'
 import { push } from 'svelte-spa-router'
 
 export const initializeFFmpeg = async () => {
@@ -51,7 +50,7 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
 export const saveRecord = async (blob: Blob) => {
   try {
     const arrBuf = await getArrayBufferFromBlob(blob)
-    if (typeof arrBuf === 'string') {
+    if (typeof arrBuf === 'string' || !arrBuf) {
       return
     }
     const dataArr = new Uint8Array(arrBuf)
@@ -86,7 +85,7 @@ export const transcode = async (dataArr: Uint8Array) => {
   return
 }
 
-const getArrayBufferFromBlob = async (blob: Blob): Promise<ArrayBuffer | string> => {
+const getArrayBufferFromBlob = async (blob: Blob): Promise<ArrayBuffer | string | null> => {
   return new Promise((resolve, reject) => {
     const fr = new FileReader()
     fr.addEventListener('load', (e) => resolve(fr.result))
@@ -145,7 +144,7 @@ const getSeconds = (num: number) => {
 }
 
 const getFFmpeg = () => {
-  const ffmpeg: FFmpeg | null = get(store.ffmpeg)
+  const ffmpeg: FFmpegWorker | null = get(store.ffmpeg)
   if (!ffmpeg) {
     console.error('ffmpeg is NULL !!!')
     throw 'ffmpeg is NULL !!!'
@@ -174,7 +173,7 @@ const download = (blob: Blob, type: string) => {
 
 export const captureAndSave = async () => {
   console.log('capture start')
-  const ele: HTMLVideoElement | HTMLMediaElement = get(store.remoteVideoElement)
+  const ele: HTMLVideoElement | HTMLMediaElement | null = get(store.remoteVideoElement)
   if (ele) {
     const canvas = document.createElement('canvas')
     document.body.appendChild(canvas)
@@ -185,9 +184,11 @@ export const captureAndSave = async () => {
     canvas.width = size.width
     canvas.height = size.height
     alert(JSON.stringify(size))
-    canvas.getContext('2d').drawImage((ele as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
+    canvas.getContext('2d')?.drawImage((ele as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
     canvas.toBlob(blob => {
-      download(blob, 'png')
+      if (blob) {
+        download(blob, 'png')
+      }
     })
     canvas.remove()
   }

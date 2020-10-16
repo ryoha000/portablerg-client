@@ -125,7 +125,8 @@ const useTemplate = (container: HTMLElement) => {
     region.bind(ele, customDistance, () => {})
   }
   const addControl = (width: number, height: number) => {
-    const prev: TabletSetting = get(store.setting)
+    const prev: TabletSetting | null = get(store.setting)
+    if (!prev) return
     let maxID = -1
     for (const c of prev.controlTemplates) {
       if (c.id > maxID) {

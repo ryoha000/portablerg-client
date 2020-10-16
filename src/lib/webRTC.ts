@@ -3,7 +3,6 @@ import useTablet from '../components/Tablet/use/useTablet';
 import { store } from '../store';
 import type { WindowRect } from './coordinary';
 import { concatenation, playVideo, sendWSMessageWithID, transcode } from './utils';
-// @ts-ignore
 import { push } from 'svelte-spa-router'
 
 const useWebRTC = () => {
@@ -84,7 +83,7 @@ const useWebRTC = () => {
 
   // ICE candaidate受信時にセットする
   function addIceCandidate(candidate: RTCIceCandidate) {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
     if (peerConnection) {
       peerConnection.addIceCandidate(candidate);
     }
@@ -97,9 +96,9 @@ const useWebRTC = () => {
   // ICE candidate生成時に送信する
   function sendIceCandidate(candidate: RTCIceCandidate) {
     const m = { type: 'candidate', ice: candidate }
-    const ws: WebSocket = get(store.ws)
-    if (!ws) {
-      console.error('ws is NULL !!!')
+    const ws: WebSocket | null = get(store.ws)
+    if (!ws || !id) {
+      console.error('ws or id is NULL !!!')
       setupWS()
       return
     }
@@ -124,17 +123,19 @@ const useWebRTC = () => {
           switch (message.type) {
             case 'windowRect': {
               const rect: WindowRect = message.rect
-              const ele: HTMLMediaElement = get(store.remoteVideoElement)
-              const size = {
-                width: ele.videoWidth,
-                height: ele.videoHeight
-              }
-              if (ele && size.width && size.height) {
+              const ele: HTMLMediaElement | null = get(store.remoteVideoElement)
+              if (ele) {
+                const size = {
+                  width: ele.videoWidth,
+                  height: ele.videoHeight
+                }
                 store.windowRect.set({ ...rect, left: rect.right - size.width, top: rect.bottom - size.height })
                 store.isTabletMode.set(true)
-                const dc: RTCDataChannel = get(store.dataChannel)
-                const { init } = useTablet(dc, get(store.remoteVideoElement))
-                init()
+                const dc: RTCDataChannel | null = get(store.dataChannel)
+                if (dc) {
+                  const { init } = useTablet(dc, ele)
+                  init()
+                }
               }
               break
             }
@@ -164,7 +165,7 @@ const useWebRTC = () => {
       console.log('-- peer.ontrack()');
       store.isConnected.set(true)
       store.remoteVideoStream.set(evt.streams[0])
-      const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
+      const remoteVideoElement: HTMLMediaElement | null = get(store.remoteVideoElement)
       const isIOS: boolean = get(store.isIOS)
       if (remoteVideoElement && !isIOS) {
         playVideo(remoteVideoElement, evt.streams[0])
@@ -201,12 +202,12 @@ const useWebRTC = () => {
     // ICEのステータスが変更になったときの処理
     peer.oniceconnectionstatechange = function() {
       console.log('ICE connection Status has changed to ' + peer.iceConnectionState);
-      const peerConnection: RTCPeerConnection = get(store.peerConnection)
+      const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
       switch (peer.iceConnectionState) {
         case 'connected': {
           const ws: WebSocket | null = get(store.ws)
-          if (!ws) {
-            console.error('connected, but ws is NULL!!!')
+          if (!id || !ws) {
+            console.error('connected, but ws or id is NULL!!!')
             setupWS()
             return
           }
@@ -238,9 +239,9 @@ const useWebRTC = () => {
       return
     }
     const m = { type: sessionDescription.type, sdp: sessionDescription.sdp }
-    const ws: WebSocket = get(store.ws)
-    if (!ws) {
-      console.error('ws is NULL !!!')
+    const ws: WebSocket | null = get(store.ws)
+    if (!id || !ws) {
+      console.error('ws or id is NULL !!!')
       setupWS()
       return
     }
@@ -251,7 +252,7 @@ const useWebRTC = () => {
 
   // Answer SDPを生成する
   async function makeAnswer() {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
     if (!peerConnection) {
       console.error('peerConnection NOT exist!');
       return;
@@ -267,7 +268,7 @@ const useWebRTC = () => {
 
   // Offer側のSDPをセットする処理
   async function setOffer(sessionDescription: RTCSessionDescription) {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
     if (peerConnection) {
       console.error('peerConnection alreay exist!');
     }
@@ -284,7 +285,7 @@ const useWebRTC = () => {
 
   // P2P通信を切断する
   function hangUp(video?: HTMLMediaElement){
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
     if (peerConnection) {
       if(peerConnection.iceConnectionState !== 'closed'){
         console.log('hangup')
@@ -293,7 +294,7 @@ const useWebRTC = () => {
         store.negotiationneededCounter.set(0)
         store.remoteVideoStream.set(null)
         store.isConnected.set(false)
-        const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
+        const remoteVideoElement: HTMLMediaElement | null = get(store.remoteVideoElement)
         if (remoteVideoElement) {
           remoteVideoElement.srcObject = null
         }
@@ -307,14 +308,14 @@ const useWebRTC = () => {
   }
 
   const deleteConnection = () => {
-    const peerConnection: RTCPeerConnection = get(store.peerConnection)
+    const peerConnection: RTCPeerConnection | null = get(store.peerConnection)
     if (peerConnection) {
       if(peerConnection.iceConnectionState !== 'closed'){
         console.log('deleteConnection')
         peerConnection.close();
         store.peerConnection.set(null)
         store.negotiationneededCounter.set(0)
-        const remoteVideoElement: HTMLMediaElement = get(store.remoteVideoElement)
+        const remoteVideoElement: HTMLMediaElement | null = get(store.remoteVideoElement)
         if (remoteVideoElement) {
           remoteVideoElement.srcObject = null
         }
@@ -327,9 +328,9 @@ const useWebRTC = () => {
   }
 
   const connectHost = () => {
-    const ws: WebSocket = get(store.ws)
-    if (!ws) {
-      console.error('ws is NULL !!!')
+    const ws: WebSocket | null = get(store.ws)
+    if (!id || !ws) {
+      console.error('ws or id is NULL !!!')
       setupWS()
       return
     }

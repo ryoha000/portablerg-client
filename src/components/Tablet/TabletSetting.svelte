@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { push } from 'svelte-spa-router'
   import { store } from '../../store'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
@@ -10,14 +10,14 @@
   let isOpenToggleSetting = false
   let isTabletMode = false
   store.isTabletMode.subscribe(v => isTabletMode = v)
-  const stop = (e) => {
+  const stop = (e: Event) => {
     e.stopPropagation()
   }
-  const openToggleSetting = (e) => {
+  const openToggleSetting = (e: Event) => {
     isOpenToggleSetting = true
     stop(e)
   }
-  const closeToggleSetting = (e) => {
+  const closeToggleSetting = (e: Event) => {
     isOpenToggleSetting = false
     stop(e)
   }

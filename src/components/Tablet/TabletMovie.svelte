@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Slider from 'svelte-slider'
   import { onMount } from 'svelte';
   import { store } from '../../store';
@@ -7,7 +7,7 @@
   import TextButton from '../UI/TextButton.svelte'
 
   let srcURL = ''
-  let video
+  let video: HTMLMediaElement
   store.editableMovie.subscribe((v) => {
     if (v) {
       srcURL = URL.createObjectURL(new Blob([v.buffer], { type: 'video/mp4' }))

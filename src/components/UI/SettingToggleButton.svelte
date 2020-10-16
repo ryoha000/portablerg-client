@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
   import Icon from './Icon.svelte'
   import { push } from 'svelte-spa-router'
   
-  export let iconName
-  export let openSetting = () => {}
-  const sleep = msec => new Promise(resolve => setTimeout(resolve, msec))
+  export let iconName: string
+  export let openSetting = (e: Event) => {}
+  const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec))
 
-  const toggle = async (e) => {
+  const toggle = async (e: MouseEvent | TouchEvent) => {
     await sleep(400)
     e.stopPropagation()
     switch (iconName) {

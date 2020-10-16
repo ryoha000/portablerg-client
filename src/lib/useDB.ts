@@ -39,7 +39,7 @@ const firstControlTemplate: ControlTemplate = {
 const initialSort = [0]
 
 export const getSetting = async (): Promise<TabletSetting> => {
-  const nowS: TabletSetting = get(store.setting)
+  const nowS: TabletSetting | null = get(store.setting)
   if (nowS) {
     return nowS
   }
@@ -173,17 +173,20 @@ const useDB = () => {
     })
   }
   const updateRects = async () => {
-    const setting: TabletSetting = get(store.setting)
+    const setting: TabletSetting | null = get(store.setting)
+    if (!setting) return
     await update('rect', { type: 'window', rect: setting.windowRect })
     await update('rect', { type: 'control', rect: setting.controlRect })
   }
   const addTemplate = async (control: ControlTemplate) => {
-    const setting: TabletSetting = get(store.setting)
+    const setting: TabletSetting | null = get(store.setting)
+    if (!setting) return
     await update('template', control)
     await update('sort', { id: 1, value: setting.controlTemplates.map(v => v.id) })
   }
   const sortTemplate = async () => {
-    const setting: TabletSetting = get(store.setting)
+    const setting: TabletSetting | null = get(store.setting)
+    if (!setting) return
     await update('sort', { id: 1, value: setting.controlTemplates.map(v => v.id) })
   }
   const deleteTemplateByID = async (id: number) => {

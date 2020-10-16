@@ -29,18 +29,19 @@ export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
   return nowIndex + d
 }
 
-export const toggleTabletMode = async (e: MouseEvent) => {
+export const toggleTabletMode = async (e: Event) => {
   const prev: boolean = get(store.isTabletMode)
-  const dc: RTCDataChannel = get(store.dataChannel)
-  if (prev) {
-    const remoteMediaElement: HTMLMediaElement = get(store.remoteVideoElement)
+  const dc: RTCDataChannel | null = get(store.dataChannel)
+  if (prev && dc) {
+    const remoteMediaElement: HTMLMediaElement | null = get(store.remoteVideoElement)
+    if (!remoteMediaElement) return
     const { dispose } = useTablet(dc, remoteMediaElement)
     const { init: initDB } = useDB()
     dispose(remoteMediaElement)
     await initDB()
     store.isTabletMode.set(false)
   }
-  if (!prev) {
+  if (!prev && dc) {
     sendDataMessage({ type: 'tabletMode' }, dc)
   }
 }

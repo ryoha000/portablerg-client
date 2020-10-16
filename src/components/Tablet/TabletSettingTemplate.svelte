@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import { getStyleFromRect, ControlType, getControlKeyName } from './useSetting'
@@ -9,7 +9,7 @@
   import useDB from '../../lib/useDB'
   import { store } from '../../store';
 
-  let container
+  let container: HTMLElement
   let elements = {
     '0': null,
     '1': null,

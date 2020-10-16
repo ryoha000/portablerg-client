@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { store } from '../../store';
   import TabletOriginalLogin from "./TabletOriginalLogin.svelte"
@@ -8,7 +8,7 @@
   import useWebRTC from "../../lib/webRTC"
   import { push } from 'svelte-spa-router'
 
-  let me
+  let me: string
   let isConnect = false
 
   const { connectHost } = useWebRTC()

@@ -8,9 +8,9 @@ import { getSize, WindowRect } from "../../../lib/coordinary";
 const TAP_OR_DRAG_TIME = 500
 
 const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
-  const container: HTMLDivElement = get(store.container)
+  const container: HTMLDivElement | null = get(store.container)
   let ratio = 1
-  let winRect: WindowRect = get(store.windowRect)
+  let winRect: WindowRect | null = get(store.windowRect)
   store.windowRect.subscribe(v => winRect = v)
   let startTime = 0
   let isDragging = false
@@ -19,7 +19,11 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   const init = () => {
     const region: Region = new ZingTouch.Region(container);
     store.videoRegion.set(region)
-    const setting: TabletSetting = get(store.setting)
+    const setting: TabletSetting | null = get(store.setting)
+    if (!setting || !winRect) {
+      console.error('winRect or setting is NULL !!!')
+      return
+    }
     const s = getSize(winRect, window.innerWidth, window.innerHeight)
     // const s = getSize(winRect, screen.width, screen.height)
     setting.windowRect.start.x = `0px`
@@ -49,7 +53,8 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
     })
   };
   const dispose = (...elements: HTMLElement[]) => {
-    const region: Region = get(store.videoRegion)
+    const region: Region | null = get(store.videoRegion)
+    if (!region) return
     for (const ele of elements) {
       region.unbind(ele)
     }
@@ -89,7 +94,10 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   }
 
   const toPoint = (x: number, y: number, ratio: number) => {
-    if (winRect === null) { console.error('winrect is null') }
+    if (winRect === null) {
+      console.error('winrect is null')
+      return
+    }
     return {
       x: winRect.left + (x * ratio),
       y: winRect.top + (y * ratio),

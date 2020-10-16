@@ -1,6 +1,9 @@
 class Gesture {
   constructor();
   end(e: any): any;
+  binding: { element: HTMLElement }
+  data
+  events
   getId(): any;
   getType(): any;
   isValid(e: any, t: any, n: any): any;

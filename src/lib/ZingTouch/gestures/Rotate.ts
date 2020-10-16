@@ -61,6 +61,7 @@ class Rotate extends Gesture {
    * @return {Object} obj.distanceFromLast - The change of angle between the
    * last position and the current position.
    */
+  // @ts-expect-error
   move(inputs: any, state: any, element: any) {
     const numActiveInputs = state.numActiveInputs();
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'numInputs' does not exist on type 'Rotat... Remove this comment to see the full error message

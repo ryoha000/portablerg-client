@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { windowStyle, controlsStyle } from './useSetting'
   import useLayout, { LayoutType } from './useLayout'
@@ -7,9 +7,9 @@
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import useDB from '../../lib/useDB'
 
-  let container
-  let windowElement
-  let controlsElement
+  let container: HTMLElement
+  let windowElement: HTMLElement
+  let controlsElement: HTMLElement
 
   const { updateRects } = useDB()
   onMount(() => {

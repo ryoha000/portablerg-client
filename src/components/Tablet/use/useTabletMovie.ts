@@ -1,5 +1,7 @@
+import type { SliderEvent } from "svelte-slider"
 import { writable } from "svelte/store"
 import { saveMovie, trimOutputMovie } from "../../../lib/utils"
+
 
 export const movieDuration = writable(0)
 
@@ -27,6 +29,7 @@ const useTabletMovie = () => {
   }
 
   const change = (e: SliderEvent) => {
+    if (!ele) return
     if (!ele.paused) {
       ele.pause()
     }
@@ -49,11 +52,13 @@ const useTabletMovie = () => {
       return
     }
     const title = await trimOutputMovie(startTime * duration, endTime * duration)
-    await saveMovie(title)
-    return
+    if (title) {
+      await saveMovie(title)
+    }
   }
 
   const togglePlay = async () => {
+    if (!ele) return
     if (ele.currentTime === duration * endTime) {
       ele.currentTime = duration * startTime
     }

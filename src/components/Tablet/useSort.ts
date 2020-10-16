@@ -85,7 +85,8 @@ const useSort = (container: HTMLElement) => {
     elements[index] = ele
   }
   const updateList = (draggingIndex: number) => {
-    const prev: TabletSetting = get(store.setting)
+    const prev: TabletSetting | null = get(store.setting)
+    if (!prev) return
     const tmp = prev.controlTemplates[draggingIndex]
     const oIndex: number = get(overIndex)
     if (oIndex === -1) {

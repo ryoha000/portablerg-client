@@ -81,6 +81,7 @@ class Pan extends Gesture {
    * so it can invalidate any end events.
    * @param {Array} inputs
    */
+  // @ts-expect-error
   start(inputs: any) {
     inputs.forEach((input: any) => {
       const progress = input.getGestureProgress(this.getId());
@@ -106,6 +107,7 @@ class Pan extends Gesture {
    * @param {Element} element - The element associated to the binding.
    * @return {Object} - Returns the distance in pixels between the two inputs.
    */
+  // @ts-expect-error
   move(inputs: any, state: any, element: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'numInputs' does not exist on type 'Pan'.
     if (this.numInputs !== inputs.length) return null;
@@ -125,6 +127,7 @@ class Pan extends Gesture {
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'threshold' does not exist on type 'Pan'.
       const reachedThreshold = distanceFromLastEmit >= this.threshold;
       if (progress.active && reachedThreshold) {
+        // @ts-expect-error
         output.data[index] = packData( input, progress );
         progress.lastEmitted.x = input.current.x;
         progress.lastEmitted.y = input.current.y;

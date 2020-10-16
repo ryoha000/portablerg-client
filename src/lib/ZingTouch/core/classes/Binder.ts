@@ -25,6 +25,7 @@ class Binder {
     this.element = element;
 
     Object.keys(state.registeredGestures).forEach((key) => {
+      // @ts-expect-error
       this[key] = (handler: any, capture: any) => {
         // @ts-expect-error ts-migrate(2339) FIXME: Property 'element' does not exist on type 'Binder'... Remove this comment to see the full error message
         state.addBinding(this.element, key, handler, capture, bindOnce);

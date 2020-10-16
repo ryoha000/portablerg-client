@@ -19,6 +19,7 @@ import util from './util.js';
  */
 function arbiter(event: any, region: any) {
   const state = region.state;
+  // @ts-expect-error
   const eventType = util.normalizeEvent[ event.type ];
 
   /*
@@ -57,7 +58,7 @@ function arbiter(event: any, region: any) {
       util.removeMSPreventDefault(region.element);
     }
 
-    const toBeDispatched = {};
+    const toBeDispatched: { [key:string] : Gesture } = {};
     const gestures = interpreter(bindings, event, state);
 
     /* Determine the deepest path index to emit the event
@@ -65,7 +66,7 @@ function arbiter(event: any, region: any) {
 
     const path = util.getPropagationPath(event);
     gestures.forEach((gesture: any) => {
-      const id = gesture.binding.gesture.getId();
+      const id: string = gesture.binding.gesture.getId();
       if (toBeDispatched[id]) {
         if (util.getPathIndex(path, gesture.binding.element) <
           util.getPathIndex(path, toBeDispatched[id].binding.element)) {
