@@ -70,9 +70,9 @@
   <div class="layer" on:click="{firstPlay}"></div>
 {/if}
 <!-- svelte-ignore a11y-media-has-caption -->
-<div class="container" on:click|once="{togglePlay}">
+<div class="container">
   <div>{m}</div>
-  <video src="{srcURL}" bind:this="{video}" on:touchstart={togglePlay} on:click="{togglePlay}" />
+  <video src="{srcURL}" bind:this="{video}" on:click="{togglePlay}" />
   <div class="sliderContainer">
     <Slider value={[0, 1]} on:change="{change}" />
   </div>
