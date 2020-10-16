@@ -21,8 +21,9 @@ export const store = {
 
   me: writable<string | null>(null),
 
-  chunks: writable<Blob[]>([]),
   buffer: writable<ArrayBuffer[]>([]),
   ffmpeg: writable<FFmpeg | null>(null),
-  editableMovie: writable(null)
+  editableMovie: writable(null),
+
+  message: writable('')
 }

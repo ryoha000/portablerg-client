@@ -7,7 +7,7 @@ import { push } from 'svelte-spa-router'
 export const initializeFFmpeg = async () => {
   try {
     setLogging(true)
-    const worker = createWorker({ logger: ({ message }) => console.log(message) })
+    const worker = createWorker({ logger: ({ message }) => store.message.update(v => v + '\n' + message) })
     await worker.load();
     store.ffmpeg.set(worker)
   } catch (e) {
@@ -75,7 +75,10 @@ export const transcode = async (dataArr: Uint8Array) => {
     const { data } = await ffmpeg.read('output.mp4');
     store.editableMovie.set(data)
     push('/movie')
-  } catch (e) { console.error(e) }
+  } catch (e) {
+    store.message.update(v => v + '\n' + e.toString())
+    console.error(e)
+  }
   return
 }
 
