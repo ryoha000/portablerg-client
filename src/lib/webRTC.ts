@@ -151,6 +151,7 @@ const useWebRTC = () => {
           const message: 'end' | ArrayBuffer = e.data
           if (message === 'end') {
             // endの処理
+            console.log('finish receive')
             await transcode(concatenation(buffer))
             buffer = []
             return

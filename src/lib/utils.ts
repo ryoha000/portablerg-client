@@ -54,13 +54,15 @@ export const saveRecord = async (blob: Blob) => {
       return
     }
     const dataArr = new Uint8Array(arrBuf)
+    console.log('end to dataArr')
     const data = await transcode(dataArr)
+    console.log('end to data')
     if (data) {
       store.editableMovie.set(data)
       push('/movie')
     }
   } catch (e) {
-    alert(e.toString())
+    console.error(e)
   }
 }
 
@@ -77,6 +79,8 @@ export const transcode = async (dataArr: Uint8Array) => {
     } catch {}
     await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
     const { data } = await ffmpeg.read('output.mp4');
+    store.editableMovie.set(data)
+    push('/movie')
     return data
   } catch (e) {
     await transcode(dataArr)
