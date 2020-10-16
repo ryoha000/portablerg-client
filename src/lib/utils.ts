@@ -121,7 +121,9 @@ export const saveMovie = async (name: string) => {
   aTag.href = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
   aTag.click()
   aTag.remove()
-  push('/client')
+  setTimeout(() => {
+    push('/client')
+  }, 500);
 }
 
 const getHHMMSS = (num: number) => {

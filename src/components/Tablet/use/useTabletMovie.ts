@@ -27,6 +27,9 @@ const useTabletMovie = () => {
   }
 
   const change = (e: SliderEvent) => {
+    if (!ele.paused) {
+      ele.pause()
+    }
     const arr = e.detail
     if (arr[0] === startTime || arr[0] === endTime) {
       currentTime = duration * arr[1]

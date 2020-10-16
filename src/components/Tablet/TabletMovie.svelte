@@ -5,7 +5,6 @@
   import { push } from 'svelte-spa-router'
   import useTabletMovie, { movieDuration } from './use/useTabletMovie'
   import TextButton from '../UI/TextButton.svelte'
-import { once } from 'svelte/internal';
 
   let srcURL = ''
   let video
