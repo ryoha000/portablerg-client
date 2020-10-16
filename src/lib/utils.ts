@@ -209,7 +209,7 @@ export const waitDownload = () => {
   })
 }
 
-const CHUNK_BEHINDE = 1000
+const CHUNK_BEHINDE = 50
 const MAX_RECORD_MINUTES = 5
 const MAX_CHUNK_LENGTH = MAX_RECORD_MINUTES * 60 * 1000 / CHUNK_BEHINDE
 
