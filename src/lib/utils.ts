@@ -60,7 +60,9 @@ export const editMovie = async () => {
       return
     }
     const dataArr = new Uint8Array(arrBuf)
-    await transcode(dataArr)
+    const data = await transcode(dataArr)
+    if (data) store.editableMovie.set(data)
+    push('/movie')
   } catch (e) {
     alert(e.toString())
   }
@@ -82,8 +84,7 @@ export const transcode = async (dataArr: Uint8Array) => {
     store.message.update(v => v + '\n' + 'transcorded')
     const { data } = await ffmpeg.read('output.mp4');
     store.message.update(v => v + '\n' + 'read output.mp4')
-    store.editableMovie.set(data)
-    push('/movie')
+    return data
   } catch (e) {
     store.message.update(v => v + '\n' + e.toString())
     console.error(e)
