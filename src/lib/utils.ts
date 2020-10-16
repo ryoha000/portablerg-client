@@ -96,16 +96,20 @@ const getArrayBufferFromBlob = async (blob: Blob): Promise<ArrayBuffer | string>
 }
 
 export const trimOutputMovie = async (from: number, to: number) => {
-  const ffmpeg = getFFmpeg()
-  const name = `${getDate()}.mp4`
-  await ffmpeg.trim(
-    'output.mp4',
-    name,
-    getHHMMSS(from),
-    getHHMMSS(to),
-    '-vcodec copy -acodec copy -strict -2'
-  )
-  return name
+  try {
+    const ffmpeg = getFFmpeg()
+    const name = `${getDate()}.mp4`
+    await ffmpeg.trim(
+      'output.mp4',
+      name,
+      getHHMMSS(from),
+      getHHMMSS(to),
+      '-vcodec copy -acodec copy -strict -2'
+    )
+    return name
+  } catch (e) {
+    store.message.update(v => v + ' ' + e.toString())
+  }
 }
 
 export const saveMovie = async (name: string) => {
@@ -121,6 +125,7 @@ export const saveMovie = async (name: string) => {
 }
 
 const getHHMMSS = (num: number) => {
+  store.message.update(v => v + ' ' + num / 1000 + `  ${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`)
   console.log(num / 1000, `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`)
   return `${getHours(num)}:${getMinutes(num)}:${getSeconds(num)}`
 }
