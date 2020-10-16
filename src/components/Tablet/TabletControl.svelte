@@ -11,7 +11,7 @@
       style: string
     }[]
   }
-  export let dc: RTCDataChannel
+  export let dc: RTCDataChannel | null
   export let container: HTMLDivElement
 
   const dispatch = createEventDispatcher();

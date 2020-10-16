@@ -47,7 +47,8 @@ const useTemplate = (container: HTMLElement) => {
     })
   }
 
-  const setupHandler = (ele: HTMLElement, type: ControlType) => {
+  const setupHandler = (ele: HTMLElement | null, type: ControlType) => {
+    if (!ele) return
     if (rects.length < 4) {
       console.error('not initialize')
       return

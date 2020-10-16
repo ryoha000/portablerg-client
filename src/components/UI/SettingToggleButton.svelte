@@ -3,7 +3,7 @@
   import { push } from 'svelte-spa-router'
   
   export let iconName: string
-  export let openSetting = (e: Event) => {}
+  export let openSetting: (e: Event) => void = () => {}
   const sleep = (msec: number) => new Promise(resolve => setTimeout(resolve, msec))
 
   const toggle = async (e: MouseEvent | TouchEvent) => {

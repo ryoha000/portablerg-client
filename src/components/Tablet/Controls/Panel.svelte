@@ -1,21 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { store } from '../../../store';
   import { ControlType } from '../useSetting';
   import useKey from './use/useKey';
   import useScroll from './use/useScroll';
   import useTouch from './use/useTouch'
 
   export let style: string
-  export let dc: RTCDataChannel
+  export let dc: RTCDataChannel | null
   export let type: ControlType
   export let rootContainer: HTMLDivElement
   let container: HTMLElement
 
-  let id: null | string = null
-  store.me.subscribe(v => id = v)
-
   onMount(() => {
+    if (!dc) return
     switch (type) {
       case ControlType.Panel: {
         const { init } = useTouch(dc, rootContainer)

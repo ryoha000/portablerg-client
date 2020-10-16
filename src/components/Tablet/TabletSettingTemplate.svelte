@@ -9,8 +9,10 @@
   import useDB from '../../lib/useDB'
   import { store } from '../../store';
 
+  type DictEle = { [ key: string ]: null | HTMLElement }
+
   let container: HTMLElement
-  let elements = {
+  let elements: DictEle = {
     '0': null,
     '1': null,
     '2': null,
@@ -28,7 +30,7 @@
   init()
 
   const { init: initDB, addTemplate } = useDB()
-  let addCon
+  let addCon: any
   onMount(async () => {
     const prev = get(store.setting)
     if (!prev) {
