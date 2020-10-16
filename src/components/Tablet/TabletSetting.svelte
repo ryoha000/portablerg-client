@@ -60,12 +60,12 @@
 {#if isOpenToggleSetting}
   <div class="layer" on:click="{closeToggleSetting}"></div>
   <div class="settingContainer" on:click="{closeToggleSetting}">
-    <div on:click="{(e) => {closeToggleSetting(e);toggleTabletMode(e)}}" on:touchstart="{(e) => {closeToggleSetting(e);toggleTabletMode(e)}}" class="settingItem">{isTabletMode ? 'タブレットモードを解除する' : 'タブレットモードにする'}</div>
-    <div on:click="{() => push('/setting/layout')}" on:touchstart="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
-    <div on:click="{() => push('/setting/template')}" on:touchstart="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
-    <div on:click="{() => push('/setting/sort')}" on:touchstart="{() => push('/setting/sort')}" class="settingItem">コントロールのテンプレートを並び替える</div>
-    <div on:click="{captureAndSave}" on:touchstart="{captureAndSave}" class="settingItem">スクリーンショットを保存する</div>
-    <div on:click="{editMovie}" on:touchstart="{editMovie}" class="settingItem">動画を保存する</div>
-    <div on:click="{connectHost}" on:touchstart="{connectHost}" class="settingItem">再接続する</div>
+    <div on:click="{toggleTabletMode}" class="settingItem">{isTabletMode ? 'タブレットモードを解除する' : 'タブレットモードにする'}</div>
+    <div on:click="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
+    <div on:click="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
+    <div on:click="{() => push('/setting/sort')}" class="settingItem">コントロールのテンプレートを並び替える</div>
+    <div on:click="{captureAndSave}" class="settingItem">スクリーンショットを保存する</div>
+    <div on:click="{editMovie}" class="settingItem">動画を保存する</div>
+    <div on:click="{connectHost}" class="settingItem">再接続する</div>
   </div>
 {/if}

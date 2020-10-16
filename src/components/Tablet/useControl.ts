@@ -29,7 +29,7 @@ export const getNextIndex = (nowIndex: number, d: 1 | -1) => {
   return nowIndex + d
 }
 
-export const toggleTabletMode = async (e: Event) => {
+export const toggleTabletMode = async () => {
   const prev: boolean = get(store.isTabletMode)
   const dc: RTCDataChannel | null = get(store.dataChannel)
   if (prev && dc) {
