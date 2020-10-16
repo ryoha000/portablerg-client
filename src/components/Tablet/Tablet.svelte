@@ -19,8 +19,6 @@
   let isIOS = false
   store.isIOS.subscribe(v => isIOS = v)
   let container: HTMLDivElement
-  let message = ''
-  store.message.subscribe(v => message = v)
 
   onMount(() => {
     if (!get(store.me)) {
@@ -74,7 +72,6 @@
   }
 </style>
 
-<div>{message}</div>
 <div class="container" bind:this="{container}">
   {#if dc && container && !isTabletMode}
     {#each $controlStyles as controlStyle, i}

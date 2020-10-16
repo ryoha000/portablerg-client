@@ -17,9 +17,7 @@
   onMount(() => {
     init(video)
   })
-  let m = ''
-  store.message.subscribe(v => m = v)
-  
+
   let played = false
   const firstPlay = (e: Event) => {
     e.stopPropagation()
@@ -71,7 +69,6 @@
 {/if}
 <!-- svelte-ignore a11y-media-has-caption -->
 <div class="container">
-  <div>{m}</div>
   <video src="{srcURL}" bind:this="{video}" on:click="{togglePlay}" />
   <div class="sliderContainer">
     <Slider value={[0, 1]} on:change="{change}" />

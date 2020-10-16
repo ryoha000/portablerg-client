@@ -54,6 +54,9 @@ export const editMovie = async () => {
       buffer = v.splice(0)
       return v
     })
+    console.log(`${buffer.length * CHUNK_BEHINDE / 1000}s`)
+    // @ts-expect-error
+    console.log(`${get(store.buffer).length * CHUNK_BEHINDE / 1000}s`)
     const blob = new Blob(buffer)
     const arrBuf = await getArrayBufferFromBlob(blob)
     if (typeof arrBuf === 'string' || !arrBuf) {
@@ -76,17 +79,14 @@ export const transcode = async (dataArr: Uint8Array) => {
       await ffmpeg.remove(name)
     } catch {}
     await ffmpeg.write(name, dataArr);
-    store.message.update(v => v + '   ' + 'upsert record.webm')
     try {
       await ffmpeg.remove('output.mp4')
     } catch {}
     await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
-    store.message.update(v => v + '\n' + 'transcorded')
     const { data } = await ffmpeg.read('output.mp4');
-    store.message.update(v => v + '\n' + 'read output.mp4')
     return data
   } catch (e) {
-    store.message.update(v => v + '\n' + e.toString())
+    await transcode(dataArr)
     console.error(e)
   }
   return
@@ -114,13 +114,15 @@ export const trimOutputMovie = async (from: number, to: number) => {
     )
     return name
   } catch (e) {
-    store.message.update(v => v + ' ' + e.toString())
+    await trimOutputMovie(from, to)
+    console.error(e)
   }
 }
 
 export const saveMovie = async (name: string) => {
   const ffmpeg = getFFmpeg()
   const { data } = await ffmpeg.read(name);
+  await ffmpeg.remove(name)
   store.downloadBlob.set({
     data: new Blob([data.buffer], { type: 'video/mp4' }),
     type: 'mp4',
@@ -185,7 +187,6 @@ export const captureAndSave = async () => {
     }
     canvas.width = size.width
     canvas.height = size.height
-    alert(JSON.stringify(size))
     canvas.getContext('2d')?.drawImage((ele as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
     canvas.toBlob(blob => {
       if (blob) {
@@ -212,7 +213,7 @@ export const waitDownload = () => {
   })
 }
 
-const CHUNK_BEHINDE = 50
+const CHUNK_BEHINDE = 20
 const MAX_RECORD_MINUTES = 5
 const MAX_CHUNK_LENGTH = MAX_RECORD_MINUTES * 60 * 1000 / CHUNK_BEHINDE
 

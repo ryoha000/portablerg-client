@@ -1,8 +1,6 @@
 import type { SliderEvent } from "svelte-slider"
 import { writable } from "svelte/store"
 import { saveMovie, trimOutputMovie } from "../../../lib/utils"
-import { store } from "../../../store"
-
 
 export const movieDuration = writable(0)
 
@@ -15,29 +13,29 @@ const useTabletMovie = () => {
 
   const init = (videoEle: HTMLMediaElement) => {
     try {
-      videoEle.onloadedmetadata = (e) => {
+      videoEle.onloadedmetadata = () => {
         duration = videoEle.duration
-        store.message.update(v => v + '  set duration: ' + duration)
         movieDuration.set(duration)
       }
       videoEle.addEventListener('timeupdate', () => {
         currentTime = videoEle.currentTime
         if (endTime * duration < currentTime) {
           videoEle.pause()
+          currentTime = startTime * duration
+          videoEle.currentTime = currentTime
         }
       })
       ele = videoEle
-      endTime = duration
     } catch (e) {
-      store.message.update(v => v + JSON.stringify({ type: 'Error', data: e.toString() }))
+      console.error(e)
     }
     return
   }
 
   const change = (e: SliderEvent) => {
     try {
-      if (!ele) return
       const arr = e.detail
+      if (!ele || arr.length !== 2) return
       if (arr[0] === startTime || arr[0] === endTime) {
         currentTime = duration * arr[1]
         ele.currentTime = currentTime
@@ -47,16 +45,19 @@ const useTabletMovie = () => {
         ele.currentTime = currentTime
       }
       [startTime, endTime] = arr
+      if (startTime === endTime) {
+        console.log(duration)
+      }
       movieDuration.set((endTime - startTime) * duration)
     } catch (e) {
-      store.message.update(v => v + JSON.stringify({ type: 'Error', data: e.toString() }))
+      console.error(e)
     }
   }
 
   const confirmSave = async () => {
     try {
       if (startTime === endTime) {
-        alert('開始時刻と終了時刻が同じです')
+        alert(`開始時刻と終了時刻が同じです。startTime: ${startTime}, endTime: ${endTime}`)
         return
       }
       const title = await trimOutputMovie(startTime * duration, endTime * duration)
@@ -64,13 +65,12 @@ const useTabletMovie = () => {
         await saveMovie(title)
       }
     } catch (e) {
-      store.message.update(v => v + JSON.stringify({ type: 'Error', data: e.toString() }))
+      console.error(e)
     }
   }
 
   const togglePlay = async () => {
     try {
-      store.message.update(v => v + '  toggle play')
       if (!ele) return
       if (ele.currentTime === duration * endTime) {
         ele.currentTime = duration * startTime
@@ -81,7 +81,7 @@ const useTabletMovie = () => {
         ele.pause()
       }
     } catch (e) {
-      store.message.update(v => v + JSON.stringify({ type: 'Error', data: e.toString() }))
+      console.error(e)
     }
   }
   return { init, change, confirmSave, togglePlay }
