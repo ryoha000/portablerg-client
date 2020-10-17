@@ -6,6 +6,7 @@
   import useWebRTC from '../../lib/webRTC'
   import { captureAndSave, sendDataMessage } from '../../lib/utils'
   import { get } from 'svelte/store';
+  import Dialog from './Dialog.svelte'
 
   let isOpenToggleSetting = false
   let isTabletMode = false
@@ -32,24 +33,6 @@
 </script>
 
 <style>
-  .layer {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 11;
-    position: absolute;
-  }
-  .settingContainer {
-    background-color: white;
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    z-index: 999999;
-    border: rgba(0, 0, 0, 0.7) solid 1px;
-    display: flex;
-    flex-direction: column;
-  }
   .settingItem {
     border-bottom: rgba(0, 0, 0, 0.7) solid 1px;
     padding: 1rem;
@@ -62,8 +45,7 @@
 
 <SettingToggleButton iconName="cog" openSetting="{openToggleSetting}" />
 {#if isOpenToggleSetting}
-  <div class="layer" on:click="{closeToggleSetting}"></div>
-  <div class="settingContainer" on:click="{closeToggleSetting}">
+  <Dialog style="top: 2rem; right: 2rem;" on:close="{closeToggleSetting}">
     <div on:click="{toggleTabletMode}" class="settingItem">{isTabletMode ? 'タブレットモードを解除する' : 'タブレットモードにする'}</div>
     <div on:click="{() => push('/setting/layout')}" class="settingItem">レイアウトの設定を開く</div>
     <div on:click="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
@@ -73,5 +55,5 @@
       <div on:click="{editMovie}" class="settingItem">動画を保存する</div>
     {/if}
     <div on:click="{connectHost}" class="settingItem">再接続する</div>
-  </div>
+  </Dialog>
 {/if}
