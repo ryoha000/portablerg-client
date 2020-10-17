@@ -29,6 +29,7 @@
       sendDataMessage({ type: 'movie' }, dc)
     }
   }
+  alert(navigator.userAgent)
   let isChromeInIOS = get(store.isIOS) && navigator.userAgent.match(/crios/i)
 </script>
 
