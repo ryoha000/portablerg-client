@@ -72,7 +72,8 @@
     position: absolute;
     top: 120px;
     left: 0;
-    background-color: rgba(255, 0, 0, 0.5);
+    border: solid black 2px;
+    flex-direction: column;
   }
   .center {
     display: flex;
@@ -98,6 +99,9 @@
       <span>{getControlKeyName(control.type)}</span>
     </div>
   {/each}
-  <div style="height: {containerSize.height}px; width: {containerSize.width}px" class="controls center"><span>コントロール</span></div>
+  <div style="height: {containerSize.height}px; width: {containerSize.width}px" class="controls center">
+    <div>コントロール</div>
+    <div>枠内に使用したいアイテムを入れてください</div>
+  </div>
   <div class="confirm"><TextButton on:click="{confirm}" on:touchstart="{confirm}" label="確定" /></div>
 </div>
