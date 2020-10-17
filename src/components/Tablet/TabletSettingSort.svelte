@@ -61,5 +61,5 @@
       </div>
     </div>
   {/each}
-  <TextButton on:click="{confirm}" on:touchstart="{confirm}" label="確定" />
 </div>
+<TextButton on:click="{confirm}" label="確定" />

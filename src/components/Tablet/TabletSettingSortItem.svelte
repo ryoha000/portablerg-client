@@ -40,6 +40,6 @@
 <div class="types">
   {controlStyle.controls.map(v => getControlKeyName(v.type)).join(', ')}
 </div>
-<div class="deleteButton" on:click="{deleteTemplate}">
+<div class="deleteButton" on:click="{deleteTemplate}" on:touchstart="{deleteTemplate}">
   <Icon name="trash-can" size="{32}" />
 </div>
