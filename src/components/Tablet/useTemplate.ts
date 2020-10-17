@@ -16,6 +16,7 @@ interface MetaControls {
     y: number
   }
   isDragging: boolean
+  color: RGBA
 }
 
 const useTemplate = () => {
@@ -29,8 +30,6 @@ const useTemplate = () => {
   const rects = writable<MetaControls[]>([])
   let substanceRects: MetaControls[] = []
   rects.subscribe(v => substanceRects = v)
-
-  const color = writable<RGBA>([0, 0, 0, 0.1])
 
   const controls: Readable<Control[]> = derived(rects, $rects => {
     const res: Control[] = []
@@ -46,7 +45,7 @@ const useTemplate = () => {
             width: `${$rects[index].width}px`,
             height: `${$rects[index].height}px`
           },
-          color: get(color),
+          color: $rects[index].color,
           type: $rects[index].type,
           zIndex: 1
         })
@@ -60,7 +59,7 @@ const useTemplate = () => {
             width: `0px`,
             height: `0px`
           },
-          color: get(color),
+          color: [0, 0, 0, 0.1],
           type: type,
           zIndex: 1
         })
@@ -68,19 +67,6 @@ const useTemplate = () => {
     }
     return res
   })
-
-  // for (const type of Object.values(ControlType)) {
-  //   rects.push({
-  //     x: REM * 6 * type + REM,
-  //     y: 0,
-  //     width: 5 * REM,
-  //     height: 5 * REM
-  //   })
-  //   distanceCenters.push({
-  //     x: 0,
-  //     y: 0
-  //   })
-  // }
 
   const setupHandler = (ele: HTMLElement,type: ControlType, borderElement: HTMLElement) => {
     if (!region || !container) {
@@ -176,7 +162,8 @@ const useTemplate = () => {
           x: 0,
           y: 0
         },
-        isDragging: false
+        isDragging: false,
+        color: [0, 0, 0, 0.1]
       })
       return $rects
     })
