@@ -40,6 +40,7 @@ export const playVideo = (element : HTMLMediaElement, stream: MediaStream) => {
     element.srcObject = stream
     element.onloadedmetadata = () => {
       console.log('loaded meta data')
+      alert('loaded meta data')
       element.play();
     }
   } catch(error) {
@@ -107,7 +108,7 @@ export const trimOutputMovie = async (from: number, to: number) => {
       name,
       getHHMMSS(from),
       getHHMMSS(to),
-      '-vcodec copy -acodec copy -strict -2'
+      '-vcodec copy -strict -2'
     )
     return name
   } catch (e) {
