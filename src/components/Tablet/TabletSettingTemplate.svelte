@@ -58,8 +58,8 @@
       const newControl = addControl(borderElement)
       if (newControl) {
         await addTemplate(newControl)
-        push('/client')
       }
+      push('/client')
     }
   }
 </script>
