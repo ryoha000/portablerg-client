@@ -8,7 +8,7 @@ import { getSize, WindowRect } from "../../../lib/coordinary";
 const TAP_OR_DRAG_TIME = 500
 
 const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
-  const container: HTMLDivElement | null = get(store.container)
+  const container: HTMLElement | null = get(store.container)
   let ratio = 1
   let winRect: WindowRect | null = get(store.windowRect)
   store.windowRect.subscribe(v => winRect = v)
