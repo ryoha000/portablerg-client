@@ -1,59 +1,71 @@
 import ZingTouch from '../../lib/ZingTouch/ZingTouch'
-import { ControlType, Control, TabletSetting, getControlKeyName } from './useSetting'
-import { get, writable } from 'svelte/store'
+import { ControlType, Control, TabletSetting, getControlKeyName, RGBA } from './useSetting'
+import { derived, get, Readable, writable } from 'svelte/store'
 import type { NumRect } from './useLayout'
 import { store } from '../../store'
 
-export const controls = writable<Control[]>([])
-
-export const init = () => {
-  const initialControls :Control[] = []
-  for (const type of Object.values(ControlType)) {
-    initialControls.push({
-      rect: {
-        start: {
-          x: `${REM * 6 * type + REM}px`,
-          y: '0px'
-        },
-        width: `${5 * REM}px`,
-        height: `${5 * REM}px`
-      },
-      color: [0, 0, 0, 0.1],
-      type: type,
-      zIndex: 1
-    })
+interface MetaControls {
+  ele: HTMLElement
+  type: ControlType
+  x: number
+  y: number
+  width: number
+  height: number
+  distanceCenter: {
+    x: number
+    y: number
   }
-  controls.set(initialControls)
+  isDragging: boolean
 }
 
-const REM = 16
-const useTemplate = (container: HTMLElement) => {
-  const region: Region = new ZingTouch.Region(container, true, true);
-  const rects: { x: number, y: number, width: number, height: number }[] = []
-  const distanceCenters: { x: number, y: number }[] = []
-  const elements: (null | HTMLElement)[] = Array(Object.values(ControlType).length).map(_ => null)
-  let isDragging = Array(Object.values(ControlType).length).map(_ => false)
-
-  for (const type of Object.values(ControlType)) {
-    rects.push({
-      x: REM * 6 * type + REM,
-      y: 0,
-      width: 5 * REM,
-      height: 5 * REM
-    })
-    distanceCenters.push({
-      x: 0,
-      y: 0
-    })
+const useTemplate = () => {
+  let container: HTMLElement | null = null
+  let region: Region | null = null
+  const init = (containerElement: HTMLElement) => {
+    region = new ZingTouch.Region(containerElement, false, true);
+    container = containerElement
   }
 
-  const setupHandler = (ele: HTMLElement | null, type: ControlType) => {
-    if (!ele) return
-    if (rects.length < 4) {
+  const rects = writable<MetaControls[]>([])
+  let substanceRects: MetaControls[] = []
+  rects.subscribe(v => substanceRects = v)
+
+  const color = writable<RGBA>([0, 0, 0, 0.1])
+
+  const controls: Readable<Control[]> = derived(rects, $rects => {
+    return $rects.map(rect => ({
+      rect: {
+        start: {
+          x: `${rect.x}px`,
+          y: `${rect.y}px`
+        },
+        width: `${rect.width}px`,
+        height: `${rect.height}px`
+      },
+      color: get(color),
+      type: rect.type,
+      zIndex: 1
+    }))
+  })
+
+  // for (const type of Object.values(ControlType)) {
+  //   rects.push({
+  //     x: REM * 6 * type + REM,
+  //     y: 0,
+  //     width: 5 * REM,
+  //     height: 5 * REM
+  //   })
+  //   distanceCenters.push({
+  //     x: 0,
+  //     y: 0
+  //   })
+  // }
+
+  const setupHandler = (ele: HTMLElement,type: ControlType, borderElement: HTMLElement) => {
+    if (!region || !container) {
       console.error('not initialize')
       return
     }
-    elements[type] = ele
 
     const onPanStart = (inputs: ZingInput[]) => {
       if (inputs.length === 0) {
@@ -61,29 +73,27 @@ const useTemplate = (container: HTMLElement) => {
         return
       }
       const initial = inputs[0].initial
-      isDragging = Array(Object.values(ControlType).length).map(_ => false)
-      rects.forEach((rect, i) => {
-        if (rect.x < initial.x && initial.x < rect.x + rect.width && rect.y < initial.y && initial.y < rect.y + rect.height) {
-          isDragging[i] = true
-        }
-      })
+      rects.update($rects => $rects.map(($rect, i) => {
+        const isDragging = $rect.x < initial.x && initial.x < $rect.x + $rect.width && $rect.y < initial.y && initial.y < $rect.y + $rect.height
+        console.log('moving', i, isDragging, $rect)
+        return { ...$rect, isDragging }
+      }))
     }
 
     const onPanMove = (inputs: ZingInput[], state: any, element: HTMLElement, output: PanData) => {
       if (!output || output.data.length === 0) {
         return
       }
-      const draggingIndex = isDragging.findIndex(v => v === true)
+      const draggingIndex = substanceRects.findIndex(v => v.isDragging === true)
       if (draggingIndex === -1) {
         return
       }
+
       const data = output.data[0]
-      rects[draggingIndex].x += data.change.x
-      rects[draggingIndex].y += data.change.y
-      const prev: Control[] = get(controls)
-      prev[draggingIndex].rect.start.x = `${rects[draggingIndex].x}px`
-      prev[draggingIndex].rect.start.y = `${rects[draggingIndex].y}px`
-      controls.set(prev)
+      rects.update($rects => $rects.map(($rect, index) => {
+        if (index !== draggingIndex) return $rect
+        return { ...$rect, x: $rect.x + data.change.x, y: $rect.y + data.change.y }
+      }))
     }
 
     const customPan = new ZingTouch.Pan({ onStart: onPanStart, onMove: onPanMove })
@@ -93,39 +103,67 @@ const useTemplate = (container: HTMLElement) => {
       if (inputs.length < 2) {
         return
       }
-      distanceCenters[type] = {
+      const distanceCenter = {
         x: (inputs[0].current.x + inputs[1].current.x) / 2,
         y: (inputs[0].current.y + inputs[1].current.y) / 2,
       }
+      rects.update($rects => $rects.map($rect => {
+        if ($rect.type !== type) return $rect
+        return { ...$rect, distanceCenter }
+      }))
     }
     const onDistanceMove = (inputs: ZingInput[], state: any, element: HTMLElement, movement: DistanceData) => {
       if (!movement || inputs.length < 2) {
         return
       }
-      const change1 = getChange(distanceCenters[type], inputs[0])
-      const change2 = getChange(distanceCenters[type], inputs[1])
-      if (inputs[0].current.x < inputs[1].current.x) {
-        rects[type].x -= change1.x
-        rects[type].y -= change1.y
-        rects[type].width += change1.x + change2.x
-        rects[type].height += change1.y + change2.y
-      } else {
-        rects[type].x -= change2.x
-        rects[type].y -= change2.y
-        rects[type].width += change1.x + change2.x
-        rects[type].height += change1.y + change2.y
+      const distanceCenter = substanceRects.find(v => v.type === type)?.distanceCenter
+      if (!distanceCenter) {
+        console.log('the type is not found')
+        return
       }
-      const prev: Control[] = get(controls)
-      prev[type].rect.start.x = `${rects[type].x}px`
-      prev[type].rect.start.y = `${rects[type].y}px`
-      prev[type].rect.width = `${rects[type].width}px`
-      prev[type].rect.height = `${rects[type].height}px`
-      controls.set(prev)
+      const change1 = getChange(distanceCenter, inputs[0])
+      const change2 = getChange(distanceCenter, inputs[1])
+      rects.update($rects => $rects.map($rect => {
+        if ($rect.type !== type) return $rect
+        if (inputs[0].current.x < inputs[1].current.x) {
+          $rect.x -= change1.x
+          $rect.y -= change1.y
+          $rect.width += change1.x + change2.x
+          $rect.height += change1.y + change2.y
+        } else {
+          $rect.x -= change2.x
+          $rect.y -= change2.y
+          $rect.width += change1.x + change2.x
+          $rect.height += change1.y + change2.y
+        }
+        return { ...$rect, distanceCenter }
+      }))
     }
     const customDistance: Distance = new ZingTouch.Distance({ onStart: onDistanceStart, onMove: onDistanceMove })
     region.bind(ele, customDistance, () => {})
+
+    const side = 5 * 16
+    const borderElementRect = borderElement.getBoundingClientRect()
+    rects.update($rects => {
+      $rects.push({
+        ele: ele,
+        type: type,
+        x: (window.innerWidth - side) / 2,
+        y: borderElementRect.y + (borderElementRect.height - side) / 2,
+        width: side,
+        height: side,
+        distanceCenter: {
+          x: 0,
+          y: 0
+        },
+        isDragging: false
+      })
+      return $rects
+    })
+    // 見えるように
+    ele.classList.remove('invisible')
   }
-  const addControl = (width: number, height: number) => {
+  const addControl = (borderElement: HTMLElement) => {
     const prev: TabletSetting | null = get(store.setting)
     if (!prev) return
     let maxID = -1
@@ -135,18 +173,17 @@ const useTemplate = (container: HTMLElement) => {
       }
     }
     const newControls: Control[] = []
-    const containerRect = { x: 0, y: 120, width: width, height: height }
-    for (const type of Object.values(ControlType)) {
-      const rect = rects[type]
+    const containerRect = borderElement.getBoundingClientRect()
+    for (const rect of substanceRects) {
       const percentRect = getRect(rect, containerRect)
       if (!percentRect) {
-        console.log(getControlKeyName(type), ' is not contain')
+        console.log(getControlKeyName(rect.type), ' is not contain')
         continue
       }
       newControls.push({
         rect: percentRect,
         color: [0, 0, 0, 0.1],
-        type: type,
+        type: rect.type,
         zIndex: 1
       })
     }
@@ -161,7 +198,7 @@ const useTemplate = (container: HTMLElement) => {
     store.setting.set(prev)
     return newControl
   }
-  return { setupHandler, addControl }
+  return { controls, init, setupHandler, addControl }
 };
 
 const getChange = (center: { x: number, y: number }, input: ZingInput) => {

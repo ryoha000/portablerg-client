@@ -2,6 +2,7 @@
   import Dialog from './Dialog.svelte'
   import LoginButton from '../UI/LoginButton.svelte';
   import { ControlType, getAddControlWords } from './useSetting';
+  import { createEventDispatcher } from 'svelte';
 
   let style = ''
 
@@ -12,14 +13,17 @@
     e.stopPropagation()
   }
   const closeDialog = (e: Event) => {
+    console.log('close')
     isOpenDialog = false
     e.stopPropagation()
   }
 
   const existed = Object.values(ControlType).map(() => false)
+  const dispatch = createEventDispatcher();
   const addControlItem = (type: ControlType) => {
+    console.log(type)
     if (existed[type]) return
-    // moromoro
+    dispatch('add', { type: type })
     existed[type] = true
   }
 </script>

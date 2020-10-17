@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import { getStyleFromRect, ControlType, getControlKeyName } from './useSetting'
-  import useTemplate, { controls, init } from './useTemplate'
+  import useTemplate from './useTemplate'
   import TextButton from '../UI/TextButton.svelte'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
@@ -10,10 +10,13 @@
   import useDB from '../../lib/useDB'
   import { store } from '../../store';
 
-  type DictEle = { [ key: string ]: null | HTMLElement }
+  type ControlElements = {
+    [key in ControlType]: null | HTMLElement;
+  };
 
-  let container: HTMLElement
-  let elements: DictEle = {
+  let container: HTMLElement | null = null
+  let borderElement: HTMLElement | null = null
+  let elements: ControlElements = {
     '0': null,
     '1': null,
     '2': null,
@@ -28,25 +31,30 @@
     width: Math.min(Math.min(window.innerWidth, 800), Math.min((window.innerHeight - 160) * RATIO)),
     height: Math.min(Math.min(window.innerWidth / RATIO, 800 / RATIO), Math.min(window.innerHeight - 160))
   }
-  init()
 
+  const { init: initTemplate, controls, setupHandler, addControl } = useTemplate()
   const { init: initDB, addTemplate } = useDB()
-  let addCon: any
   onMount(async () => {
     const prev = get(store.setting)
     if (!prev) {
       await initDB()
     }
-    const { setupHandler, addControl } = useTemplate(container)
-    addCon = addControl
-    for (const type of Object.values(ControlType)) {
-      if (elements[`${type}`] !== null) {
-        setupHandler(elements[`${type}`], type)
-      }
+    if (!container) {
+      console.error('container is not setted')
+      return
     }
+    initTemplate(container)
   })
+  const addItem = (e: CustomEvent<{ type: ControlType }>) => {
+    const type = e.detail.type
+    console.log('addItem: ', type)
+    if (elements[type]) {
+      console.log('element exist')
+      setupHandler(elements[type], type, borderElement)
+    }
+  }
   const confirm = async () => {
-    const newControl = addCon(containerSize.width, containerSize.height)
+    const newControl = addControl(borderElement)
     await addTemplate(newControl)
     push('/client')
   }
@@ -66,11 +74,11 @@
   .headerItem {
     background-color: rgba(0, 0, 0, 0.1);
     position: absolute;
+    /* top: 0;
+    left: 0; */
     z-index: 10;
   }
   .controls {
-    z-index: 7;
-    position: absolute;
     top: 120px;
     left: 0;
     border: solid black 2px;
@@ -82,6 +90,13 @@
     align-items: center;
     font-size: 1.5rem;
   }
+  .center.invisible {
+    display: none;
+  }
+  .controlsContainer {
+    padding: 5rem 0;
+    width: 100%;
+  }
   .confirm {
     margin-top: auto;
     margin-bottom: 8rem;
@@ -89,21 +104,27 @@
   }
 </style>
 
-<div class="container" bind:this="{container}">
+<div class="container">
   <SettingToggleButton iconName="close" />
-  <TabletSettingTemplateAdd />
-  <!-- {#each $controls as control}
+  <TabletSettingTemplateAdd on:add="{addItem}" />
+  <div class="controlsContainer center" bind:this="{container}">
+    {#each Object.values(ControlType) as type}
+      <div
+        class="center headerItem invisible"
+        style="{$controls.find(v => v.type === type) ? getStyleFromRect($controls.find(v => v.type === type).rect) : ''}"
+        bind:this="{elements[type]}"
+      >
+        <span>{getControlKeyName(type)}</span>
+      </div>
+    {/each}
     <div
-      class="center headerItem"
-      style="{getStyleFromRect(control.rect)}"
-      bind:this="{elements[`${control.type}`]}"
+      style="height: {containerSize.height}px; width: {containerSize.width}px"
+      class="controls center"
+      bind:this="{borderElement}"
     >
-      <span>{getControlKeyName(control.type)}</span>
+      <div>コントロール</div>
+      <div>枠内に使用したいアイテムを入れてください</div>
     </div>
-  {/each} -->
-  <div style="height: {containerSize.height}px; width: {containerSize.width}px" class="controls center">
-    <div>コントロール</div>
-    <div>枠内に使用したいアイテムを入れてください</div>
   </div>
   <div class="confirm"><TextButton on:click="{confirm}" on:touchstart="{confirm}" label="確定" /></div>
 </div>

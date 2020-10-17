@@ -7,7 +7,7 @@ export interface TabletSetting {
   controlTemplates: ControlTemplate[]
 }
 
-type RGBA = [number, number, number, number]
+export type RGBA = [number, number, number, number]
 
 export interface ControlTemplate {
   id: number
