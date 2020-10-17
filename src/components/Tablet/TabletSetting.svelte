@@ -30,7 +30,7 @@
     }
   }
   alert(navigator.userAgent)
-  let isChromeInIOS = get(store.isIOS) && navigator.userAgent.match(/crios/i)
+  let isChromeInIOS = (get(store.isIOS) && /crios/i.test(navigator.userAgent))
 </script>
 
 <style>
