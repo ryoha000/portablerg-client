@@ -23,7 +23,10 @@
   }
   const { connectHost } = useWebRTC()
   const editMovie = () => {
-    sendDataMessage({ type: 'movie' }, get(store.dataChannel))
+    const dc: RTCDataChannel | null = get(store.dataChannel)
+    if (dc) {
+      sendDataMessage({ type: 'movie' }, dc)
+    }
   }
 </script>
 
