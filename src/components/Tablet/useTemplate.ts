@@ -222,7 +222,7 @@ const getChange = (center: { x: number, y: number }, input: ZingInput) => {
   }
 }
 
-const getRect = (rect: NumRect, containerRect: NumRect) => {
+const getRect = (rect: NumRect, containerRect: DOMRect) => {
   const x = getStartPoint(rect.x , containerRect.x, containerRect.width)
   const y = getStartPoint(rect.y , containerRect.y, containerRect.height)
   const width = rect.width / containerRect.width
@@ -246,6 +246,8 @@ const getRect = (rect: NumRect, containerRect: NumRect) => {
 const getPercentSize = (point: number, size: number) => {
   // 正の方向ににはみ出してるとき
   if (point + size > 1) {
+    const num = 1 - point
+    if (num > 1) return getPercent(1)
     return getPercent(1 - point)
   }
   // 負の方向にはみ出してるとき
