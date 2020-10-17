@@ -78,7 +78,7 @@ export const transcode = async (dataArr: Uint8Array) => {
     try {
       await ffmpeg.remove('output.mp4')
     } catch {}
-    await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -acodec copy -strict -2');
+    await ffmpeg.transcode(name, 'output.mp4', '-vcodec copy -strict -2');
     const { data } = await ffmpeg.read('output.mp4');
     store.editableMovie.set(data)
     push('/movie')
@@ -108,7 +108,7 @@ export const trimOutputMovie = async (from: number, to: number) => {
       name,
       getHHMMSS(from),
       getHHMMSS(to),
-      '-vcodec copy -strict -2'
+      '-vcodec copy -acodec copy -strict -2'
     )
     return name
   } catch (e) {
