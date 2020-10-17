@@ -34,7 +34,7 @@
     cursor: pointer;
   }
   .disable {
-    opacity: 0.5;
+    color: rgba(0, 0, 0, 0.5);
   }
   .settingItem:last-of-type {
     border-bottom: 0;
