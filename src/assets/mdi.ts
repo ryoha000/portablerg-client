@@ -7,7 +7,8 @@ import {
   mdiTrashCan,
   mdiGoogle,
   mdiGithub,
-  mdiCastConnected
+  mdiCastConnected,
+  mdiPlusThick
 } from '@mdi/js'
 
 const mdi = new Map<string, string>([
@@ -19,7 +20,8 @@ const mdi = new Map<string, string>([
   ['trash-can', mdiTrashCan],
   ['google', mdiGoogle],
   ['github', mdiGithub],
-  ['cast-connected', mdiCastConnected]
+  ['cast-connected', mdiCastConnected],
+  ['plus-thick', mdiPlusThick],
 ])
 
 export default mdi

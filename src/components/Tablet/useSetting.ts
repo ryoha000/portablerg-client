@@ -53,6 +53,27 @@ export const getControlKeyName = (type: ControlType) => {
   }
 }
 
+export const getAddControlWords = (type: ControlType) => {
+  switch (type) {
+    case 0:
+      return 'トラックパッドを追加する'
+    case 1:
+      return 'スクローラーを追加する'
+    case 2:
+      return 'エンターキーを追加する'
+    case 3:
+      return '↑キーを追加する'
+    case 4:
+      return '↓キーを追加する'
+    case 5:
+      return 'Ctrlキーを追加する'
+    default: {
+      console.error('this control type not supported')
+      return ''
+    }
+  }
+}
+
 export interface Rect {
   width: string
   height: string

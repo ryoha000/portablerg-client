@@ -6,6 +6,7 @@
   import TextButton from '../UI/TextButton.svelte'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
+  import TabletSettingTemplateAdd from './TabletSettingTemplateAdd.svelte'
   import useDB from '../../lib/useDB'
   import { store } from '../../store';
 
@@ -90,7 +91,8 @@
 
 <div class="container" bind:this="{container}">
   <SettingToggleButton iconName="close" />
-  {#each $controls as control}
+  <TabletSettingTemplateAdd />
+  <!-- {#each $controls as control}
     <div
       class="center headerItem"
       style="{getStyleFromRect(control.rect)}"
@@ -98,7 +100,7 @@
     >
       <span>{getControlKeyName(control.type)}</span>
     </div>
-  {/each}
+  {/each} -->
   <div style="height: {containerSize.height}px; width: {containerSize.width}px" class="controls center">
     <div>コントロール</div>
     <div>枠内に使用したいアイテムを入れてください</div>
