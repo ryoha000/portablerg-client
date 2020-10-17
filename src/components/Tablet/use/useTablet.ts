@@ -6,6 +6,7 @@ import type { TabletSetting } from "../useSetting";
 import { getSize, WindowRect } from "../../../lib/coordinary";
 
 const TAP_OR_DRAG_TIME = 500
+const SWIPE_MAGNIFICATION = 100
 
 const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
   const container: HTMLElement | null = get(store.container)
@@ -38,7 +39,7 @@ const useTablet = (dc: RTCDataChannel, ele: HTMLElement) => {
     region.bind(ele, 'swipe', (e: SwipeEvent) => {
       if (e.detail.data.length !== 0) {
         const data = e.detail.data[0]
-        const r = data.velocity * data.duration
+        const r = data.velocity * data.duration * SWIPE_MAGNIFICATION
         sendDataMessage(
           {
             type: 'scroll',
