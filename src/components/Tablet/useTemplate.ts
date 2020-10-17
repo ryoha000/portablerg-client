@@ -33,19 +33,40 @@ const useTemplate = () => {
   const color = writable<RGBA>([0, 0, 0, 0.1])
 
   const controls: Readable<Control[]> = derived(rects, $rects => {
-    return $rects.map(rect => ({
-      rect: {
-        start: {
-          x: `${rect.x}px`,
-          y: `${rect.y}px`
-        },
-        width: `${rect.width}px`,
-        height: `${rect.height}px`
-      },
-      color: get(color),
-      type: rect.type,
-      zIndex: 1
-    }))
+    const res: Control[] = []
+    for (const type of Object.values(ControlType)) {
+      const index = $rects.findIndex(v => v.type === type)
+      if (index > -1) {
+        res.push({
+          rect: {
+            start: {
+              x: `${$rects[index].x}px`,
+              y: `${$rects[index].y}px`
+            },
+            width: `${$rects[index].width}px`,
+            height: `${$rects[index].height}px`
+          },
+          color: get(color),
+          type: $rects[index].type,
+          zIndex: 1
+        })
+      } else {
+        res.push({
+          rect: {
+            start: {
+              x: `0px`,
+              y: `0px`
+            },
+            width: `0px`,
+            height: `0px`
+          },
+          color: get(color),
+          type: type,
+          zIndex: 1
+        })
+      }
+    }
+    return res
   })
 
   // for (const type of Object.values(ControlType)) {
