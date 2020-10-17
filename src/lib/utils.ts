@@ -165,13 +165,18 @@ const fullTime = (t: number) => {
 }
 
 const download = (blob: Blob, type: string) => {
-  const aTag = document.createElement("a");
-  document.body.appendChild(aTag)
-  aTag.download = `${getDate()}.${type}`
-  aTag.href = URL.createObjectURL(blob)
-  aTag.target = '_blank'
-  aTag.click()
-  aTag.remove()
+  // iOS Chromeはaタグのdownloadもtarget="_blank"も効かない
+  if (get(store.isIOS) && navigator.userAgent.match(/crios/i)) {
+    window.open(URL.createObjectURL(blob), '_blank')
+  } else {
+    const aTag = document.createElement("a");
+    document.body.appendChild(aTag)
+    aTag.download = `${getDate()}.${type}`
+    aTag.href = URL.createObjectURL(blob)
+    aTag.target = '_blank'
+    aTag.click()
+    aTag.remove()
+  }
 }
 
 export const captureAndSave = async () => {
