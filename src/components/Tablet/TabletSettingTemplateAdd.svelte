@@ -8,8 +8,8 @@
 
   let isOpenDialog = false
   const openDialog = (e: MouseEvent) => {
+    style = `top: ${e.y}px; left: ${e.x}px;`
     isOpenDialog = true
-    style = `top: ${e.y}; left: ${e.x};`
     e.stopPropagation()
   }
   const closeDialog = (e: Event) => {
