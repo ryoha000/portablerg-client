@@ -138,6 +138,6 @@ const getRGBA = (rgba: RGBA) => {
   return `rgba(${rgba.join(',')})`
 }
 
-const getStyleFromControl = (control: Control) => {
+export const getStyleFromControl = (control: Control) => {
   return `position: absolute; ${getStyleFromRect(control.rect)} z-index: ${control.zIndex}; background-color: ${getRGBA(control.color)};`
 }

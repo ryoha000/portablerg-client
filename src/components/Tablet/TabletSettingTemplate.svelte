@@ -1,22 +1,23 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
-  import { getStyleFromRect, ControlType, getControlKeyName } from './useSetting'
+  import { getStyleFromControl, ControlType, getControlKeyName } from './useSetting'
   import useTemplate from './useTemplate'
   import TextButton from '../UI/TextButton.svelte'
   import { push } from 'svelte-spa-router'
   import SettingToggleButton from '../UI/SettingToggleButton.svelte'
   import TabletSettingTemplateAdd from './TabletSettingTemplateAdd.svelte'
+  import TabletSettingTemplateColor from './TabletSettingTemplateColor.svelte'
   import useDB from '../../lib/useDB'
   import { store } from '../../store';
 
-  type ControlElements = {
-    [key in ControlType]: null | HTMLElement;
+  type ControlTypeDict<T> = {
+    [key in ControlType]: null | T;
   };
 
   let container: HTMLElement | null = null
   let borderElement: HTMLElement | null = null
-  let elements: ControlElements = {
+  let elements: ControlTypeDict<HTMLElement> = {
     '0': null,
     '1': null,
     '2': null,
@@ -32,7 +33,7 @@
     height: Math.min(Math.min(window.innerWidth / RATIO, 800 / RATIO), Math.min(window.innerHeight - 160))
   }
 
-  const { init: initTemplate, controls, setupHandler, addControl } = useTemplate()
+  const { init: initTemplate, controls, setupHandler, addControl, changeColor } = useTemplate()  
   const { init: initDB, addTemplate } = useDB()
   onMount(async () => {
     const prev = get(store.setting)
@@ -47,15 +48,18 @@
   })
   const addItem = (e: CustomEvent<{ type: ControlType }>) => {
     const type = e.detail.type
-    if (elements[type] && borderElement) {
-      setupHandler(elements[type], type, borderElement)
+    const ele = elements[type]
+    if (ele && borderElement) {
+      setupHandler(ele, type, borderElement)
     }
   }
   const confirm = async () => {
     if (borderElement) {
       const newControl = addControl(borderElement)
-      await addTemplate(newControl)
-      push('/client')
+      if (newControl) {
+        await addTemplate(newControl)
+        push('/client')
+      }
     }
   }
 </script>
@@ -74,8 +78,6 @@
   .headerItem {
     background-color: rgba(0, 0, 0, 0.1);
     position: absolute;
-    /* top: 0;
-    left: 0; */
     z-index: 10;
   }
   .controls {
@@ -106,12 +108,15 @@
 
 <div class="container">
   <SettingToggleButton iconName="close" />
-  <TabletSettingTemplateAdd on:add="{addItem}" />
+  <div>
+    <TabletSettingTemplateAdd on:add="{addItem}" />
+    <TabletSettingTemplateColor on:color="{(e) => changeColor(e.detail.rgba)}" />
+  </div>
   <div class="controlsContainer center" bind:this="{container}">
     {#each Object.values(ControlType) as type}
       <div
         class="center headerItem invisible"
-        style="{$controls.find(v => v.type === type) ? getStyleFromRect($controls.find(v => v.type === type).rect) : ''}"
+        style="{getStyleFromControl($controls[type])}"
         bind:this="{elements[type]}"
       >
         <span>{getControlKeyName(type)}</span>

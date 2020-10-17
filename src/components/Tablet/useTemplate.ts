@@ -30,6 +30,7 @@ const useTemplate = () => {
   const rects = writable<MetaControls[]>([])
   let substanceRects: MetaControls[] = []
   rects.subscribe(v => substanceRects = v)
+  let color: RGBA = [0, 0, 0, 0.1]
 
   const controls: Readable<Control[]> = derived(rects, $rects => {
     const res: Control[] = []
@@ -45,7 +46,7 @@ const useTemplate = () => {
             width: `${$rects[index].width}px`,
             height: `${$rects[index].height}px`
           },
-          color: $rects[index].color,
+          color: color,
           type: $rects[index].type,
           zIndex: 1
         })
@@ -59,7 +60,7 @@ const useTemplate = () => {
             width: `0px`,
             height: `0px`
           },
-          color: [0, 0, 0, 0.1],
+          color: color,
           type: type,
           zIndex: 1
         })
@@ -163,7 +164,7 @@ const useTemplate = () => {
           y: 0
         },
         isDragging: false,
-        color: [0, 0, 0, 0.1]
+        color: color
       })
       return $rects
     })
@@ -189,7 +190,7 @@ const useTemplate = () => {
       }
       newControls.push({
         rect: percentRect,
-        color: [0, 0, 0, 0.1],
+        color: color,
         type: rect.type,
         zIndex: 1
       })
@@ -205,7 +206,13 @@ const useTemplate = () => {
     store.setting.set(prev)
     return newControl
   }
-  return { controls, init, setupHandler, addControl }
+  const changeColor = (rgba: RGBA) => {
+    console.log('changeColor')
+    console.log(rgba)
+    color = rgba
+    rects.update(v => v.map($rect => ({ ...$rect, color: rgba })))
+  }
+  return { controls, init, setupHandler, addControl, changeColor }
 };
 
 const getChange = (center: { x: number, y: number }, input: ZingInput) => {

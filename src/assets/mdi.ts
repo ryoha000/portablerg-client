@@ -8,7 +8,8 @@ import {
   mdiGoogle,
   mdiGithub,
   mdiCastConnected,
-  mdiPlusThick
+  mdiPlusThick,
+  mdiPalette
 } from '@mdi/js'
 
 const mdi = new Map<string, string>([
@@ -22,6 +23,7 @@ const mdi = new Map<string, string>([
   ['github', mdiGithub],
   ['cast-connected', mdiCastConnected],
   ['plus-thick', mdiPlusThick],
+  ['palette', mdiPalette]
 ])
 
 export default mdi
