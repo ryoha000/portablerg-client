@@ -59,8 +59,8 @@
   }
 </style>
 
+<SettingToggleButton iconName="close" />
 <div class="container" bind:this="{container}">
-  <SettingToggleButton iconName="close" />
   <div style="{$windowStyle}" class="window center" bind:this="{windowElement}"><span>Window</span></div>
   <div style="{$controlsStyle}" class="controls center" bind:this="{controlsElement}"><span>コントロール</span></div>
   <div class="confirm"><TextButton label="確定" on:click="{confirm}" on:touchstart="{confirm}" /></div>

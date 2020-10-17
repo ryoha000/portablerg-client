@@ -106,8 +106,8 @@
   }
 </style>
 
+<SettingToggleButton iconName="close" />
 <div class="container">
-  <SettingToggleButton iconName="close" />
   <div>
     <TabletSettingTemplateAdd on:add="{addItem}" />
     <TabletSettingTemplateColor on:color="{(e) => changeColor(e.detail.rgba)}" />

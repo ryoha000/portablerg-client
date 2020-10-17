@@ -51,8 +51,8 @@
   }
 </style>
 
+<SettingToggleButton iconName="close" />
 <div class="container" bind:this="{container}">
-  <SettingToggleButton iconName="close" />
   <div class="thumbnailContainer"></div>
   {#each $controlStyles as controlStyle, i}
     <div class="{$overIndex === i ? 'over' : ''}">
