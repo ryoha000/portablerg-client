@@ -28,26 +28,38 @@ const useFirebase = () => {
   const init = () => {
     firebase.initializeApp(firebaseConfig)
   }
+  const checkLogin = async () => {
+    try {
+      const result = await firebase.auth().getRedirectResult()
+      const user = result.user
+      if (user) {
+        const token = await user.getIdToken(false)
+        setAndConnect(token)
+      } else {
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            user.getIdToken(false).then(token => setAndConnect(token))
+          } else {
+            console.log('not login')
+          }
+        });
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
   const github = async () => {
     const provider = new firebase.auth.GithubAuthProvider();
-    const result = await firebase.auth().signInWithPopup(provider);
-    if (result.user) {
-      const token = await result.user.getIdToken(false)
-      setAndConnect(token)
-    }
+    await firebase.auth().signInWithRedirect(provider);
   }
   const google = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    const result = await firebase.auth().signInWithPopup(provider);
-    if (result.user) {
-      const token = await result.user.getIdToken(false)
-      setAndConnect(token)
-    }
+    await firebase.auth().signInWithRedirect(provider);
   }
   const original = async (id: string) => {
     setAndConnect(`original${id}`)
   }
-  return { init, github, google, original }
+  return { init, github, google, original, checkLogin }
 }
 
 export default useFirebase

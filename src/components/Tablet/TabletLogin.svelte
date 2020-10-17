@@ -30,10 +30,11 @@
   store.isConnected.subscribe(v => {
     if (v) push('/client')
   })
-  const { init, google, github } = useFirebase()
-  onMount(() => {
+  const { init, google, github, checkLogin } = useFirebase()
+  onMount(async () => {
     if (!me) {
       init()
+      await checkLogin()
     }
   })
   onDestroy(unsubscribe)
