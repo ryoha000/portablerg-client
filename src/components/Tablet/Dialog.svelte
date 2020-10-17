@@ -19,7 +19,7 @@
     z-index: 300;
     position: absolute;
   }
-  .settingContainer {
+  .container {
     background-color: white;
     position: absolute;
     z-index: 999999;
@@ -31,6 +31,6 @@
 
 
 <div class="layer" on:click="{closeToggleSetting}"></div>
-<div class="settingContainer" style="{style}">
+<div class="container" on:click="{closeToggleSetting}" style="{style}">
   <slot></slot>
 </div>
