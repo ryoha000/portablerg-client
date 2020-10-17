@@ -28,6 +28,7 @@
       sendDataMessage({ type: 'movie' }, dc)
     }
   }
+  let isChromeInIOS = get(store.isIOS) && navigator.userAgent.match(/crios/i)
 </script>
 
 <style>
@@ -68,7 +69,9 @@
     <div on:click="{() => push('/setting/template')}" class="settingItem">コントロールのテンプレートを作る</div>
     <div on:click="{() => push('/setting/sort')}" class="settingItem">コントロールのテンプレートを並び替える</div>
     <div on:click="{captureAndSave}" class="settingItem">スクリーンショットを保存する</div>
-    <div on:click="{editMovie}" class="settingItem">動画を保存する</div>
+    {#if isChromeInIOS}
+      <div on:click="{editMovie}" class="settingItem">動画を保存する</div>
+    {/if}
     <div on:click="{connectHost}" class="settingItem">再接続する</div>
   </div>
 {/if}
