@@ -75,7 +75,6 @@ const useTemplate = () => {
       const initial = inputs[0].initial
       rects.update($rects => $rects.map(($rect, i) => {
         const isDragging = $rect.x < initial.x && initial.x < $rect.x + $rect.width && $rect.y < initial.y && initial.y < $rect.y + $rect.height
-        console.log('moving', i, isDragging, $rect)
         return { ...$rect, isDragging }
       }))
     }

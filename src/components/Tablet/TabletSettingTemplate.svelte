@@ -47,16 +47,16 @@
   })
   const addItem = (e: CustomEvent<{ type: ControlType }>) => {
     const type = e.detail.type
-    console.log('addItem: ', type)
-    if (elements[type]) {
-      console.log('element exist')
+    if (elements[type] && borderElement) {
       setupHandler(elements[type], type, borderElement)
     }
   }
   const confirm = async () => {
-    const newControl = addControl(borderElement)
-    await addTemplate(newControl)
-    push('/client')
+    if (borderElement) {
+      const newControl = addControl(borderElement)
+      await addTemplate(newControl)
+      push('/client')
+    }
   }
 </script>
 

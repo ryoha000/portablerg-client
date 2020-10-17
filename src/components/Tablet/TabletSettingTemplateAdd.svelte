@@ -21,7 +21,6 @@
   const existed = Object.values(ControlType).map(() => false)
   const dispatch = createEventDispatcher();
   const addControlItem = (type: ControlType) => {
-    console.log(type)
     if (existed[type]) return
     dispatch('add', { type: type })
     existed[type] = true
