@@ -39,6 +39,14 @@
             init(container, 'down')
             break
           }
+          case ControlType.Left: {
+            init(container, 'left')
+            break
+          }
+          case ControlType.Right: {
+            init(container, 'right')
+            break
+          }
           case ControlType.Control: {
             init(container, 'control')
             break

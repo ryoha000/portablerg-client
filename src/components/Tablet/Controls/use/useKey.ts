@@ -4,7 +4,7 @@ import { sendDataMessage } from '../../../../lib/utils'
 const useKey = (dc: RTCDataChannel, rootContainer: HTMLDivElement) => {
   const region: Region = new ZingTouch.Region(rootContainer);
 
-  const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'control') => {
+  const init = (ele: HTMLElement, type: 'enter' | 'up' | 'down' | 'left' | 'right' | 'control') => {
     const tapStart = () => {
       sendDataMessage({ type: 'down', key: type }, dc)
     }

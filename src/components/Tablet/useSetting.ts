@@ -30,6 +30,8 @@ export const ControlType = {
   Up: 3,
   Down: 4,
   Control: 5,
+  Left: 6,
+  Right: 7,
 } as const
 
 export const getControlKeyName = (type: ControlType) => {
@@ -45,6 +47,10 @@ export const getControlKeyName = (type: ControlType) => {
     case 4:
       return 'Down'
     case 5:
+      return 'Left'
+    case 6:
+      return 'Right'
+    case 7:
       return 'Control'
     default: {
       console.error('this control type not supported')
@@ -66,6 +72,10 @@ export const getAddControlWords = (type: ControlType) => {
     case 4:
       return '↓キーを追加する'
     case 5:
+      return '←キーを追加する'
+    case 6:
+      return '→キーを追加する'
+    case 7:
       return 'Ctrlキーを追加する'
     default: {
       console.error('this control type not supported')
