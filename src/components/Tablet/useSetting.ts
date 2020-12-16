@@ -29,9 +29,9 @@ export const ControlType = {
   Enter: 2,
   Up: 3,
   Down: 4,
-  Control: 5,
-  Left: 6,
-  Right: 7,
+  Left: 5,
+  Right: 6,
+  Control: 7,
 } as const
 
 export const getControlKeyName = (type: ControlType) => {

@@ -69,7 +69,7 @@ const useTemplate = () => {
     return res
   })
 
-  const setupHandler = (ele: HTMLElement,type: ControlType, borderElement: HTMLElement) => {
+  const setupHandler = (ele: HTMLElement, type: ControlType, borderElement: HTMLElement) => {
     if (!region || !container) {
       console.error('not initialize')
       return
