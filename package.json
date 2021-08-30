@@ -27,7 +27,7 @@
   "dependencies": {
     "@ffmpeg/ffmpeg": "0.7.0",
     "@mdi/js": "^5.9.55",
-    "firebase": "^7.24.0",
+    "firebase": "^9.0.0",
     "sirv-cli": "^1.0.11",
     "svelte-color-picker": "^1.0.7",
     "svelte-loading-spinners": "^0.1.5",
