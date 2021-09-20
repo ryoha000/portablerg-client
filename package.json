@@ -31,6 +31,6 @@
     "sirv-cli": "^1.0.11",
     "svelte-color-picker": "^1.0.7",
     "svelte-loading-spinners": "^0.1.5",
-    "svelte-slider": "0.0.6"
+    "svelte-slider": "1.0.1"
   }
 }
